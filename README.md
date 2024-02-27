@@ -1,1 +1,1 @@
-# bitkub-go
+# go-bitkub
