@@ -2,6 +2,7 @@ package market
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/touno-io/go-bitkub/bitkub"
 )
@@ -22,14 +23,16 @@ type Ticker struct {
 	PrevOpen      float64 `json:"prevOpen"`
 }
 
-func GetMarketTicker(symbol string) Ticker {
+func GetMarketTicker(symbol string) (*Ticker, error) {
 	var res map[string]Ticker
-	url := fmt.Sprintf("/market/ticker?sym=%s", symbol)
+
+	sym := fmt.Sprintf("THB_%s", strings.ToUpper(symbol))
+	url := fmt.Sprintf("/market/ticker?sym=%s", sym)
 	// sugar.Debugf("GET %s", url)
 	if err := bitkub.FetchNonSecure("GET", url, nil, &res); err != nil {
 		// sugar.Errorln(err)
+		return nil, err
 	}
-
-	// sugar.Debugf("Response: %#v\n", res[symbol])
-	return res[symbol]
+	data := res[sym]
+	return &data, nil
 }
