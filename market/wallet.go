@@ -4,15 +4,10 @@ import (
 	"github.com/touno-io/go-bitkub/bitkub"
 )
 
-type Balance struct {
-	Available float64 `json:"available"`
-	Reserved  float64 `json:"reserved"`
-}
-
-func GetBalances() (map[string]Balance, error) {
+func GetWallet() (map[string]float64, error) {
 	var result bitkub.ResponseAPI
 
-	if err := bitkub.FetchSecure("POST", "/v3/market/balances", nil, &result); err != nil {
+	if err := bitkub.FetchSecure("POST", "/v3/market/wallet", nil, &result); err != nil {
 		return nil, err
 	}
 
@@ -21,7 +16,7 @@ func GetBalances() (map[string]Balance, error) {
 		return nil, err
 	}
 
-	data := map[string]Balance{}
+	data := map[string]float64{}
 
 	if err = stdJson.Unmarshal(byteData, &data); err != nil {
 		return nil, err
