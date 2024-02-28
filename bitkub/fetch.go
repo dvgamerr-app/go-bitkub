@@ -36,18 +36,22 @@ func generateSignature(payload string) string {
 func FetchSecure(method string, path string, reqBody any, resPayload any) error {
 	resp, err := fetch(true, method, path, reqBody)
 	if err != nil {
-		return fmt.Errorf("error decoding response: %+v", err)
+		return fmt.Errorf("decoding response: %+v", err)
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode > 299 {
+		return fmt.Errorf("%s : %+v", ErrorCode[resp.StatusCode], resp.Request)
+	}
+
 	if err = json.NewDecoder(resp.Body).Decode(&resPayload); err != nil {
-		return fmt.Errorf("error decoding response: %+v", err)
+		return fmt.Errorf("decoding response: %+v", err)
 	}
 
 	res := resPayload.(*ResponseAPI)
 
 	if res.Error != 0 {
-		return fmt.Errorf("error response: %+v", ErrorCode[res.Error])
+		return fmt.Errorf("%s : %+v", ErrorCode[res.Error], res)
 	}
 
 	return nil
@@ -56,12 +60,12 @@ func FetchSecure(method string, path string, reqBody any, resPayload any) error 
 func FetchNonSecure(method string, path string, reqBody any, resPayload any) error {
 	resp, err := fetch(true, method, path, reqBody)
 	if err != nil {
-		return fmt.Errorf("error decoding response: %+v", err)
+		return fmt.Errorf("decoding response: %+v", err)
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&resPayload); err != nil {
-		return fmt.Errorf("error decoding response: %+v", err)
+		return fmt.Errorf("decoding response: %+v", err)
 	}
 
 	return nil
@@ -93,7 +97,11 @@ func fetch(secure bool, method string, path string, reqBody any) (*http.Response
 	}
 
 	// Generate timestamp and signature
+
 	signaturePayload := fmt.Sprintf(`%s%s%s`, serverTime, req.Method, req.URL.Path)
+	if req.URL.RawQuery != "" {
+		signaturePayload += fmt.Sprintf(`?%s`, req.URL.RawQuery)
+	}
 	signature := generateSignature(signaturePayload)
 
 	// Set the required headers
