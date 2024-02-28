@@ -109,11 +109,11 @@ func fetch(secure bool, method string, path string, reqBody any) (*http.Response
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Error().Msgf("%s | %s %s", resp.Status, method, path)
+		log.Warn().Int("status", resp.StatusCode).Str("method", method).Str("path", path).Err(err).Stack().Send()
 		return nil, fmt.Errorf("making request: %+v", err)
 	}
 
-	log.Debug().Int("status", resp.StatusCode).Str("method", method).Str("path", path).Msg("")
+	log.Debug().Int("status", resp.StatusCode).Str("method", method).Str("path", path).Send()
 	return resp, nil
 }
 
