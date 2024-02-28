@@ -10,6 +10,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/rs/zerolog/log"
 )
 
 const BASE_URL = "https://api.bitkub.com/api"
@@ -107,8 +109,10 @@ func fetch(secure bool, method string, path string, reqBody any) (*http.Response
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Error().Msgf("%s | %s %s", resp.Status, method, path)
 		return nil, fmt.Errorf("making request: %+v", err)
 	}
+	log.Debug().Msgf("%s | %s %s", resp.Status, method, path)
 
 	return resp, nil
 }

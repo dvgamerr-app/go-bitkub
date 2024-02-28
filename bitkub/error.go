@@ -1,5 +1,7 @@
 package bitkub
 
+import "github.com/rs/zerolog"
+
 var ErrorCode = map[int]string{
 	0:  "No error",
 	1:  "Invalid JSON payload",
@@ -47,4 +49,9 @@ var ErrorCode = map[int]string{
 	56: "User has been suspended from purchasing",
 	57: "User has been suspended from selling",
 	90: "Server error (please contact support)",
+}
+
+func init() {
+	// UNIX Time is faster and smaller than most timestamps
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 }
