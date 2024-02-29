@@ -24,14 +24,16 @@ func PrettyPrintJSON(data interface{}) error {
 
 // Load environment variables from .env
 func LoadDotEnv(filenames ...string) error {
-	for _, f := range filenames {
-		if _, err := os.Stat(f); err != nil {
+	if len(filenames) == 0 {
+		if _, err := os.Stat(".env"); err != nil {
 			return err
 		}
-	}
-
-	if _, err := os.Stat(".env"); err != nil && len(filenames) == 0 {
-		return err
+	} else {
+		for _, f := range filenames {
+			if _, err := os.Stat(f); err != nil {
+				return err
+			}
+		}
 	}
 
 	if err := godotenv.Load(filenames...); err != nil {

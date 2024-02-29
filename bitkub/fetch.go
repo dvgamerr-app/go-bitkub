@@ -9,23 +9,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 
 	"github.com/rs/zerolog/log"
 )
-
-const BASE_URL = "https://api.bitkub.com/api"
-
-var (
-	apiKey    string
-	secretKey string
-)
-
-type ResponseAPI struct {
-	Error   int    `json:"error"`
-	Message string `json:"message"`
-	Result  any    `json:"result"`
-}
 
 func generateSignature(payload string) string {
 	h := hmac.New(sha256.New, []byte(secretKey))
@@ -72,11 +58,6 @@ func FetchNonSecure(method string, path string, reqBody any, resPayload any) err
 }
 
 func fetch(secure bool, method string, path string, reqBody any) (*http.Response, error) {
-	if secure && (apiKey == "" || secretKey == "") {
-		apiKey = os.Getenv("BTK_APIKEY")
-		secretKey = os.Getenv("BTK_SECRETKEY")
-	}
-
 	var payload []byte = nil
 
 	serverTime, err := getServerTime()

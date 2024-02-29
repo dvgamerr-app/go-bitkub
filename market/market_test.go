@@ -6,6 +6,7 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/suite"
+	"github.com/touno-io/go-bitkub/bitkub"
 	"github.com/touno-io/go-bitkub/helper"
 )
 
@@ -37,7 +38,7 @@ func TestBitkubAPISuite(t *testing.T) {
 		log.Fatalln(err)
 	}
 
-	if err := helper.CheckEnvVars("BTK_APIKEY", "BTK_SECRETKEY"); err != nil {
+	if err := bitkub.Initlizer("", ""); err != nil {
 		log.Fatalln(err)
 	}
 	suite.Run(t, new(BitkubSuite))
