@@ -44,11 +44,7 @@ func main() {
 	// helper.FatalError(err)
 	// log.Trace().Interface("Balance", bal).Send()
 
-	wal, err := market.GetWallet()
-	helper.FatalError(err)
-	log.Trace().Interface("wal", wal).Send()
-
-	ord, err := market.GetMyOpenOrders("ankr")
+	ord, err := market.GetUserLimits()
 	helper.FatalError(err)
 	log.Trace().Interface("ord", ord).Send()
 

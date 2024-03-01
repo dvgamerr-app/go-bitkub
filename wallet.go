@@ -4,24 +4,31 @@ import (
 	"github.com/touno-io/go-bitkub/market"
 )
 
-type BitkubWallet map[string]float64
-
-func QueryWallet() (*BitkubWallet, error) {
-	var (
-		data BitkubWallet
-		err  error
-	)
-	data, err = market.GetWallet()
+func QueryWallet() (*market.BitkubWallet, error) {
+	data, err := market.GetWallet()
 	if err != nil {
 		return nil, err
 	}
 
-	for ccy, coin := range data {
+	for ccy, coin := range *data {
 		if coin == 0.0 {
-			delete(data, ccy)
+			delete(*data, ccy)
 			continue
 		}
 	}
 
-	return &data, nil
+	return data, nil
+}
+
+func QueryCoins() ([]string, error) {
+	data, err := market.GetWallet()
+	if err != nil {
+		return nil, err
+	}
+
+	keys := make([]string, 0, len(*data))
+	for k := range *data {
+		keys = append(keys, k)
+	}
+	return keys, nil
 }

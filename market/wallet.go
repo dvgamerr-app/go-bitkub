@@ -4,7 +4,9 @@ import (
 	"github.com/touno-io/go-bitkub/bitkub"
 )
 
-func GetWallet() (map[string]float64, error) {
+type BitkubWallet map[string]float64
+
+func GetWallet() (*BitkubWallet, error) {
 	var result bitkub.ResponseAPI
 
 	if err := bitkub.FetchSecure("POST", "/v3/market/wallet", nil, &result); err != nil {
@@ -16,10 +18,10 @@ func GetWallet() (map[string]float64, error) {
 		return nil, err
 	}
 
-	data := map[string]float64{}
+	data := BitkubWallet{}
 
 	if err = stdJson.Unmarshal(byteData, &data); err != nil {
 		return nil, err
 	}
-	return data, nil
+	return &data, nil
 }

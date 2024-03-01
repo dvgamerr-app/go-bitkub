@@ -1,9 +1,6 @@
 package market
 
 import (
-	"encoding/binary"
-	"math"
-
 	"github.com/touno-io/go-bitkub/bitkub"
 )
 
@@ -43,23 +40,28 @@ type FiatUsage struct {
 	WithdrawPercentage float64 `json:"withdraw_percentage"`
 }
 
-type Data struct {
+type UserLimits struct {
 	Limits Limits `json:"limits"`
 	Usage  Usage  `json:"usage"`
 	Rate   int    `json:"rate"`
 }
 
-func GetUserLimits() (float64, error) {
+func GetUserLimits() (*UserLimits, error) {
 	var result bitkub.ResponseAPI
 
-	if err := bitkub.FetchSecure("POST", "/api/v3/user/limits", nil, &result); err != nil {
-		return 0, err
+	if err := bitkub.FetchSecure("POST", "/v3/user/limits", nil, &result); err != nil {
+		return nil, err
 	}
 
 	byteData, err := stdJson.Marshal(result.Result)
 	if err != nil {
-		return 0, err
+		return nil, err
+	}
+	data := UserLimits{}
+
+	if err = stdJson.Unmarshal(byteData, &data); err != nil {
+		return nil, err
 	}
 
-	return math.Float64frombits(binary.LittleEndian.Uint64(byteData)), nil
+	return &data, nil
 }
