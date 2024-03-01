@@ -15,23 +15,6 @@ type BitkubSuite struct {
 }
 
 func (t *BitkubSuite) SetupSuite() {
-	log.Println("Setup before all tests")
-
-}
-
-func (t *BitkubSuite) TearDownSuite() {
-	log.Println("Tear down after all tests")
-}
-
-func (t *BitkubSuite) SetupTest() {
-	log.Println("Setup before each test")
-}
-
-func (t *BitkubSuite) TearDownTest() {
-	log.Println("Tear down after each test")
-}
-
-func TestBitkubAPISuite(t *testing.T) {
 	zerolog.SetGlobalLevel(zerolog.Disabled)
 
 	if err := helper.LoadDotEnv("../.env"); err != nil {
@@ -41,5 +24,21 @@ func TestBitkubAPISuite(t *testing.T) {
 	if err := bitkub.Initlizer("", ""); err != nil {
 		log.Fatalln(err)
 	}
+}
+
+func (t *BitkubSuite) TearDownSuite() {
+	log.Println("Tear down after all tests")
+}
+
+// func (t *BitkubSuite) SetupTest() {
+// 	log.Println("Setup before each test")
+// }
+
+// func (t *BitkubSuite) TearDownTest() {
+// 	log.Println("Tear down after each test")
+// }
+
+func TestBitkubAPISuite(t *testing.T) {
+
 	suite.Run(t, new(BitkubSuite))
 }
