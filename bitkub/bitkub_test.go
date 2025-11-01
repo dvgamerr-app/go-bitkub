@@ -1,7 +1,7 @@
 package bitkub
 
 import (
-	"github.com/dvgamerr-app/go-bitkub/helper"
+	util "github.com/dvgamerr-app/go-bitkub/Util"
 	"github.com/rs/zerolog"
 )
 
@@ -9,6 +9,6 @@ func init() {
 	// Disable zerolog during tests
 	zerolog.SetGlobalLevel(zerolog.Disabled)
 
-	helper.LoadDotEnv("../.env")
+	util.LoadDotEnv("../.env")
 	Initlizer()
 }

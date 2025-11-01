@@ -4,8 +4,8 @@ import (
 	"os"
 
 	"github.com/alexflint/go-arg"
+	util "github.com/dvgamerr-app/go-bitkub/Util"
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
-	"github.com/dvgamerr-app/go-bitkub/helper"
 	"github.com/dvgamerr-app/go-bitkub/market"
 	"github.com/leekchan/accounting"
 	"github.com/rs/zerolog"
@@ -25,7 +25,7 @@ func init() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	zerolog.SetGlobalLevel(zerolog.TraceLevel)
 
-	if err := helper.LoadDotEnv(); err != nil {
+	if err := util.LoadDotEnv(); err != nil {
 		log.Warn().Err(err).Msg("Failed to load .env file")
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/dvgamerr-app/go-bitkub/helper"
+	util "github.com/dvgamerr-app/go-bitkub/Util"
 )
 
 const BASE_URL = "https://api.bitkub.com/api"
@@ -48,7 +48,7 @@ func Initlizer(key ...string) error {
 	}
 
 	if apiKey == "" || secretKey == "" {
-		if err := helper.CheckEnvVars("BTK_APIKEY", "BTK_SECRETKEY"); err != nil {
+		if err := util.CheckEnvVars("BTK_APIKEY", "BTK_SECRETKEY"); err != nil {
 			return err
 		}
 
