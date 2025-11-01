@@ -17,9 +17,11 @@ func init() {
 }
 
 func TestGetAddresses(t *testing.T) {
-	params := GetAddressesParams{
-		Page:  1,
-		Limit: 10,
+	params := Addresses{
+		Pagination: Pagination{
+			Page:  1,
+			Limit: 10,
+		},
 	}
 
 	result, err := GetAddresses(params)
@@ -50,10 +52,14 @@ func TestGetAddresses(t *testing.T) {
 }
 
 func TestGetAddressesWithFilter(t *testing.T) {
-	params := GetAddressesParams{
-		Page:   1,
-		Limit:  5,
-		Symbol: "KUB",
+	params := Addresses{
+		Pagination: Pagination{
+			Page:  1,
+			Limit: 5,
+		},
+		SymbolNetwork: SymbolNetwork{
+			Symbol: "KUB",
+		},
 	}
 
 	result, err := GetAddresses(params)

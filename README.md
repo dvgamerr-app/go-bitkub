@@ -68,17 +68,26 @@ if err != nil {
 ### Crypto API (v4) Examples
 
 ```go
-// List crypto addresses
+// List crypto addresses with pagination
 addresses, err := crypto.GetAddresses(crypto.GetAddressesParams{
-    Page:  1,
-    Limit: 10,
+    PaginationParams: crypto.PaginationParams{
+        Page:  1,
+        Limit: 10,
+    },
+    SymbolNetworkParams: crypto.SymbolNetworkParams{
+        Symbol:  "ATOM",
+        Network: "ATOM",
+    },
 })
 
-// Get deposit history
+// Get deposit history with filters
 deposits, err := crypto.GetDeposits(crypto.GetDepositsParams{
-    Page:   1,
-    Limit:  10,
+    PaginationParams: crypto.PaginationParams{
+        Page:  1,
+        Limit: 10,
+    },
     Symbol: "BTC",
+    Status: "complete",
 })
 
 // Get available coins

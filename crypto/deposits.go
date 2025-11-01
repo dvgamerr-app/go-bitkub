@@ -7,16 +7,14 @@ import (
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
-type GetDepositsParams struct {
-	Page         int
-	Limit        int
-	Symbol       string
-	Status       string
-	CreatedStart string
-	CreatedEnd   string
+type Deposits struct {
+	Pagination
+	DateRange
+	Symbol string
+	Status string
 }
 
-func GetDeposits(params GetDepositsParams) (*DepositsResponse, error) {
+func GetDeposits(params Deposits) (*DepositsResponse, error) {
 	var result bitkub.ResponseAPIV4
 
 	queryParams := url.Values{}

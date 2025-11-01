@@ -8,15 +8,13 @@ import (
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
-type GetAddressesParams struct {
-	Page    int
-	Limit   int
-	Symbol  string
-	Network string
-	Memo    string
+type Addresses struct {
+	Pagination
+	SymbolNetwork
+	Memo string
 }
 
-func GetAddresses(params GetAddressesParams) (*AddressesResponse, error) {
+func GetAddresses(params Addresses) (*AddressesResponse, error) {
 	var result bitkub.ResponseAPIV4
 
 	queryParams := url.Values{}

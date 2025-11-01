@@ -37,14 +37,27 @@ func main() {
 }
 ```
 
+### Common Parameter Types
+
+The library uses reusable parameter structs for consistent API patterns:
+
+- `PaginationParams` - For page and limit parameters
+- `DateRangeParams` - For created_start and created_end filters
+- `SymbolNetworkParams` - For symbol and network filters
+
 ### Get Crypto Addresses
 
 ```go
 addresses, err := crypto.GetAddresses(crypto.GetAddressesParams{
-    Page:    1,
-    Limit:   10,
-    Symbol:  "ATOM",
-    Network: "ATOM",
+    PaginationParams: crypto.PaginationParams{
+        Page:  1,
+        Limit: 10,
+    },
+    SymbolNetworkParams: crypto.SymbolNetworkParams{
+        Symbol:  "ATOM",
+        Network: "ATOM",
+    },
+    Memo: "", // Optional
 })
 if err != nil {
     log.Fatal(err)
@@ -75,12 +88,16 @@ fmt.Printf("New address: %s\n", newAddr[0].Address)
 
 ```go
 deposits, err := crypto.GetDeposits(crypto.GetDepositsParams{
-    Page:         1,
-    Limit:        10,
-    Symbol:       "BTC",
-    Status:       "complete",
-    CreatedStart: "2025-01-01T00:00:00.000Z",
-    CreatedEnd:   "2025-01-31T23:59:59.999Z",
+    PaginationParams: crypto.PaginationParams{
+        Page:  1,
+        Limit: 10,
+    },
+    DateRangeParams: crypto.DateRangeParams{
+        CreatedStart: "2025-01-01T00:00:00.000Z",
+        CreatedEnd:   "2025-01-31T23:59:59.999Z",
+    },
+    Symbol: "BTC",
+    Status: "complete",
 })
 if err != nil {
     log.Fatal(err)
@@ -96,12 +113,16 @@ for _, deposit := range deposits.Items {
 
 ```go
 withdraws, err := crypto.GetWithdraws(crypto.GetWithdrawsParams{
-    Page:         1,
-    Limit:        10,
-    Symbol:       "ETH",
-    Status:       "complete",
-    CreatedStart: "2025-01-01T00:00:00.000Z",
-    CreatedEnd:   "2025-01-31T23:59:59.999Z",
+    PaginationParams: crypto.PaginationParams{
+        Page:  1,
+        Limit: 10,
+    },
+    DateRangeParams: crypto.DateRangeParams{
+        CreatedStart: "2025-01-01T00:00:00.000Z",
+        CreatedEnd:   "2025-01-31T23:59:59.999Z",
+    },
+    Symbol: "ETH",
+    Status: "complete",
 })
 if err != nil {
     log.Fatal(err)
@@ -136,8 +157,13 @@ fmt.Printf("Withdrawal created: TxnID=%s, Amount=%s %s, Fee=%s\n",
 ### Get Available Coins
 
 ```go
+// Get all coins
+coins, err := crypto.GetCoins(crypto.GetCoinsParams{})
+
+// Or filter by symbol and network
 coins, err := crypto.GetCoins(crypto.GetCoinsParams{
-    Symbol: "BTC",
+    Symbol:  "BTC",
+    Network: "BTC",
 })
 if err != nil {
     log.Fatal(err)
@@ -156,8 +182,10 @@ for _, coin := range coins.Items {
 
 ```go
 compensations, err := crypto.GetCompensations(crypto.GetCompensationsParams{
-    Page:   1,
-    Limit:  10,
+    PaginationParams: crypto.PaginationParams{
+        Page:  1,
+        Limit: 10,
+    },
     Symbol: "XRP",
     Type:   "COMPENSATE", // or "DECOMPENSATE"
     Status: "COMPLETED",  // or "PENDING"

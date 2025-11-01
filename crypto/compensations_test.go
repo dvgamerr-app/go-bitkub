@@ -17,9 +17,11 @@ func init() {
 }
 
 func TestGetCompensations(t *testing.T) {
-	params := GetCompensationsParams{
-		Page:  1,
-		Limit: 10,
+	params := Compensations{
+		Pagination: Pagination{
+			Page:  1,
+			Limit: 10,
+		},
 	}
 
 	result, err := GetCompensations(params)
@@ -57,10 +59,12 @@ func TestGetCompensations(t *testing.T) {
 }
 
 func TestGetCompensationsByType(t *testing.T) {
-	params := GetCompensationsParams{
-		Page:  1,
-		Limit: 5,
-		Type:  "COMPENSATE",
+	params := Compensations{
+		Pagination: Pagination{
+			Page:  1,
+			Limit: 5,
+		},
+		Type: "COMPENSATE",
 	}
 
 	result, err := GetCompensations(params)
@@ -86,9 +90,11 @@ func TestGetCompensationsByType(t *testing.T) {
 }
 
 func TestGetCompensationsByStatus(t *testing.T) {
-	params := GetCompensationsParams{
-		Page:   1,
-		Limit:  5,
+	params := Compensations{
+		Pagination: Pagination{
+			Page:  1,
+			Limit: 5,
+		},
 		Status: "COMPLETED",
 	}
 
@@ -109,9 +115,11 @@ func TestGetCompensationsByStatus(t *testing.T) {
 }
 
 func TestGetCompensationsBySymbol(t *testing.T) {
-	params := GetCompensationsParams{
-		Page:   1,
-		Limit:  5,
+	params := Compensations{
+		Pagination: Pagination{
+			Page:  1,
+			Limit: 5,
+		},
 		Symbol: "XRP",
 	}
 

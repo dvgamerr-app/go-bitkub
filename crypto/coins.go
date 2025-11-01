@@ -6,12 +6,9 @@ import (
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
-type GetCoinsParams struct {
-	Symbol  string
-	Network string
-}
+type Coins = SymbolNetwork
 
-func GetCoins(params GetCoinsParams) (*CoinsResponse, error) {
+func GetCoins(params Coins) (*CoinsResponse, error) {
 	var result bitkub.ResponseAPIV4
 
 	queryParams := url.Values{}

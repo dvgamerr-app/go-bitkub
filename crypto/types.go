@@ -1,5 +1,21 @@
 package crypto
 
+// Common parameter structs for API requests
+type Pagination struct {
+	Page  int
+	Limit int
+}
+
+type DateRange struct {
+	CreatedStart string
+	CreatedEnd   string
+}
+
+type SymbolNetwork struct {
+	Symbol  string
+	Network string
+}
+
 type PaginatedResponse struct {
 	Page      int `json:"page"`
 	TotalPage int `json:"total_page"`

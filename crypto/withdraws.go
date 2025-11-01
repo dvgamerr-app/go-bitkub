@@ -8,16 +8,14 @@ import (
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
-type GetWithdrawsParams struct {
-	Page         int
-	Limit        int
-	Symbol       string
-	Status       string
-	CreatedStart string
-	CreatedEnd   string
+type Withdraws struct {
+	Pagination
+	DateRange
+	Symbol string
+	Status string
 }
 
-func GetWithdraws(params GetWithdrawsParams) (*WithdrawsResponse, error) {
+func GetWithdraws(params Withdraws) (*WithdrawsResponse, error) {
 	var result bitkub.ResponseAPIV4
 
 	queryParams := url.Values{}

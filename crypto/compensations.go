@@ -7,17 +7,15 @@ import (
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
-type GetCompensationsParams struct {
-	Page         int
-	Limit        int
-	Symbol       string
-	Type         string
-	Status       string
-	CreatedStart string
-	CreatedEnd   string
+type Compensations struct {
+	Pagination
+	DateRange
+	Symbol string
+	Type   string
+	Status string
 }
 
-func GetCompensations(params GetCompensationsParams) (*CompensationsResponse, error) {
+func GetCompensations(params Compensations) (*CompensationsResponse, error) {
 	var result bitkub.ResponseAPIV4
 
 	queryParams := url.Values{}

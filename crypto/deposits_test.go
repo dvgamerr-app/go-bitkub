@@ -17,9 +17,11 @@ func init() {
 }
 
 func TestGetDeposits(t *testing.T) {
-	params := GetDepositsParams{
-		Page:  1,
-		Limit: 10,
+	params := Deposits{
+		Pagination: Pagination{
+			Page:  1,
+			Limit: 10,
+		},
 	}
 
 	result, err := GetDeposits(params)
@@ -57,9 +59,11 @@ func TestGetDeposits(t *testing.T) {
 }
 
 func TestGetDepositsWithFilters(t *testing.T) {
-	params := GetDepositsParams{
-		Page:   1,
-		Limit:  5,
+	params := Deposits{
+		Pagination: Pagination{
+			Page:  1,
+			Limit: 5,
+		},
 		Status: "complete",
 	}
 
@@ -86,9 +90,11 @@ func TestGetDepositsWithFilters(t *testing.T) {
 }
 
 func TestGetDepositsBySymbol(t *testing.T) {
-	params := GetDepositsParams{
-		Page:   1,
-		Limit:  5,
+	params := Deposits{
+		Pagination: Pagination{
+			Page:  1,
+			Limit: 5,
+		},
 		Symbol: "BTC",
 	}
 

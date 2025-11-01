@@ -17,9 +17,11 @@ func init() {
 }
 
 func TestGetWithdraws(t *testing.T) {
-	params := GetWithdrawsParams{
-		Page:  1,
-		Limit: 10,
+	params := Withdraws{
+		Pagination: Pagination{
+			Page:  1,
+			Limit: 10,
+		},
 	}
 
 	result, err := GetWithdraws(params)
@@ -61,9 +63,11 @@ func TestGetWithdraws(t *testing.T) {
 }
 
 func TestGetWithdrawsWithFilters(t *testing.T) {
-	params := GetWithdrawsParams{
-		Page:   1,
-		Limit:  5,
+	params := Withdraws{
+		Pagination: Pagination{
+			Page:  1,
+			Limit: 5,
+		},
 		Status: "complete",
 	}
 
@@ -90,9 +94,11 @@ func TestGetWithdrawsWithFilters(t *testing.T) {
 }
 
 func TestGetWithdrawsBySymbol(t *testing.T) {
-	params := GetWithdrawsParams{
-		Page:   1,
-		Limit:  5,
+	params := Withdraws{
+		Pagination: Pagination{
+			Page:  1,
+			Limit: 5,
+		},
 		Symbol: "THB",
 	}
 
@@ -112,7 +118,7 @@ func TestGetWithdrawsBySymbol(t *testing.T) {
 }
 
 func TestCreateWithdraw(t *testing.T) {
-	t.Error("requires is_withdraw permission and real transaction")
+	t.Skip("requires is_withdraw permission and real transaction")
 
 	req := CreateWithdrawRequest{
 		Symbol:  "RDNT",

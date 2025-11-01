@@ -34,20 +34,17 @@ func main() {
 	arg.MustParse(&cli)
 	bitkub.Initlizer(cli.Key, cli.Secret)
 
-	// ดึง balances จากทุก wallet
 	log.Info().Msg("📊 Fetching balances from all wallets...")
 	balances, err := QueryBalances()
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to fetch balances")
 	}
 
-	// แสดงยอดรวมเป็นเงินบาท
 	log.Info().
 		Str("total", aNo.FormatMoney(balances.Total)).
 		Str("available", aNo.FormatMoney(balances.Available)).
 		Msg("💰 Total Balance Summary")
 
-	// แสดงรายละเอียดแต่ละ coin
 	log.Info().Msg("📋 Balance Details:")
 	for ccy, balance := range balances.Coins {
 		if ccy == "THB" {
@@ -65,7 +62,6 @@ func main() {
 		}
 	}
 
-	// ดึงรายการ orders ที่ open อยู่แต่ละประเภท
 	log.Info().Msg("📝 Fetching open orders...")
 	ordersByCoin := make(map[string][]market.Order)
 
@@ -85,7 +81,6 @@ func main() {
 		}
 	}
 
-	// แสดงรายการ orders แยกตามประเภท
 	if len(ordersByCoin) == 0 {
 		log.Info().Msg("✅ No open orders")
 	} else {
@@ -97,7 +92,6 @@ func main() {
 				Int("count", len(orders)).
 				Msg("  ")
 
-			// จัดกลุ่ม orders ตาม side (buy/sell) และ type
 			buyOrders := 0
 			sellOrders := 0
 			limitOrders := 0

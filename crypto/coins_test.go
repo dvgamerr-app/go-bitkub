@@ -17,7 +17,7 @@ func init() {
 }
 
 func TestGetCoins(t *testing.T) {
-	params := GetCoinsParams{}
+	params := Coins{}
 
 	result, err := GetCoins(params)
 	if err != nil {
@@ -53,7 +53,7 @@ func TestGetCoins(t *testing.T) {
 }
 
 func TestGetCoinsWithSymbol(t *testing.T) {
-	params := GetCoinsParams{
+	params := Coins{
 		Symbol: "KUB",
 	}
 
@@ -104,7 +104,7 @@ func TestGetCoinsMultipleSymbols(t *testing.T) {
 	totalNetworks := 0
 
 	for _, symbol := range symbols {
-		params := GetCoinsParams{
+		params := Coins{
 			Symbol: symbol,
 		}
 
