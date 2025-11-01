@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetMarketTicker(t *testing.T) {
-	_, err := GetMarketTicker("btc")
+func TestGetTicker(t *testing.T) {
+	_, err := GetTicker("btc_thb")
 	assert.Equal(t, err, nil)
 }

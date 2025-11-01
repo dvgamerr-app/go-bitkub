@@ -2,37 +2,43 @@ package market
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
+// Ticker represents ticker information from V3 API
 type Ticker struct {
-	ID            int     `json:"id"`
-	Last          float64 `json:"last"`
-	LowestAsk     float64 `json:"lowestAsk"`
-	HighestBid    float64 `json:"highestBid"`
-	PercentChange float64 `json:"percentChange"`
-	BaseVolume    float64 `json:"baseVolume"`
-	QuoteVolume   float64 `json:"quoteVolume"`
-	IsFrozen      int     `json:"isFrozen"`
-	High24hr      float64 `json:"high24hr"`
-	Low24hr       float64 `json:"low24hr"`
-	Change        float64 `json:"change"`
-	PrevClose     float64 `json:"prevClose"`
-	PrevOpen      float64 `json:"prevOpen"`
+	Symbol        string `json:"symbol"`
+	BaseVolume    string `json:"base_volume"`
+	High24hr      string `json:"high_24_hr"`
+	HighestBid    string `json:"highest_bid"`
+	Last          string `json:"last"`
+	Low24hr       string `json:"low_24_hr"`
+	LowestAsk     string `json:"lowest_ask"`
+	PercentChange string `json:"percent_change"`
+	QuoteVolume   string `json:"quote_volume"`
 }
 
-func GetMarketTicker(symbol string) (*Ticker, error) {
-	var res map[string]Ticker
+// TickerResponse represents the response from /api/v3/market/ticker endpoint
+type TickerResponse struct {
+	Error  int      `json:"error"`
+	Result []Ticker `json:"result"`
+}
 
-	sym := fmt.Sprintf("THB_%s", strings.ToUpper(symbol))
-	url := fmt.Sprintf("/market/ticker?sym=%s", sym)
-	// sugar.Debugf("GET %s", url)
-	if err := bitkub.FetchNonSecure("GET", url, nil, &res); err != nil {
-		// sugar.Errorln(err)
+// GetTicker gets ticker information (V3 API)
+// GET /api/v3/market/ticker
+// sym: The symbol (e.g. btc_thb) - optional, returns all if not specified
+func GetTicker(sym string) ([]Ticker, error) {
+	var result TickerResponse
+
+	url := "/v3/market/ticker"
+	if sym != "" {
+		url = fmt.Sprintf("%s?sym=%s", url, sym)
+	}
+
+	if err := bitkub.FetchNonSecure("GET", url, nil, &result); err != nil {
 		return nil, err
 	}
-	data := res[sym]
-	return &data, nil
+
+	return result.Result, nil
 }
