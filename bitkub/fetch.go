@@ -10,9 +10,29 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/rs/zerolog/log"
 )
+
+var (
+	httpClient *http.Client
+)
+
+func init() {
+	// Connection pooling optimization
+	transport := &http.Transport{
+		MaxIdleConns:        100,
+		MaxIdleConnsPerHost: 10,
+		IdleConnTimeout:     90 * time.Second,
+		DisableKeepAlives:   false,
+	}
+
+	httpClient = &http.Client{
+		Transport: transport,
+		Timeout:   30 * time.Second,
+	}
+}
 
 func generateSignature(payload string) string {
 	h := hmac.New(sha256.New, []byte(secretKey))
@@ -127,8 +147,7 @@ func fetch(secure bool, method string, path string, reqBody any) (*http.Response
 		req.Header.Set("X-BTK-SIGN", signature)
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		log.Warn().Int("status", resp.StatusCode).Str("method", method).Str("path", path).Err(err).Stack().Send()
 		return nil, fmt.Errorf("making request: %+v", err)
@@ -139,7 +158,7 @@ func fetch(secure bool, method string, path string, reqBody any) (*http.Response
 }
 
 func getServerTime() (string, error) {
-	resp, err := http.Get(fmt.Sprintf("%s%s", BASE_URL, "/v3/servertime"))
+	resp, err := httpClient.Get(fmt.Sprintf("%s%s", BASE_URL, "/v3/servertime"))
 	if err != nil {
 		return "0", err
 	}
