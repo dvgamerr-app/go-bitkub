@@ -6,7 +6,6 @@ import (
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
-// DepositHistory represents a fiat deposit history item
 type DepositHistory struct {
 	TxnID    string  `json:"txn_id"`
 	Currency string  `json:"currency"`
@@ -15,27 +14,22 @@ type DepositHistory struct {
 	Time     int64   `json:"time"`
 }
 
-// DepositHistoryPagination represents pagination information
 type DepositHistoryPagination struct {
 	Page int `json:"page"`
 	Last int `json:"last"`
 }
 
-// DepositHistoryResponse represents the response from /api/v3/fiat/deposit-history endpoint
 type DepositHistoryResponse struct {
 	Error      int                      `json:"error"`
 	Result     []DepositHistory         `json:"result"`
 	Pagination DepositHistoryPagination `json:"pagination"`
 }
 
-// DepositHistoryParams represents parameters for deposit history request
 type DepositHistoryParams struct {
-	P   int // Page (optional)
-	Lmt int // Limit (optional)
+	P   int
+	Lmt int
 }
 
-// GetDepositHistory lists fiat deposit history
-// POST /api/v3/fiat/deposit-history
 func GetDepositHistory(params DepositHistoryParams) (*DepositHistoryResponse, error) {
 	var response bitkub.ResponseAPI
 
@@ -48,7 +42,6 @@ func GetDepositHistory(params DepositHistoryParams) (*DepositHistoryResponse, er
 		url = fmt.Sprintf("%slmt=%d&", url, params.Lmt)
 	}
 
-	// Remove trailing '&' or '?'
 	if url[len(url)-1] == '&' || url[len(url)-1] == '?' {
 		url = url[:len(url)-1]
 	}

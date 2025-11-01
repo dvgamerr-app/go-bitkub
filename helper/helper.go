@@ -9,20 +9,16 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// PrettyPrintJSON takes an interface containing the data and prints it as formatted JSON
 func PrettyPrintJSON(data interface{}) error {
-	// Marshal the data with indentation
 	jsonData, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		return err
 	}
 
-	// Print the formatted JSON
 	fmt.Println(string(jsonData))
 	return nil
 }
 
-// Load environment variables from .env
 func LoadDotEnv(filenames ...string) error {
 	if len(filenames) == 0 {
 		if _, err := os.Stat(".env"); err != nil {
@@ -43,7 +39,6 @@ func LoadDotEnv(filenames ...string) error {
 	return nil
 }
 
-// checkEnvVars checks that all specified environment variables are set and not empty.
 func CheckEnvVars(envs ...string) error {
 	var missingEnvVars []string
 	for _, env := range envs {

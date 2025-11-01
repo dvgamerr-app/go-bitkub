@@ -6,7 +6,6 @@ import (
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
-// BankAccount represents a bank account
 type BankAccount struct {
 	ID   string `json:"id"`
 	Bank string `json:"bank"`
@@ -14,27 +13,22 @@ type BankAccount struct {
 	Time int64  `json:"time"`
 }
 
-// AccountsPagination represents pagination information
 type AccountsPagination struct {
 	Page int `json:"page"`
 	Last int `json:"last"`
 }
 
-// AccountsResponse represents the response from /api/v3/fiat/accounts endpoint
 type AccountsResponse struct {
 	Error      int                `json:"error"`
 	Result     []BankAccount      `json:"result"`
 	Pagination AccountsPagination `json:"pagination"`
 }
 
-// AccountsParams represents parameters for accounts request
 type AccountsParams struct {
-	P   int // Page (optional)
-	Lmt int // Limit (optional)
+	P   int
+	Lmt int
 }
 
-// GetAccounts lists all approved bank accounts
-// POST /api/v3/fiat/accounts
 func GetAccounts(params AccountsParams) (*AccountsResponse, error) {
 	var response bitkub.ResponseAPI
 
@@ -47,7 +41,6 @@ func GetAccounts(params AccountsParams) (*AccountsResponse, error) {
 		url = fmt.Sprintf("%slmt=%d&", url, params.Lmt)
 	}
 
-	// Remove trailing '&' or '?'
 	if url[len(url)-1] == '&' || url[len(url)-1] == '?' {
 		url = url[:len(url)-1]
 	}
