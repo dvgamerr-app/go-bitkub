@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/touno-io/go-bitkub/bitkub"
+	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
 type Order struct {

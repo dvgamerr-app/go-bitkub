@@ -4,12 +4,13 @@ import (
 	"os"
 
 	"github.com/alexflint/go-arg"
+	"github.com/dvgamerr-app/go-bitkub/bitkub"
+	"github.com/dvgamerr-app/go-bitkub/crypto"
+	"github.com/dvgamerr-app/go-bitkub/helper"
+	_ "github.com/dvgamerr-app/go-bitkub/market"
 	"github.com/leekchan/accounting"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/touno-io/go-bitkub/bitkub"
-	"github.com/touno-io/go-bitkub/helper"
-	"github.com/touno-io/go-bitkub/market"
 )
 
 var (
@@ -31,21 +32,17 @@ func init() {
 	if err := helper.LoadDotEnv(); err != nil {
 		log.Warn().Err(err)
 	}
-	// if os.Getenv("ENV") != "development" {
-	// 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-	// }
 }
 
 func main() {
 	arg.MustParse(&cli)
 	bitkub.Initlizer(cli.Key, cli.Secret)
 
-	// bal, err := QueryBalances()
-	// helper.FatalError(err)
-	// log.Trace().Interface("Balance", bal).Send()
-
-	ord, err := market.GetUserLimits()
+	addresses, err := crypto.GetAddresses(crypto.GetAddressesParams{
+		Page:  1,
+		Limit: 10,
+	})
 	helper.FatalError(err)
-	log.Trace().Interface("ord", ord).Send()
+	log.Info().Interface("addresses", addresses).Send()
 
 }

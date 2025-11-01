@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/touno-io/go-bitkub/market"
+	"github.com/dvgamerr-app/go-bitkub/market"
 )
 
 type BitkubBalances struct {

@@ -1,7 +1,7 @@
 package market
 
 import (
-	"github.com/touno-io/go-bitkub/bitkub"
+	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
 type Limits struct {

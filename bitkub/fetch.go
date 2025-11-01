@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 )
@@ -38,6 +39,30 @@ func FetchSecure(method string, path string, reqBody any, resPayload any) error 
 
 	if res.Error != 0 {
 		return fmt.Errorf("%s : %+v", ErrorCode[res.Error], res)
+	}
+
+	return nil
+}
+
+func FetchSecureV4(method string, path string, reqBody any, resPayload any) error {
+	resp, err := fetch(true, method, path, reqBody)
+	if err != nil {
+		return fmt.Errorf("decoding response: %+v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode > 299 {
+		return fmt.Errorf("HTTP %d : %s", resp.StatusCode, resp.Status)
+	}
+
+	if err = json.NewDecoder(resp.Body).Decode(&resPayload); err != nil {
+		return fmt.Errorf("decoding response: %+v", err)
+	}
+
+	res := resPayload.(*ResponseAPIV4)
+
+	if res.Code != "0" {
+		return fmt.Errorf("API Error [%s]: %s", res.Code, res.Message)
 	}
 
 	return nil
@@ -77,15 +102,15 @@ func fetch(secure bool, method string, path string, reqBody any) (*http.Response
 		return nil, fmt.Errorf("creating request: %+v", err)
 	}
 
-	// Generate timestamp and signature
-
 	signaturePayload := fmt.Sprintf(`%s%s%s`, serverTime, req.Method, req.URL.Path)
 	if req.URL.RawQuery != "" {
 		signaturePayload += fmt.Sprintf(`?%s`, req.URL.RawQuery)
 	}
+	if len(payload) > 0 {
+		signaturePayload += string(payload)
+	}
 	signature := generateSignature(signaturePayload)
 
-	// Set the required headers
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
 	if secure {
@@ -94,7 +119,6 @@ func fetch(secure bool, method string, path string, reqBody any) (*http.Response
 		req.Header.Set("X-BTK-SIGN", signature)
 	}
 
-	// Make the request
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -118,5 +142,8 @@ func getServerTime() (string, error) {
 		return "0", err
 	}
 
-	return string(result), nil
+	timeStr := string(result)
+	timeStr = strings.Trim(timeStr, "\"")
+
+	return timeStr, nil
 }

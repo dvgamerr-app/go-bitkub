@@ -3,7 +3,7 @@ package market
 import (
 	"fmt"
 
-	"github.com/touno-io/go-bitkub/bitkub"
+	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
 func GetTradingCredits() (float64, error) {
