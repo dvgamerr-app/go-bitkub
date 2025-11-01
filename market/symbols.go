@@ -31,7 +31,7 @@ type Symbol struct {
 }
 
 type SymbolsResponse struct {
-	Error  int      `json:"error"`
+	bitkub.GetError
 	Result []Symbol `json:"result"`
 }
 

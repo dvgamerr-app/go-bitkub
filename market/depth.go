@@ -14,7 +14,7 @@ type DepthResult struct {
 }
 
 type DepthResponse struct {
-	Error  int         `json:"error"`
+	bitkub.GetError
 	Result DepthResult `json:"result"`
 }
 

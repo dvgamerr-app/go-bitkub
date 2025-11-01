@@ -1,5 +1,10 @@
 package bitkub
 
+// GetError represents the error response from Bitkub API
+type GetError struct {
+	Error int `json:"error"`
+}
+
 type PaginationInfo struct {
 	Page    int    `json:"page,omitempty"`
 	Last    int    `json:"last,omitempty"`

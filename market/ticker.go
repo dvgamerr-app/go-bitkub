@@ -18,13 +18,8 @@ type Ticker struct {
 	QuoteVolume   string `json:"quote_volume"`
 }
 
-type TickerResponse struct {
-	Error  int      `json:"error"`
-	Result []Ticker `json:"result"`
-}
-
 func GetTicker(sym string) ([]Ticker, error) {
-	var result TickerResponse
+	var result []Ticker
 
 	url := "/v3/market/ticker"
 	if sym != "" {
@@ -35,5 +30,5 @@ func GetTicker(sym string) ([]Ticker, error) {
 		return nil, err
 	}
 
-	return result.Result, nil
+	return result, nil
 }

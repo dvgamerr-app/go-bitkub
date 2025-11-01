@@ -20,7 +20,7 @@ type DepositHistoryPagination struct {
 }
 
 type DepositHistoryResponse struct {
-	Error      int                      `json:"error"`
+	bitkub.GetError
 	Result     []DepositHistory         `json:"result"`
 	Pagination DepositHistoryPagination `json:"pagination"`
 }

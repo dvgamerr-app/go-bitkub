@@ -9,7 +9,7 @@ import (
 type Trade [4]interface{}
 
 type TradesResponse struct {
-	Error  int     `json:"error"`
+	bitkub.GetError
 	Result []Trade `json:"result"`
 }
 

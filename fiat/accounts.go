@@ -19,7 +19,7 @@ type AccountsPagination struct {
 }
 
 type AccountsResponse struct {
-	Error      int                `json:"error"`
+	bitkub.GetError
 	Result     []BankAccount      `json:"result"`
 	Pagination AccountsPagination `json:"pagination"`
 }

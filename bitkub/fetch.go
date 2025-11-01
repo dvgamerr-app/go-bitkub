@@ -40,6 +40,11 @@ func generateSignature(payload string) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
+// ResponseSecure interface for non-secure API responses
+type ResponseSecure interface {
+	GetError() int
+}
+
 func FetchSecure(method string, path string, reqBody any, resPayload any) error {
 	resp, err := fetch(true, method, path, reqBody)
 	if err != nil {
@@ -111,11 +116,20 @@ func FetchNonSecure(method string, path string, reqBody any, resPayload any) err
 		return fmt.Errorf("decoding response: %+v", err)
 	}
 
-	res := resPayload.(*ResponseAPI)
-
-	if res.Error != 0 {
-		return fmt.Errorf("%s : %+v", ErrorCode[res.Error], res)
+	res, ok := resPayload.(ResponseSecure)
+	if !ok {
+		// If response doesn't implement ResponseNonSecure, return without error check
+		return nil
 	}
+
+	if res.GetError() != 0 {
+		errMsg, exists := ErrorCode[res.GetError()]
+		if !exists {
+			errMsg = "Unknown error"
+		}
+		return fmt.Errorf("[error %d] %s", res.GetError(), errMsg)
+	}
+
 	return nil
 }
 

@@ -23,7 +23,7 @@ type WithdrawResult struct {
 
 // WithdrawResponse represents the response from /api/v3/fiat/withdraw endpoint
 type WithdrawResponse struct {
-	Error  int            `json:"error"`
+	bitkub.GetError
 	Result WithdrawResult `json:"result"`
 }
 

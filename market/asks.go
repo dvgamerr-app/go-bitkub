@@ -18,7 +18,7 @@ type AskOrder struct {
 
 // AsksResponse represents the response from /api/v3/market/asks endpoint
 type AsksResponse struct {
-	Error  int        `json:"error"`
+	bitkub.GetError
 	Result []AskOrder `json:"result"`
 }
 

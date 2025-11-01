@@ -26,7 +26,7 @@ type PlaceBidResult struct {
 }
 
 type PlaceBidResponse struct {
-	Error  int            `json:"error"`
+	bitkub.GetError
 	Result PlaceBidResult `json:"result"`
 }
 
