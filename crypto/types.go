@@ -1,6 +1,5 @@
 package crypto
 
-// Common parameter structs for API requests
 type Pagination struct {
 	Page  int
 	Limit int
@@ -35,13 +34,11 @@ type AddressesResponse struct {
 	Items []Address `json:"items"`
 }
 
-// CreateAddressRequest is the request body for POST /api/v4/crypto/addresses
 type CreateAddressRequest struct {
 	Symbol  string `json:"symbol"`
 	Network string `json:"network"`
 }
 
-// Deposit represents a crypto deposit transaction
 type Deposit struct {
 	Hash          string `json:"hash"`
 	Symbol        string `json:"symbol"`
@@ -55,13 +52,11 @@ type Deposit struct {
 	CompletedAt   string `json:"completed_at,omitempty"`
 }
 
-// DepositsResponse is the response for GET /api/v4/crypto/deposits
 type DepositsResponse struct {
 	PaginatedResponse
 	Items []Deposit `json:"items"`
 }
 
-// Withdraw represents a crypto withdrawal transaction
 type Withdraw struct {
 	TxnID       string `json:"txn_id"`
 	ExternalRef string `json:"external_ref,omitempty"`
@@ -77,13 +72,11 @@ type Withdraw struct {
 	CompletedAt string `json:"completed_at,omitempty"`
 }
 
-// WithdrawsResponse is the response for GET /api/v4/crypto/withdraws
 type WithdrawsResponse struct {
 	PaginatedResponse
 	Items []Withdraw `json:"items"`
 }
 
-// CreateWithdrawRequest is the request body for POST /api/v4/crypto/withdraws
 type CreateWithdrawRequest struct {
 	Symbol  string `json:"symbol"`
 	Amount  string `json:"amount"`
@@ -92,7 +85,6 @@ type CreateWithdrawRequest struct {
 	Network string `json:"network"`
 }
 
-// CreateWithdrawResponse is the response for POST /api/v4/crypto/withdraws
 type CreateWithdrawResponse struct {
 	TxnID     string `json:"txn_id"`
 	Symbol    string `json:"symbol"`
@@ -104,7 +96,6 @@ type CreateWithdrawResponse struct {
 	CreatedAt string `json:"created_at"`
 }
 
-// Network represents a cryptocurrency network
 type Network struct {
 	Name                  string `json:"name"`
 	Network               string `json:"network"`
@@ -124,7 +115,6 @@ type Network struct {
 	IsMemo                bool   `json:"is_memo"`
 }
 
-// Coin represents a cryptocurrency with its networks
 type Coin struct {
 	Name           string    `json:"name"`
 	Symbol         string    `json:"symbol"`
@@ -133,23 +123,20 @@ type Coin struct {
 	WithdrawEnable bool      `json:"withdraw_enable"`
 }
 
-// CoinsResponse is the response for GET /api/v4/crypto/coins
 type CoinsResponse struct {
 	Items []Coin `json:"items"`
 }
 
-// Compensation represents a crypto compensation transaction
 type Compensation struct {
 	TxnID       string `json:"txn_id"`
 	Symbol      string `json:"symbol"`
-	Type        string `json:"type"` // COMPENSATE or DECOMPENSATE
+	Type        string `json:"type"`
 	Amount      string `json:"amount"`
-	Status      string `json:"status"` // PENDING or COMPLETED
+	Status      string `json:"status"`
 	CreatedAt   string `json:"created_at"`
 	CompletedAt string `json:"completed_at,omitempty"`
 }
 
-// CompensationsResponse is the response for GET /api/v4/crypto/compensations
 type CompensationsResponse struct {
 	PaginatedResponse
 	Items []Compensation `json:"items"`

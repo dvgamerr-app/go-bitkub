@@ -43,7 +43,6 @@ func QueryBalances() (*BitkubBalances, error) {
 				continue
 			}
 
-			// Parse last price from string
 			lastPrice, err := strconv.ParseFloat(ticker[0].Last, 64)
 			if err != nil {
 				log.Warn().Err(err).Str("coin", ccy).Msg("Failed to parse ticker price")

@@ -1,8 +1,5 @@
 package bitkub
 
-// Common types and structures used across the SDK
-
-// PaginationInfo represents common pagination information
 type PaginationInfo struct {
 	Page    int    `json:"page,omitempty"`
 	Last    int    `json:"last,omitempty"`
@@ -12,7 +9,6 @@ type PaginationInfo struct {
 	HasNext bool   `json:"has_next,omitempty"`
 }
 
-// OrderSide represents the side of an order
 type OrderSide string
 
 const (
@@ -20,7 +16,6 @@ const (
 	OrderSideSell OrderSide = "sell"
 )
 
-// OrderType represents the type of an order
 type OrderType string
 
 const (
@@ -28,7 +23,6 @@ const (
 	OrderTypeMarket OrderType = "market"
 )
 
-// OrderStatus represents the status of an order
 type OrderStatus string
 
 const (
@@ -37,7 +31,6 @@ const (
 	OrderStatusCanceled OrderStatus = "cancelled"
 )
 
-// TransactionStatus represents the status of a transaction
 type TransactionStatus string
 
 const (
