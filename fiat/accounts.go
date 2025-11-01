@@ -49,6 +49,10 @@ func GetAccounts(params AccountsParams) (*AccountsResponse, error) {
 		return nil, err
 	}
 
+	if err := response.CheckResponseError(); err != nil {
+		return nil, err
+	}
+
 	byteData, err := stdJson.Marshal(response)
 	if err != nil {
 		return nil, err

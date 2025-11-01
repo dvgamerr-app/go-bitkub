@@ -6,7 +6,6 @@ import (
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
-// BidOrder represents an open buy order
 type BidOrder struct {
 	OrderID   string `json:"order_id"`
 	Price     string `json:"price"`
@@ -16,16 +15,11 @@ type BidOrder struct {
 	Volume    string `json:"volume"`
 }
 
-// BidsResponse represents the response from /api/v3/market/bids endpoint
 type BidsResponse struct {
 	Error  int        `json:"error"`
 	Result []BidOrder `json:"result"`
 }
 
-// GetBids lists open buy orders
-// GET /api/v3/market/bids
-// sym: The symbol (e.g. btc_thb)
-// lmt: No. of limit to query open buy orders (optional)
 func GetBids(sym string, lmt int) ([]BidOrder, error) {
 	var result BidsResponse
 
@@ -36,6 +30,14 @@ func GetBids(sym string, lmt int) ([]BidOrder, error) {
 
 	if err := bitkub.FetchNonSecure("GET", url, nil, &result); err != nil {
 		return nil, err
+	}
+
+	if result.Error != 0 {
+		errMsg, exists := bitkub.ErrorCode[result.Error]
+		if !exists {
+			errMsg = "Unknown error"
+		}
+		return nil, fmt.Errorf("[error %d] %s", result.Error, errMsg)
 	}
 
 	return result.Result, nil

@@ -57,6 +57,10 @@ func GetOrderInfo(sym, id, sd string) (*OrderInfo, error) {
 		return nil, err
 	}
 
+	if err := response.CheckResponseError(); err != nil {
+		return nil, err
+	}
+
 	byteData, err := stdJson.Marshal(response.Result)
 	if err != nil {
 		return nil, err

@@ -13,6 +13,10 @@ func GetTradingCredits() (float64, error) {
 		return 0, err
 	}
 
+	if err := result.CheckResponseError(); err != nil {
+		return 0, err
+	}
+
 	crd, ok := result.Result.(float64)
 	if !ok {
 		return 0, fmt.Errorf("can't parse Result %#v", result)

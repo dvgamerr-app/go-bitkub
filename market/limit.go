@@ -53,6 +53,10 @@ func GetUserLimits() (*UserLimits, error) {
 		return nil, err
 	}
 
+	if err := result.CheckResponseError(); err != nil {
+		return nil, err
+	}
+
 	byteData, err := stdJson.Marshal(result.Result)
 	if err != nil {
 		return nil, err

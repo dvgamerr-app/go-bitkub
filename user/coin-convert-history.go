@@ -6,7 +6,6 @@ import (
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
-// CoinConvertHistory represents a coin convert history item
 type CoinConvertHistory struct {
 	TransactionID      string `json:"transaction_id"`
 	Status             string `json:"status"`
@@ -16,33 +15,28 @@ type CoinConvertHistory struct {
 	Timestamp          int64  `json:"timestamp"`
 }
 
-// CoinConvertPagination represents pagination information for coin convert history
 type CoinConvertPagination struct {
 	Page int  `json:"page"`
 	Last int  `json:"last"`
 	Next *int `json:"next,omitempty"`
 }
 
-// CoinConvertHistoryResponse represents the response from /api/v3/user/coin-convert-history endpoint
 type CoinConvertHistoryResponse struct {
 	Error      int                   `json:"error"`
 	Result     []CoinConvertHistory  `json:"result"`
 	Pagination CoinConvertPagination `json:"pagination"`
 }
 
-// CoinConvertHistoryParams represents parameters for coin convert history request
 type CoinConvertHistoryParams struct {
-	P      int    // Page default = 1 (optional)
-	Lmt    int    // Limit default = 100 (optional)
-	Sort   int    // Sort [1, -1] default = 1 (optional)
-	Status string // Status [success, fail, all] (default = all) (optional)
-	Sym    string // The symbol (e.g. KUB) (optional)
-	Start  int64  // Start timestamp (optional)
-	End    int64  // End timestamp (optional)
+	P      int
+	Lmt    int
+	Sort   int
+	Status string
+	Sym    string
+	Start  int64
+	End    int64
 }
 
-// GetCoinConvertHistory lists all coin convert histories (paginated)
-// GET /api/v3/user/coin-convert-history
 func GetCoinConvertHistory(params CoinConvertHistoryParams) (*CoinConvertHistoryResponse, error) {
 	var response bitkub.ResponseAPI
 
@@ -70,12 +64,15 @@ func GetCoinConvertHistory(params CoinConvertHistoryParams) (*CoinConvertHistory
 		url = fmt.Sprintf("%send=%d&", url, params.End)
 	}
 
-	// Remove trailing '&' or '?'
 	if url[len(url)-1] == '&' || url[len(url)-1] == '?' {
 		url = url[:len(url)-1]
 	}
 
 	if err := bitkub.FetchSecure("GET", url, nil, &response); err != nil {
+		return nil, err
+	}
+
+	if err := response.CheckResponseError(); err != nil {
 		return nil, err
 	}
 

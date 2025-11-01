@@ -6,25 +6,18 @@ import (
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
-// DepthEntry represents a depth entry [price, size]
 type DepthEntry [2]float64
 
-// DepthResult represents the depth information
 type DepthResult struct {
 	Asks []DepthEntry `json:"asks"`
 	Bids []DepthEntry `json:"bids"`
 }
 
-// DepthResponse represents the response from /api/v3/market/depth endpoint
 type DepthResponse struct {
 	Error  int         `json:"error"`
 	Result DepthResult `json:"result"`
 }
 
-// GetDepth gets depth information
-// GET /api/v3/market/depth
-// sym: The symbol (e.g. btc_thb)
-// lmt: Depth size (optional)
 func GetDepth(sym string, lmt int) (*DepthResult, error) {
 	var result DepthResponse
 
@@ -35,6 +28,14 @@ func GetDepth(sym string, lmt int) (*DepthResult, error) {
 
 	if err := bitkub.FetchNonSecure("GET", url, nil, &result); err != nil {
 		return nil, err
+	}
+
+	if result.Error != 0 {
+		errMsg, exists := bitkub.ErrorCode[result.Error]
+		if !exists {
+			errMsg = "Unknown error"
+		}
+		return nil, fmt.Errorf("[error %d] %s", result.Error, errMsg)
 	}
 
 	return &result.Result, nil

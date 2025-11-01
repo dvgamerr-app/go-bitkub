@@ -50,6 +50,10 @@ func GetDepositHistory(params DepositHistoryParams) (*DepositHistoryResponse, er
 		return nil, err
 	}
 
+	if err := response.CheckResponseError(); err != nil {
+		return nil, err
+	}
+
 	byteData, err := stdJson.Marshal(response)
 	if err != nil {
 		return nil, err
