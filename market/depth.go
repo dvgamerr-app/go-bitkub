@@ -30,13 +30,5 @@ func GetDepth(sym string, lmt int) (*DepthResult, error) {
 		return nil, err
 	}
 
-	if result.Error != 0 {
-		errMsg, exists := bitkub.ErrorCode[result.Error]
-		if !exists {
-			errMsg = "Unknown error"
-		}
-		return nil, fmt.Errorf("[error %d] %s", result.Error, errMsg)
-	}
-
 	return &result.Result, nil
 }
