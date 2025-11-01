@@ -54,7 +54,7 @@ func TestGetCoins(t *testing.T) {
 
 func TestGetCoinsWithSymbol(t *testing.T) {
 	params := GetCoinsParams{
-		Symbol: SYMBOL_NETWORK,
+		Symbol: "KUB",
 	}
 
 	result, err := GetCoins(params)

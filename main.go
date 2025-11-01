@@ -45,4 +45,20 @@ func main() {
 	helper.FatalError(err)
 	log.Info().Interface("addresses", addresses).Send()
 
+	// Get deposit history
+	deposits, err := crypto.GetDeposits(crypto.GetDepositsParams{
+		Page:   1,
+		Limit:  10,
+		Symbol: "BTC",
+	})
+	helper.FatalError(err)
+	log.Info().Interface("deposits", deposits).Send()
+
+	// Get available coins
+	coins, err := crypto.GetCoins(crypto.GetCoinsParams{
+		Symbol: "BTC",
+	})
+	helper.FatalError(err)
+	log.Info().Interface("coins", coins).Send()
+
 }

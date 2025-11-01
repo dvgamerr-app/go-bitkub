@@ -8,8 +8,6 @@ import (
 	"github.com/rs/zerolog"
 )
 
-var SYMBOL_NETWORK = "KUB"
-
 func init() {
 	// Disable zerolog during tests
 	zerolog.SetGlobalLevel(zerolog.Disabled)
@@ -57,7 +55,7 @@ func TestGetAddressesWithFilter(t *testing.T) {
 	params := GetAddressesParams{
 		Page:   1,
 		Limit:  5,
-		Symbol: SYMBOL_NETWORK,
+		Symbol: "KUB",
 	}
 
 	result, err := GetAddresses(params)
@@ -77,14 +75,12 @@ func TestGetAddressesWithFilter(t *testing.T) {
 			t.Error("Address is empty")
 		}
 	}
-
-	t.Logf("✅ GetAddresses with filter passed: found %d %s addresses", len(result.Items), params.Symbol)
 }
 
 func TestCreateAddress(t *testing.T) {
 	req := CreateAddressRequest{
-		Symbol:  SYMBOL_NETWORK,
-		Network: SYMBOL_NETWORK,
+		Symbol:  "ETH",
+		Network: "ETH",
 	}
 
 	result, err := CreateAddress(req)
@@ -111,7 +107,7 @@ func TestCreateAddress(t *testing.T) {
 func TestValidationCreateAddress(t *testing.T) {
 	// Test missing symbol
 	req := CreateAddressRequest{
-		Network: SYMBOL_NETWORK,
+		Network: "KUB",
 	}
 	_, err := CreateAddress(req)
 	if err == nil {
@@ -120,7 +116,7 @@ func TestValidationCreateAddress(t *testing.T) {
 
 	// Test missing network
 	req = CreateAddressRequest{
-		Symbol: SYMBOL_NETWORK,
+		Symbol: "KUB",
 	}
 	_, err = CreateAddress(req)
 	if err == nil {
