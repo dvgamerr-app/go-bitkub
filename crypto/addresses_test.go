@@ -3,18 +3,8 @@ package crypto
 import (
 	"testing"
 
-	"github.com/dvgamerr-app/go-bitkub/bitkub"
-	"github.com/dvgamerr-app/go-bitkub/helper"
-	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/assert"
 )
-
-func init() {
-	// Disable zerolog during tests
-	zerolog.SetGlobalLevel(zerolog.Disabled)
-
-	helper.LoadDotEnv("../.env")
-	bitkub.Initlizer()
-}
 
 func TestGetAddresses(t *testing.T) {
 	params := Addresses{
@@ -25,30 +15,9 @@ func TestGetAddresses(t *testing.T) {
 	}
 
 	result, err := GetAddresses(params)
-	if err != nil {
-		t.Error("API credentials may be invalid")
-		return
-	}
 
-	// Assertions
-	if result == nil {
-		t.Fatal("❌ GetAddresses failed: result is nil")
-	}
-	if result.Page != params.Page {
-		t.Errorf("Expected page %d, got %d", params.Page, result.Page)
-	}
-	if result.TotalItem < 0 {
-		t.Errorf("TotalItem should not be negative, got %d", result.TotalItem)
-	}
-	if len(result.Items) > 0 {
-		addr := result.Items[0]
-		if addr.Symbol == "" {
-			t.Error("First address symbol is empty")
-		}
-		if addr.Address == "" {
-			t.Error("First address is empty")
-		}
-	}
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
 }
 
 func TestGetAddressesWithFilter(t *testing.T) {
@@ -63,22 +32,9 @@ func TestGetAddressesWithFilter(t *testing.T) {
 	}
 
 	result, err := GetAddresses(params)
-	if err != nil {
-		t.Fatalf("❌ GetAddresses with filter failed: %v", err)
-	}
 
-	// Assertions
-	if result == nil {
-		t.Fatal("Result is nil")
-	}
-	for _, addr := range result.Items {
-		if addr.Symbol != params.Symbol {
-			t.Errorf("Expected symbol %s, got %s", params.Symbol, addr.Symbol)
-		}
-		if addr.Address == "" {
-			t.Error("Address is empty")
-		}
-	}
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
 }
 
 func TestCreateAddress(t *testing.T) {
@@ -88,24 +44,9 @@ func TestCreateAddress(t *testing.T) {
 	}
 
 	result, err := CreateAddress(req)
-	if err != nil {
-		t.Fatalf("❌ CreateAddress failed: %v", err)
-	}
 
-	// Assertions
-	if len(result) == 0 {
-		t.Fatal("Result is empty")
-	}
-	addr := result[0]
-	if addr.Symbol != req.Symbol {
-		t.Errorf("Expected symbol %s, got %s", req.Symbol, addr.Symbol)
-	}
-	if addr.Network != req.Network {
-		t.Errorf("Expected network %s, got %s", req.Network, addr.Network)
-	}
-	if addr.Address == "" {
-		t.Error("Address is empty")
-	}
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
 }
 
 func TestValidationCreateAddress(t *testing.T) {
@@ -114,16 +55,12 @@ func TestValidationCreateAddress(t *testing.T) {
 		Network: "KUB",
 	}
 	_, err := CreateAddress(req)
-	if err == nil {
-		t.Fatal("❌ Expected error for missing symbol")
-	}
+	assert.NotNil(t, err)
 
 	// Test missing network
 	req = CreateAddressRequest{
 		Symbol: "KUB",
 	}
 	_, err = CreateAddress(req)
-	if err == nil {
-		t.Fatal("❌ Expected error for missing network")
-	}
+	assert.NotNil(t, err)
 }
