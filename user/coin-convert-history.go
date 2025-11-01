@@ -27,26 +27,26 @@ type CoinConvertHistoryResponse struct {
 	Pagination CoinConvertPagination `json:"pagination"`
 }
 
-type CoinConvertHistoryParams struct {
-	P      int
-	Lmt    int
+type CoinHistoryParams struct {
+	Page   int
+	Limit  int
 	Sort   int
 	Status string
-	Sym    string
+	Symbol string
 	Start  int64
 	End    int64
 }
 
-func GetCoinConvertHistory(params CoinConvertHistoryParams) (*CoinConvertHistoryResponse, error) {
+func GetCoinConvertHistory(params CoinHistoryParams) (*CoinConvertHistoryResponse, error) {
 	var response bitkub.ResponseAPI
 
 	url := "/v3/user/coin-convert-history?"
 
-	if params.P > 0 {
-		url = fmt.Sprintf("%sp=%d&", url, params.P)
+	if params.Page > 0 {
+		url = fmt.Sprintf("%sp=%d&", url, params.Page)
 	}
-	if params.Lmt > 0 {
-		url = fmt.Sprintf("%slmt=%d&", url, params.Lmt)
+	if params.Limit > 0 {
+		url = fmt.Sprintf("%slmt=%d&", url, params.Limit)
 	}
 	if params.Sort != 0 {
 		url = fmt.Sprintf("%ssort=%d&", url, params.Sort)
@@ -54,8 +54,8 @@ func GetCoinConvertHistory(params CoinConvertHistoryParams) (*CoinConvertHistory
 	if params.Status != "" {
 		url = fmt.Sprintf("%sstatus=%s&", url, params.Status)
 	}
-	if params.Sym != "" {
-		url = fmt.Sprintf("%ssym=%s&", url, params.Sym)
+	if params.Symbol != "" {
+		url = fmt.Sprintf("%ssym=%s&", url, params.Symbol)
 	}
 	if params.Start > 0 {
 		url = fmt.Sprintf("%sstart=%d&", url, params.Start)
