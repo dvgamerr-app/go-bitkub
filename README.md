@@ -105,17 +105,6 @@ go test ./crypto/... -v
 go test ./market/... -v -run "Test"
 ```
 
-### Or use test scripts:
-```bash
-# PowerShell
-.\run_tests.ps1
-
-# Bash
-./run_tests.sh
-```
-
-See [TESTING.md](TESTING.md) for detailed testing guide.
-
 ## Project Structure
 
 ```

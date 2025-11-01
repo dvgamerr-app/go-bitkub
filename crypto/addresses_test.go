@@ -47,8 +47,6 @@ func TestGetAddresses(t *testing.T) {
 			t.Error("First address is empty")
 		}
 	}
-
-	t.Logf("✅ GetAddresses passed: %d items, page %d/%d", len(result.Items), result.Page, result.TotalPage)
 }
 
 func TestGetAddressesWithFilter(t *testing.T) {
