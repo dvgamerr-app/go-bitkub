@@ -7,6 +7,7 @@ import (
 )
 
 func TestGetTradingCredits(t *testing.T) {
-	_, err := GetTradingCredits()
-	assert.Equal(t, err, nil)
+	result, err := GetTradingCredits()
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
 }

@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetUserLimits(t *testing.T) {
-	result, err := GetUserLimits()
+func TestGetDepth(t *testing.T) {
+	result, err := GetDepth("btc_thb", 10)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 }

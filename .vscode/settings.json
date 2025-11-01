@@ -11,5 +11,6 @@
   },
   "go.formatTool": "gofmt",
   "go.useLanguageServer": true,
-  "go.lintOnSave": "workspace"
+  "go.lintOnSave": "workspace",
+  "go.testFlags": ["-v"]
 }

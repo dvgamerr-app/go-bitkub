@@ -7,6 +7,7 @@ import (
 )
 
 func TestGetTicker(t *testing.T) {
-	_, err := GetTicker("btc_thb")
-	assert.Equal(t, err, nil)
+	result, err := GetTicker("btc_thb")
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
 }

@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetUserLimits(t *testing.T) {
-	result, err := GetUserLimits()
+func TestGetSymbols(t *testing.T) {
+	result, err := GetSymbols()
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 }

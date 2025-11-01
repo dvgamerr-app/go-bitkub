@@ -7,6 +7,7 @@ import (
 )
 
 func TestGetMyOpenOrders(t *testing.T) {
-	_, err := GetMyOpenOrders("btc")
-	assert.Equal(t, err, nil)
+	result, err := GetMyOpenOrders("btc_thb")
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
 }

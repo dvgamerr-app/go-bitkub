@@ -25,7 +25,7 @@ type OrderInfo struct {
 	Last          string             `json:"last"`           // Last order id
 	ClientID      string             `json:"client_id"`      // Your id for reference
 	PostOnly      bool               `json:"post_only"`      // Post only flag
-	Amount        string             `json:"amount"`         // Order amount
+	Amount        float64            `json:"amount"`         // Order amount
 	Rate          float64            `json:"rate"`           // Order rate
 	Fee           float64            `json:"fee"`            // Order fee
 	Credit        float64            `json:"credit"`         // Order fee credit used
