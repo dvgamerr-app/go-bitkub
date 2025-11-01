@@ -1,10 +1,12 @@
 package market
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 )
 
-func (t *BitkubSuite) TestGetMyOpenOrders() {
+func TestGetMyOpenOrders(t *testing.T) {
 	_, err := GetMyOpenOrders("btc")
-	assert.Equal(t.T(), err, nil)
+	assert.Equal(t, err, nil)
 }

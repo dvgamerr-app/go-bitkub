@@ -24,7 +24,7 @@ func TestGetWithdraws(t *testing.T) {
 
 	result, err := GetWithdraws(params)
 	if err != nil {
-		t.Skip("Skipping - API credentials may be invalid")
+		t.Error("API credentials may be invalid")
 		return
 	}
 
@@ -112,7 +112,7 @@ func TestGetWithdrawsBySymbol(t *testing.T) {
 }
 
 func TestCreateWithdraw(t *testing.T) {
-	t.Skip("Skipping - requires is_withdraw permission and real transaction")
+	t.Error("requires is_withdraw permission and real transaction")
 
 	req := CreateWithdrawRequest{
 		Symbol:  "RDNT",

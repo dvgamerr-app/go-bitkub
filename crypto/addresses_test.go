@@ -24,7 +24,7 @@ func TestGetAddresses(t *testing.T) {
 
 	result, err := GetAddresses(params)
 	if err != nil {
-		t.Skip("Skipping - API credentials may be invalid")
+		t.Error("API credentials may be invalid")
 		return
 	}
 

@@ -24,7 +24,7 @@ func TestGetCompensations(t *testing.T) {
 
 	result, err := GetCompensations(params)
 	if err != nil {
-		t.Skip("Skipping - API credentials may be invalid")
+		t.Error("API credentials may be invalid")
 		return
 	}
 

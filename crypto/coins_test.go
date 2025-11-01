@@ -21,7 +21,7 @@ func TestGetCoins(t *testing.T) {
 
 	result, err := GetCoins(params)
 	if err != nil {
-		t.Skip("Skipping - API credentials may be invalid")
+		t.Error("API credentials may be invalid")
 		return
 	}
 
