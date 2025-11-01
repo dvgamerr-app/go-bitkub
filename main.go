@@ -5,17 +5,15 @@ import (
 
 	"github.com/alexflint/go-arg"
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
-	"github.com/dvgamerr-app/go-bitkub/crypto"
 	"github.com/dvgamerr-app/go-bitkub/helper"
-	_ "github.com/dvgamerr-app/go-bitkub/market"
+	"github.com/dvgamerr-app/go-bitkub/market"
 	"github.com/leekchan/accounting"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
 var (
-	symbolMoney string                = "₮"
-	aNo         accounting.Accounting = accounting.Accounting{Precision: 2, Thousand: ",", Format: "%s%v"}
+	aNo accounting.Accounting = accounting.Accounting{Precision: 2, Thousand: ",", Format: "%s%v"}
 )
 
 var cli struct {
@@ -24,8 +22,6 @@ var cli struct {
 }
 
 func init() {
-	aNo.Symbol = symbolMoney
-
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	zerolog.SetGlobalLevel(zerolog.TraceLevel)
 
@@ -38,27 +34,108 @@ func main() {
 	arg.MustParse(&cli)
 	bitkub.Initlizer(cli.Key, cli.Secret)
 
-	addresses, err := crypto.GetAddresses(crypto.GetAddressesParams{
-		Page:  1,
-		Limit: 10,
-	})
-	helper.FatalError(err)
-	log.Info().Interface("addresses", addresses).Send()
+	// ดึง balances จากทุก wallet
+	log.Info().Msg("📊 Fetching balances from all wallets...")
+	balances, err := QueryBalances()
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to fetch balances")
+	}
 
-	// Get deposit history
-	deposits, err := crypto.GetDeposits(crypto.GetDepositsParams{
-		Page:   1,
-		Limit:  10,
-		Symbol: "BTC",
-	})
-	helper.FatalError(err)
-	log.Info().Interface("deposits", deposits).Send()
+	// แสดงยอดรวมเป็นเงินบาท
+	log.Info().
+		Str("total", aNo.FormatMoney(balances.Total)).
+		Str("available", aNo.FormatMoney(balances.Available)).
+		Msg("💰 Total Balance Summary")
 
-	// Get available coins
-	coins, err := crypto.GetCoins(crypto.GetCoinsParams{
-		Symbol: "BTC",
-	})
-	helper.FatalError(err)
-	log.Info().Interface("coins", coins).Send()
+	// แสดงรายละเอียดแต่ละ coin
+	log.Info().Msg("📋 Balance Details:")
+	for ccy, balance := range balances.Coins {
+		if ccy == "THB" {
+			log.Info().
+				Str("coin", ccy).
+				Str("available", aNo.FormatMoney(balance.Available)).
+				Str("reserved", aNo.FormatMoney(balance.Reserved)).
+				Msg("  ")
+		} else {
+			log.Info().
+				Str("coin", ccy).
+				Float64("available", balance.Available).
+				Float64("reserved", balance.Reserved).
+				Msg("  ")
+		}
+	}
 
+	// ดึงรายการ orders ที่ open อยู่แต่ละประเภท
+	log.Info().Msg("📝 Fetching open orders...")
+	ordersByCoin := make(map[string][]market.Order)
+
+	for ccy := range balances.Coins {
+		if ccy == "THB" {
+			continue
+		}
+
+		orders, err := market.GetMyOpenOrders(ccy)
+		if err != nil {
+			log.Warn().Err(err).Str("coin", ccy).Msg("Failed to fetch orders")
+			continue
+		}
+
+		if len(orders) > 0 {
+			ordersByCoin[ccy] = orders
+		}
+	}
+
+	// แสดงรายการ orders แยกตามประเภท
+	if len(ordersByCoin) == 0 {
+		log.Info().Msg("✅ No open orders")
+	} else {
+		log.Info().Int("coins", len(ordersByCoin)).Msg("🔄 Open Orders by Coin:")
+
+		for ccy, orders := range ordersByCoin {
+			log.Info().
+				Str("coin", ccy).
+				Int("count", len(orders)).
+				Msg("  ")
+
+			// จัดกลุ่ม orders ตาม side (buy/sell) และ type
+			buyOrders := 0
+			sellOrders := 0
+			limitOrders := 0
+			marketOrders := 0
+
+			for _, order := range orders {
+				switch order.Side {
+				case "buy":
+					buyOrders++
+				case "sell":
+					sellOrders++
+				}
+
+				switch order.Type {
+				case "limit":
+					limitOrders++
+				case "market":
+					marketOrders++
+				}
+
+				log.Debug().
+					Str("id", order.ID).
+					Str("side", order.Side).
+					Str("type", order.Type).
+					Str("rate", order.Rate).
+					Str("amount", order.Amount).
+					Msg("    ")
+			}
+
+			log.Info().
+				Str("coin", ccy).
+				Int("buy", buyOrders).
+				Int("sell", sellOrders).
+				Int("limit", limitOrders).
+				Int("market", marketOrders).
+				Msg("    Summary")
+		}
+	}
+
+	log.Info().Msg("✨ Done!")
 }

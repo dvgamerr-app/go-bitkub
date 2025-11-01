@@ -2,6 +2,8 @@
 
 Go client library for Bitkub API (v3 & v4)
 
+![](./docs/example.png)
+
 ## Features
 
 ### Market API (v3)
