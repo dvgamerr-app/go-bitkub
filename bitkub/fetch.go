@@ -111,6 +111,11 @@ func FetchNonSecure(method string, path string, reqBody any, resPayload any) err
 		return fmt.Errorf("decoding response: %+v", err)
 	}
 
+	res := resPayload.(*ResponseAPI)
+
+	if res.Error != 0 {
+		return fmt.Errorf("%s : %+v", ErrorCode[res.Error], res)
+	}
 	return nil
 }
 
