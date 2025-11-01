@@ -51,11 +51,19 @@ func FetchSecureV4(method string, path string, reqBody any, resPayload any) erro
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode > 299 {
-		return fmt.Errorf("HTTP %d : %s", resp.StatusCode, resp.Status)
+	// Read body once
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("reading response body: %+v", err)
 	}
 
-	if err = json.NewDecoder(resp.Body).Decode(&resPayload); err != nil {
+	if resp.StatusCode > 299 {
+		bodyString := string(bodyBytes)
+		log.Error().Str("response_body", bodyString).Msg("API Error Response")
+		return fmt.Errorf("HTTP %d : %s - %s", resp.StatusCode, resp.Status, bodyString)
+	}
+
+	if err = json.Unmarshal(bodyBytes, &resPayload); err != nil {
 		return fmt.Errorf("decoding response: %+v", err)
 	}
 

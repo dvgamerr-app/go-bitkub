@@ -30,7 +30,7 @@ func init() {
 	zerolog.SetGlobalLevel(zerolog.TraceLevel)
 
 	if err := helper.LoadDotEnv(); err != nil {
-		log.Warn().Err(err)
+		log.Warn().Err(err).Msg("Failed to load .env file")
 	}
 }
 

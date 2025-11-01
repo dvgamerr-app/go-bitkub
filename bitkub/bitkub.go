@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/dvgamerr-app/go-bitkub/helper"
-	"github.com/rs/zerolog/log"
 )
 
 const BASE_URL = "https://api.bitkub.com/api"
@@ -40,6 +39,5 @@ func Initlizer(key ...string) error {
 		apiKey = os.Getenv("BTK_APIKEY")
 		secretKey = os.Getenv("BTK_SECRETKEY")
 	}
-	log.Info().Msgf("key:%s secret:%s", apiKey, secretKey)
 	return nil
 }
