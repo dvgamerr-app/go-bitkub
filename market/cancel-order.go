@@ -5,9 +5,9 @@ import (
 )
 
 type CancelOrderRequest struct {
-	Sym string `json:"sym"`
-	ID  string `json:"id"`
-	Sd  string `json:"sd"`
+	Symbol string `json:"sym"`
+	ID     string `json:"id"`
+	Side   string `json:"sd"`
 }
 
 func CancelOrder(req CancelOrderRequest) error {

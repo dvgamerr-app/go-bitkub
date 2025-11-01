@@ -20,12 +20,12 @@ type BidsResponse struct {
 	Result []BidOrder `json:"result"`
 }
 
-func GetBids(sym string, lmt int) ([]BidOrder, error) {
+func GetBids(symbol string, limit int) ([]BidOrder, error) {
 	var result BidsResponse
 
-	url := fmt.Sprintf("/v3/market/bids?sym=%s", sym)
-	if lmt > 0 {
-		url = fmt.Sprintf("%s&lmt=%d", url, lmt)
+	url := fmt.Sprintf("/v3/market/bids?sym=%s", symbol)
+	if limit > 0 {
+		url = fmt.Sprintf("%s&lmt=%d", url, limit)
 	}
 
 	if err := bitkub.FetchNonSecure("GET", url, nil, &result); err != nil {

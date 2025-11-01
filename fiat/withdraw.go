@@ -6,19 +6,19 @@ import (
 
 // WithdrawRequest represents the request body for fiat withdrawal
 type WithdrawRequest struct {
-	ID  string  `json:"id"`  // Bank account id
-	Amt float64 `json:"amt"` // Amount you want to withdraw
+	ID     string  `json:"id"`  // Bank account id
+	Amount float64 `json:"amt"` // Amount you want to withdraw
 }
 
 // WithdrawResult represents the result from fiat withdrawal
 type WithdrawResult struct {
-	Txn string  `json:"txn"` // Local transaction id
-	Acc string  `json:"acc"` // Bank account id
-	Cur string  `json:"cur"` // Currency
-	Amt float64 `json:"amt"` // Withdraw amount
-	Fee float64 `json:"fee"` // Withdraw fee
-	Rec float64 `json:"rec"` // Amount to receive
-	Ts  int64   `json:"ts"`  // Timestamp
+	Transaction string  `json:"txn"` // Local transaction id
+	Account     string  `json:"acc"` // Bank account id
+	Currency    string  `json:"cur"` // Currency
+	Amount      float64 `json:"amt"` // Withdraw amount
+	Fee         float64 `json:"fee"` // Withdraw fee
+	Receive     float64 `json:"rec"` // Amount to receive
+	Timestamp   int64   `json:"ts"`  // Timestamp
 }
 
 // WithdrawResponse represents the response from /api/v3/fiat/withdraw endpoint

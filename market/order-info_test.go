@@ -9,10 +9,10 @@ import (
 func TestGetOrderInfo(t *testing.T) {
 	// Try to create an order first to get a valid order ID
 	bidResult, err := PlaceBid(PlaceBidRequest{
-		Sym: "btc_thb",
-		Amt: 100,
-		Rat: 100,
-		Typ: "limit",
+		Symbol: "btc_thb",
+		Amount: 100,
+		Rate:   100,
+		Type:   "limit",
 	})
 	if err != nil {
 		t.Skipf("Cannot create bid order for test: %v", err)
@@ -27,8 +27,8 @@ func TestGetOrderInfo(t *testing.T) {
 
 	// Clean up: cancel the order
 	_ = CancelOrder(CancelOrderRequest{
-		Sym: "btc_thb",
-		ID:  bidResult.ID,
-		Sd:  "buy",
+		Symbol: "btc_thb",
+		ID:     bidResult.ID,
+		Side:   "buy",
 	})
 }

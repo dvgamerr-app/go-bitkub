@@ -13,12 +13,12 @@ type TradesResponse struct {
 	Result []Trade `json:"result"`
 }
 
-func GetTrades(sym string, lmt int) ([]Trade, error) {
+func GetTrades(symbol string, limit int) ([]Trade, error) {
 	var result TradesResponse
 
-	url := fmt.Sprintf("/v3/market/trades?sym=%s", sym)
-	if lmt > 0 {
-		url = fmt.Sprintf("%s&lmt=%d", url, lmt)
+	url := fmt.Sprintf("/v3/market/trades?sym=%s", symbol)
+	if limit > 0 {
+		url = fmt.Sprintf("%s&lmt=%d", url, limit)
 	}
 
 	if err := bitkub.FetchNonSecure("GET", url, nil, &result); err != nil {

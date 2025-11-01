@@ -18,12 +18,12 @@ type Ticker struct {
 	QuoteVolume   string `json:"quote_volume"`
 }
 
-func GetTicker(sym string) ([]Ticker, error) {
+func GetTicker(symbol string) ([]Ticker, error) {
 	var result []Ticker
 
 	url := "/v3/market/ticker"
-	if sym != "" {
-		url = fmt.Sprintf("%s?sym=%s", url, sym)
+	if symbol != "" {
+		url = fmt.Sprintf("%s?sym=%s", url, symbol)
 	}
 
 	if err := bitkub.FetchNonSecure("GET", url, nil, &result); err != nil {

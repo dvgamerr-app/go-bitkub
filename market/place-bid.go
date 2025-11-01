@@ -5,24 +5,24 @@ import (
 )
 
 type PlaceBidRequest struct {
-	Sym      string  `json:"sym"`
-	Amt      float64 `json:"amt"`
-	Rat      float64 `json:"rat"`
-	Typ      string  `json:"typ"`
+	Symbol   string  `json:"sym"`
+	Amount   float64 `json:"amt"`
+	Rate     float64 `json:"rat"`
+	Type     string  `json:"typ"`
 	ClientID string  `json:"client_id,omitempty"`
 	PostOnly bool    `json:"post_only,omitempty"`
 }
 
 type PlaceBidResult struct {
-	ID       string  `json:"id"`
-	Typ      string  `json:"typ"`
-	Amt      float64 `json:"amt"`
-	Rat      float64 `json:"rat"`
-	Fee      float64 `json:"fee"`
-	Cre      float64 `json:"cre"`
-	Rec      float64 `json:"rec"`
-	Ts       string  `json:"ts"`
-	ClientID string  `json:"ci"`
+	ID        string  `json:"id"`
+	Type      string  `json:"typ"`
+	Amount    float64 `json:"amt"`
+	Rate      float64 `json:"rat"`
+	Fee       float64 `json:"fee"`
+	Credit    float64 `json:"cre"`
+	Receive   float64 `json:"rec"`
+	Timestamp string  `json:"ts"`
+	ClientID  string  `json:"ci"`
 }
 
 type PlaceBidResponse struct {

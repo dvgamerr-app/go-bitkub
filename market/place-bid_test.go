@@ -8,10 +8,10 @@ import (
 
 func TestPlaceBid(t *testing.T) {
 	request := PlaceBidRequest{
-		Sym: "btc_thb",
-		Amt: 100,
-		Rat: 100,
-		Typ: "limit",
+		Symbol: "btc_thb",
+		Amount: 100,
+		Rate:   100,
+		Type:   "limit",
 	}
 	result, err := PlaceBid(request)
 	assert.Nil(t, err)
@@ -25,9 +25,9 @@ func TestPlaceBid(t *testing.T) {
 
 	// Clean up: cancel the order
 	_ = CancelOrder(CancelOrderRequest{
-		Sym: "btc_thb",
-		ID:  result.ID,
-		Sd:  "buy",
+		Symbol: "btc_thb",
+		ID:     result.ID,
+		Side:   "buy",
 	})
 
 }

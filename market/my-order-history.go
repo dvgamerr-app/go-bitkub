@@ -7,18 +7,18 @@ import (
 )
 
 type OpenOrder struct {
-	ID       string `json:"id"`
-	Side     string `json:"side"`
-	Type     string `json:"type"`
-	Rate     string `json:"rate"`
-	Fee      string `json:"fee"`
-	Credit   string `json:"credit"`
-	Amount   string `json:"amount"`
-	Receive  string `json:"receive"`
-	ParentID string `json:"parent_id"`
-	SuperID  string `json:"super_id"`
-	ClientID string `json:"client_id"`
-	Ts       int64  `json:"ts"`
+	ID        string `json:"id"`
+	Side      string `json:"side"`
+	Type      string `json:"type"`
+	Rate      string `json:"rate"`
+	Fee       string `json:"fee"`
+	Credit    string `json:"credit"`
+	Amount    string `json:"amount"`
+	Receive   string `json:"receive"`
+	ParentID  string `json:"parent_id"`
+	SuperID   string `json:"super_id"`
+	ClientID  string `json:"client_id"`
+	Timestamp int64  `json:"ts"`
 }
 
 type OrderHistory struct {
@@ -35,7 +35,7 @@ type OrderHistory struct {
 	Fee           string `json:"fee"`
 	Credit        string `json:"credit"`
 	Amount        string `json:"amount"`
-	Ts            int64  `json:"ts"`
+	Timestamp     int64  `json:"ts"`
 	OrderClosedAt int64  `json:"order_closed_at"`
 }
 
@@ -49,9 +49,9 @@ type Pagination struct {
 }
 
 type MyOrderHistoryParams struct {
-	Sym            string
-	P              string
-	Lmt            string
+	Symbol         string
+	Page           string
+	Limit          string
 	Cursor         string
 	Start          string
 	End            string
@@ -64,10 +64,10 @@ type MyOrderHistoryResponse struct {
 	Pagination Pagination     `json:"pagination"`
 }
 
-func GetMyOpenOrders(sym string) ([]OpenOrder, error) {
+func GetMyOpenOrders(symbol string) ([]OpenOrder, error) {
 	var response bitkub.ResponseAPI
 
-	url := fmt.Sprintf("/v3/market/my-open-orders?sym=%s", sym)
+	url := fmt.Sprintf("/v3/market/my-open-orders?sym=%s", symbol)
 
 	if err := bitkub.FetchSecure("GET", url, nil, &response); err != nil {
 		return nil, err
@@ -93,13 +93,13 @@ func GetMyOpenOrders(sym string) ([]OpenOrder, error) {
 func GetMyOrderHistory(params MyOrderHistoryParams) (*MyOrderHistoryResponse, error) {
 	var response bitkub.ResponseAPI
 
-	url := fmt.Sprintf("/v3/market/my-order-history?sym=%s", params.Sym)
+	url := fmt.Sprintf("/v3/market/my-order-history?sym=%s", params.Symbol)
 
-	if params.P != "" {
-		url = fmt.Sprintf("%s&p=%s", url, params.P)
+	if params.Page != "" {
+		url = fmt.Sprintf("%s&p=%s", url, params.Page)
 	}
-	if params.Lmt != "" {
-		url = fmt.Sprintf("%s&lmt=%s", url, params.Lmt)
+	if params.Limit != "" {
+		url = fmt.Sprintf("%s&lmt=%s", url, params.Limit)
 	}
 	if params.Cursor != "" {
 		url = fmt.Sprintf("%s&cursor=%s", url, params.Cursor)

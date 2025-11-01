@@ -26,8 +26,8 @@ type DepositHistoryResponse struct {
 }
 
 type DepositHistoryParams struct {
-	P   int
-	Lmt int
+	Page  int
+	Limit int
 }
 
 func GetDepositHistory(params DepositHistoryParams) (*DepositHistoryResponse, error) {
@@ -35,11 +35,11 @@ func GetDepositHistory(params DepositHistoryParams) (*DepositHistoryResponse, er
 
 	url := "/v3/fiat/deposit-history?"
 
-	if params.P > 0 {
-		url = fmt.Sprintf("%sp=%d&", url, params.P)
+	if params.Page > 0 {
+		url = fmt.Sprintf("%sp=%d&", url, params.Page)
 	}
-	if params.Lmt > 0 {
-		url = fmt.Sprintf("%slmt=%d&", url, params.Lmt)
+	if params.Limit > 0 {
+		url = fmt.Sprintf("%slmt=%d&", url, params.Limit)
 	}
 
 	if url[len(url)-1] == '&' || url[len(url)-1] == '?' {

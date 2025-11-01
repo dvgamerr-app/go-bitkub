@@ -18,12 +18,12 @@ type DepthResponse struct {
 	Result DepthResult `json:"result"`
 }
 
-func GetDepth(sym string, lmt int) (*DepthResult, error) {
+func GetDepth(symbol string, limit int) (*DepthResult, error) {
 	var result DepthResponse
 
-	url := fmt.Sprintf("/v3/market/depth?sym=%s", sym)
-	if lmt > 0 {
-		url = fmt.Sprintf("%s&lmt=%d", url, lmt)
+	url := fmt.Sprintf("/v3/market/depth?sym=%s", symbol)
+	if limit > 0 {
+		url = fmt.Sprintf("%s&lmt=%d", url, limit)
 	}
 
 	if err := bitkub.FetchNonSecure("GET", url, nil, &result); err != nil {

@@ -45,13 +45,13 @@ type OrderInfoResponse struct {
 
 // GetOrderInfo gets information regarding the specified order
 // GET /api/v3/market/order-info
-// sym: The symbol (e.g. btc_thb)
+// symbol: The symbol (e.g. btc_thb)
 // id: Order id
-// sd: Order side: buy or sell
-func GetOrderInfo(sym, id, sd string) (*OrderInfo, error) {
+// side: Order side: buy or sell
+func GetOrderInfo(symbol, id, side string) (*OrderInfo, error) {
 	var response bitkub.ResponseAPI
 
-	url := fmt.Sprintf("/v3/market/order-info?sym=%s&id=%s&sd=%s", sym, id, sd)
+	url := fmt.Sprintf("/v3/market/order-info?sym=%s&id=%s&sd=%s", symbol, id, side)
 
 	if err := bitkub.FetchSecure("GET", url, nil, &response); err != nil {
 		return nil, err

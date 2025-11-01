@@ -8,8 +8,8 @@ import (
 
 func TestGetAccounts(t *testing.T) {
 	params := AccountsParams{
-		P:   1,
-		Lmt: 10,
+		Page:  1,
+		Limit: 10,
 	}
 
 	result, err := GetAccounts(params)

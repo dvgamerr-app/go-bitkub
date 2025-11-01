@@ -25,8 +25,8 @@ type AccountsResponse struct {
 }
 
 type AccountsParams struct {
-	P   int
-	Lmt int
+	Page  int
+	Limit int
 }
 
 func GetAccounts(params AccountsParams) (*AccountsResponse, error) {
@@ -34,11 +34,11 @@ func GetAccounts(params AccountsParams) (*AccountsResponse, error) {
 
 	url := "/v3/fiat/accounts?"
 
-	if params.P > 0 {
-		url = fmt.Sprintf("%sp=%d&", url, params.P)
+	if params.Page > 0 {
+		url = fmt.Sprintf("%sp=%d&", url, params.Page)
 	}
-	if params.Lmt > 0 {
-		url = fmt.Sprintf("%slmt=%d&", url, params.Lmt)
+	if params.Limit > 0 {
+		url = fmt.Sprintf("%slmt=%d&", url, params.Limit)
 	}
 
 	if url[len(url)-1] == '&' || url[len(url)-1] == '?' {

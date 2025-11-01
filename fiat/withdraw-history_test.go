@@ -8,8 +8,8 @@ import (
 
 func TestGetWithdrawHistory(t *testing.T) {
 	params := WithdrawHistoryParams{
-		P:   1,
-		Lmt: 10,
+		Page:  1,
+		Limit: 10,
 	}
 
 	result, err := GetWithdrawHistory(params)

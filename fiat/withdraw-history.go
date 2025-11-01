@@ -31,8 +31,8 @@ type WithdrawHistoryResponse struct {
 
 // WithdrawHistoryParams represents parameters for withdraw history request
 type WithdrawHistoryParams struct {
-	P   int // Page (optional)
-	Lmt int // Limit (optional)
+	Page  int // Page (optional)
+	Limit int // Limit (optional)
 }
 
 // GetWithdrawHistory lists fiat withdrawal history
@@ -42,11 +42,11 @@ func GetWithdrawHistory(params WithdrawHistoryParams) (*WithdrawHistoryResponse,
 
 	url := "/v3/fiat/withdraw-history?"
 
-	if params.P > 0 {
-		url = fmt.Sprintf("%sp=%d&", url, params.P)
+	if params.Page > 0 {
+		url = fmt.Sprintf("%sp=%d&", url, params.Page)
 	}
-	if params.Lmt > 0 {
-		url = fmt.Sprintf("%slmt=%d&", url, params.Lmt)
+	if params.Limit > 0 {
+		url = fmt.Sprintf("%slmt=%d&", url, params.Limit)
 	}
 
 	// Remove trailing '&' or '?'

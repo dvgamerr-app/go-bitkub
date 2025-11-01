@@ -10,8 +10,8 @@ func TestWithdraw(t *testing.T) {
 	t.Skip("requires real bank account and withdrawal permission")
 
 	request := WithdrawRequest{
-		ID:  "account123",
-		Amt: 1000,
+		ID:     "account123",
+		Amount: 1000,
 	}
 
 	result, err := Withdraw(request)

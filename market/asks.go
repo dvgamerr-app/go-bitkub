@@ -24,14 +24,14 @@ type AsksResponse struct {
 
 // GetAsks lists open sell orders
 // GET /api/v3/market/asks
-// sym: The symbol (e.g. btc_thb)
-// lmt: No. of limit to query open sell orders (optional)
-func GetAsks(sym string, lmt int) ([]AskOrder, error) {
+// symbol: The symbol (e.g. btc_thb)
+// limit: No. of limit to query open sell orders (optional)
+func GetAsks(symbol string, limit int) ([]AskOrder, error) {
 	var result AsksResponse
 
-	url := fmt.Sprintf("/v3/market/asks?sym=%s", sym)
-	if lmt > 0 {
-		url = fmt.Sprintf("%s&lmt=%d", url, lmt)
+	url := fmt.Sprintf("/v3/market/asks?sym=%s", symbol)
+	if limit > 0 {
+		url = fmt.Sprintf("%s&lmt=%d", url, limit)
 	}
 
 	if err := bitkub.FetchNonSecure("GET", url, nil, &result); err != nil {

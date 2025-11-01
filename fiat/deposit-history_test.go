@@ -8,8 +8,8 @@ import (
 
 func TestGetDepositHistory(t *testing.T) {
 	params := DepositHistoryParams{
-		P:   1,
-		Lmt: 10,
+		Page:  1,
+		Limit: 10,
 	}
 
 	result, err := GetDepositHistory(params)
