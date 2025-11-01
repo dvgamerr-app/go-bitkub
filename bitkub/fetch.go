@@ -90,7 +90,11 @@ func FetchSecureV4(method string, path string, reqBody any, resPayload any) erro
 	res := resPayload.(*ResponseAPIV4)
 
 	if res.Code != "0" {
-		return fmt.Errorf("API Error [%s]: %s", res.Code, res.Message)
+		errDesc, exists := ErrorCodeV4[res.Code]
+		if exists {
+			return fmt.Errorf("[%s] %s: %s", res.Code, errDesc, res.Message)
+		}
+		return fmt.Errorf("[%s] %s", res.Code, res.Message)
 	}
 
 	return nil

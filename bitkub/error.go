@@ -54,7 +54,43 @@ var ErrorCode = map[int]string{
 	405: "405 Method not Allow",
 }
 
+var ErrorCodeV4 = map[string]string{
+	"B1000-CW": "User account is suspended",
+	"B1001-CW": "Network is disabled",
+	"B1002-CW": "CWS Wallet not found",
+	"B1003-CW": "Insufficient balance",
+	"B1004-CW": "User mismatch condition",
+	"B1005-CW": "Duplicate key",
+	"B1006-CW": "Airdrop already transfer",
+	"B1007-CW": "Symbol required",
+	"B1008-CW": "Event Symbol mismatched",
+	"B1009-CW": "Pending withdrawal exists",
+	"B1010-CW": "User account is frozen",
+	"B1011-CW": "Withdrawal exceeds daily limit",
+	"B1012-CW": "Address is not trusted",
+	"B1013-CW": "Withdrawal is frozen",
+	"B1014-CW": "Address is not whitelisted",
+	"B1015-CW": "Request is processing",
+	"B1016-CW": "Deposit is frozen",
+	"V1000-CW": "User not found",
+	"V1001-CW": "Asset not found",
+	"V1002-CW": "Event not found",
+	"V1003-CW": "Invalid signature",
+	"V1004-CW": "Signature has expired",
+	"V1005-CW": "Transaction not found",
+	"V1006-CW": "Invalid parameter",
+	"V1007-CW": "Symbol not found",
+	"V1008-CW": "Address not yet generated for this symbol",
+	"V1009-CW": "Memo not found for this address",
+	"V1010-CW": "Address not found",
+	"V1011-CW": "Address already exists",
+	"V1012-CW": "Destination address not active",
+	"V1015-CW": "Coin not found",
+	"A1000-CW": "Unauthorized Access",
+	"A1001-CW": "Permission denied",
+	"S1000-CW": "Internal service error",
+}
+
 func init() {
-	// UNIX Time is faster and smaller than most timestamps
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 }
