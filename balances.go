@@ -1,7 +1,11 @@
 package main
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/dvgamerr-app/go-bitkub/market"
+	"github.com/rs/zerolog/log"
 )
 
 type BitkubBalances struct {
@@ -28,11 +32,24 @@ func QueryBalances() (*BitkubBalances, error) {
 
 		rate := 1.0
 		if ccy != "THB" {
-			ticker, err := market.GetMarketTicker(ccy)
+			ticker, err := market.GetTicker(fmt.Sprintf("%s_THB", ccy))
 			if err != nil {
-				return nil, err
+				log.Warn().Err(err).Str("coin", ccy).Msg("Failed to fetch ticker")
+				continue
 			}
-			rate = ticker.Last
+
+			if len(ticker) == 0 {
+				log.Warn().Str("coin", ccy).Msg("No ticker data available")
+				continue
+			}
+
+			// Parse last price from string
+			lastPrice, err := strconv.ParseFloat(ticker[0].Last, 64)
+			if err != nil {
+				log.Warn().Err(err).Str("coin", ccy).Msg("Failed to parse ticker price")
+				continue
+			}
+			rate = lastPrice
 		}
 		data.Total += (coin.Available + coin.Reserved) * rate
 		data.Available += coin.Available * rate

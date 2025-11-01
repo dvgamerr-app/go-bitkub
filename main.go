@@ -63,7 +63,7 @@ func main() {
 	}
 
 	log.Info().Msg("📝 Fetching open orders...")
-	ordersByCoin := make(map[string][]market.Order)
+	ordersByCoin := make(map[string][]market.OpenOrder)
 
 	for ccy := range balances.Coins {
 		if ccy == "THB" {
