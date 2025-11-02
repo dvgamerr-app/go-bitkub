@@ -56,24 +56,30 @@ package main
 
 import (
     "log"
+    "github.com/dvgamerr-app/go-bitkub"
     "github.com/dvgamerr-app/go-bitkub/bitkub"
-    "github.com/dvgamerr-app/go-bitkub/market"
-    "github.com/dvgamerr-app/go-bitkub/crypto"
 )
 
 func main() {
     // Initialize with API credentials
     bitkub.Initlizer("YOUR_API_KEY", "YOUR_SECRET_KEY")
-    
     // Or use environment variables BTK_APIKEY and BTK_SECRETKEY
     bitkub.Initlizer()
     
     // Get wallet balance
-    wallet, err := market.GetWallet()
+    wallet, err := Wallet()
     if err != nil {
         log.Fatal(err)
     }
     log.Printf("Wallet: %+v", wallet)
+
+    // Get detailed balances
+    balances, err := Balances()
+    if err != nil {
+        log.Fatal(err)
+    }
+    log.Printf("Balances: %+v", balances)
+    
 }
 ```
 
