@@ -56,8 +56,8 @@ package main
 
 import (
     "log"
-    "github.com/dvgamerr-app/go-bitkub"
     "github.com/dvgamerr-app/go-bitkub/bitkub"
+    "github.com/dvgamerr-app/go-bitkub/market"
 )
 
 func main() {
@@ -67,19 +67,18 @@ func main() {
     bitkub.Initlizer()
     
     // Get wallet balance
-    wallet, err := Wallet()
+    wallet, err := market.GetWallet()
     if err != nil {
         log.Fatal(err)
     }
     log.Printf("Wallet: %+v", wallet)
 
     // Get detailed balances
-    balances, err := Balances()
+    balances, err := market.GetBalances()
     if err != nil {
         log.Fatal(err)
     }
     log.Printf("Balances: %+v", balances)
-    
 }
 ```
 
@@ -88,52 +87,41 @@ func main() {
 ### Non-Secure Endpoints (V3)
 
 ```go
+import (
+    "github.com/dvgamerr-app/go-bitkub/bitkub"
+    "github.com/dvgamerr-app/go-bitkub/market"
+)
+
 // Get system status
 status, err := bitkub.GetStatus()
 
 // Get server time
-timestamp, err := bitkub.GetServerTimeV3()
+timestamp, err := bitkub.GetServerTime()
 
 // Get all symbols
 symbols, err := market.GetSymbols()
 
 // Get ticker data
-tickers, err := market.GetTickerV3("btc_thb")
+tickers, err := market.GetTicker("btc_thb")
 
-#### Get Market Depth
-```go
+// Get market depth
 depth, err := market.GetDepth("btc_thb", 10)
-```
 
-#### Get Recent Trades
-```go
+// Get recent trades
 trades, err := market.GetTrades("btc_thb", 10)
-```
 
-#### Get Order Books
-```go
 // Get buy orders (bids)
 bids, err := market.GetBids("btc_thb", 10)
 
 // Get sell orders (asks)
 asks, err := market.GetAsks("btc_thb", 10)
-
-// Get recent trades
-trades, err := market.GetTradesV3("btc_thb", 10)
-
-// Get TradingView history
-params := market.TradingViewHistoryParams{
-    Symbol:     "BTC_THB",
-    Resolution: "60",
-    From:       1633424427,
-    To:         1633427427,
-}
-history, err := market.GetTradingViewHistory(params)
 ```
 
 ### Trading Endpoints (V3 - Secure)
 
 ```go
+import "github.com/dvgamerr-app/go-bitkub/market"
+
 // Get wallet balances
 wallet, err := market.GetWallet()
 
@@ -142,28 +130,28 @@ balances, err := market.GetBalances()
 
 // Place buy order
 bidReq := market.PlaceBidRequest{
-    Sym:      "btc_thb",
-    Amt:      1000,
-    Rat:      2500000,
-    Typ:      "limit",
+    Symbol:   "btc_thb",
+    Amount:   1000,
+    Rate:     2500000,
+    Type:     "limit",
     ClientID: "my-order-1",
 }
 bidResult, err := market.PlaceBid(bidReq)
 
 // Place sell order
 askReq := market.PlaceAskRequest{
-    Sym: "btc_thb",
-    Amt: 0.001,
-    Rat: 2600000,
-    Typ: "limit",
+    Symbol: "btc_thb",
+    Amount: 0.001,
+    Rate:   2600000,
+    Type:   "limit",
 }
 askResult, err := market.PlaceAsk(askReq)
 
 // Cancel order
 cancelReq := market.CancelOrderRequest{
-    Sym: "btc_thb",
-    ID:  "12345",
-    Sd:  "buy",
+    Symbol: "btc_thb",
+    ID:     "12345",
+    Side:   "buy",
 }
 err = market.CancelOrder(cancelReq)
 
@@ -172,9 +160,8 @@ orders, err := market.GetMyOpenOrders("btc_thb")
 
 // Get order history (with keyset pagination)
 historyParams := market.MyOrderHistoryParams{
-    Sym:            "BTC_THB",
-    Lmt:            "10",
-    PaginationType: "keyset",
+    Symbol: "BTC_THB",
+    Limit:  "10",
 }
 orderHistory, err := market.GetMyOrderHistory(historyParams)
 
@@ -197,9 +184,9 @@ credits, err := user.GetTradingCredits()
 limits, err := user.GetUserLimits()
 
 // Get coin convert history
-convertParams := user.CoinConvertHistoryParams{
-    P:      1,
-    Lmt:    100,
+convertParams := user.CoinHistoryParams{
+    Page:   1,
+    Limit:  100,
     Status: "success",
 }
 convertHistory, err := user.GetCoinConvertHistory(convertParams)
@@ -212,29 +199,29 @@ import "github.com/dvgamerr-app/go-bitkub/fiat"
 
 // Get bank accounts
 accountsParams := fiat.AccountsParams{
-    P:   1,
-    Lmt: 10,
+    Page:  1,
+    Limit: 10,
 }
 accounts, err := fiat.GetAccounts(accountsParams)
 
 // Withdraw fiat
 withdrawReq := fiat.WithdrawRequest{
-    ID:  "bank-account-id",
-    Amt: 1000.0,
+    ID:     "bank-account-id",
+    Amount: 1000.0,
 }
 withdrawResult, err := fiat.Withdraw(withdrawReq)
 
 // Get deposit history
 depositParams := fiat.DepositHistoryParams{
-    P:   1,
-    Lmt: 10,
+    Page:  1,
+    Limit: 10,
 }
 deposits, err := fiat.GetDepositHistory(depositParams)
 
 // Get withdrawal history
 withdrawParams := fiat.WithdrawHistoryParams{
-    P:   1,
-    Lmt: 10,
+    Page:  1,
+    Limit: 10,
 }
 withdrawals, err := fiat.GetWithdrawHistory(withdrawParams)
 ```
@@ -242,53 +229,61 @@ withdrawals, err := fiat.GetWithdrawHistory(withdrawParams)
 ### Crypto API (V4) Examples
 
 ```go
-### Crypto API (V4) Examples
+import "github.com/dvgamerr-app/go-bitkub/crypto"
 
-```go
 // List crypto addresses with pagination
-addresses, err := crypto.GetAddresses(crypto.GetAddressesParams{
-    PaginationParams: crypto.PaginationParams{
-        Page:  1,
-        Limit: 10,
-    },
-    SymbolNetworkParams: crypto.SymbolNetworkParams{
-        Symbol:  "ATOM",
-        Network: "ATOM",
-    },
+addresses, err := crypto.GetAddresses(crypto.Addresses{
+    Page:    1,
+    Limit:   10,
+    Symbol:  "ATOM",
+    Network: "ATOM",
+})
+
+// Create new crypto address
+newAddresses, err := crypto.CreateAddress(crypto.CreateAddressRequest{
+    Symbol:  "BTC",
+    Network: "BTC",
 })
 
 // Get deposit history with filters
-deposits, err := crypto.GetDeposits(crypto.GetDepositsParams{
-    PaginationParams: crypto.PaginationParams{
-        Page:  1,
-        Limit: 10,
-    },
+deposits, err := crypto.GetDeposits(crypto.Deposits{
+    Page:   1,
+    Limit:  10,
     Symbol: "BTC",
     Status: "complete",
 })
 
+// Get withdrawal history
+withdrawals, err := crypto.GetWithdraws(crypto.Withdraws{
+    Page:   1,
+    Limit:  10,
+    Symbol: "BTC",
+})
+
 // Get available coins
-coins, err := crypto.GetCoins(crypto.GetCoinsParams{
+coins, err := crypto.GetCoins(crypto.Coins{
     Symbol: "BTC",
 })
 
 // Withdraw crypto
-withdrawReq := crypto.WithdrawRequest{
+withdrawReq := crypto.CreateWithdrawRequest{
     Symbol:  "BTC",
     Network: "BTC",
     Address: "bc1q...",
     Amount:  0.001,
     Memo:    "",
 }
-txn, err := crypto.Withdraw(withdrawReq)
-```
+txn, err := crypto.CreateWithdraw(withdrawReq)
 
-For detailed crypto API documentation, see [crypto/README.md](crypto/README.md)
+// Get compensations history
+compensations, err := crypto.GetCompensations(crypto.Compensations{
+    Page:  1,
+    Limit: 10,
+})
+```
 
 ## 📖 Documentation
 
-- [API Migration Guide](docs/API_MIGRATION_GUIDE.md) - Complete V3 migration guide
-- [Crypto API Guide](crypto/README.md) - Crypto V4 endpoints documentation
 - [Official Bitkub V3 API](https://github.com/bitkub/bitkub-official-api-docs/blob/master/restful-api.md)
 - [Official Bitkub V4 API](https://github.com/bitkub/bitkub-official-api-docs/blob/master/restful-api-v4.md)
 
@@ -317,20 +312,14 @@ See [official documentation](https://github.com/bitkub/bitkub-official-api-docs/
 
 ## 🧪 Testing
 
-### Run Validation Tests (No API credentials needed)
-```bash
-go test ./crypto/... -v -run "Validation"
-```
-
-### Run Integration Tests (Requires API credentials)
+### Run Tests (Requires API credentials)
 ```bash
 # Set your credentials
 export BTK_APIKEY="your_api_key"
 export BTK_SECRETKEY="your_secret_key"
 
 # Run tests
-go test ./crypto/... -v
-go test ./market/... -v -run "Test"
+go test ./... -v
 ```
 
 ## 📁 Project Structure
@@ -345,9 +334,11 @@ go-bitkub/
 │   └── types.go     # Common type definitions
 ├── market/          # Market API (V3) endpoints
 │   ├── symbols.go
-│   ├── ticker_v3.go
-│   ├── depth_v3.go
-│   ├── trades_v3.go
+│   ├── ticker.go
+│   ├── depth.go
+│   ├── trades.go
+│   ├── bids.go
+│   ├── asks.go
 │   ├── place-bid.go
 │   ├── place-ask.go
 │   ├── cancel-order.go
@@ -355,8 +346,9 @@ go-bitkub/
 │   ├── order-info.go
 │   ├── balances.go
 │   ├── wallet.go
-│   ├── wstoken.go
-│   └── ...
+│   ├── trading-credits.go
+│   ├── limit.go
+│   └── wstoken.go
 ├── user/            # User API (V3) endpoints
 │   ├── trading-credits.go
 │   ├── limits.go
@@ -373,9 +365,12 @@ go-bitkub/
 │   ├── coins.go
 │   ├── compensations.go
 │   └── types.go
-├── helper/          # Utility functions
+├── utils/           # Utility functions
+│   ├── error.go
+│   └── helper.go
+├── balances.go      # Balance aggregation helper
+├── wallet.go        # Wallet helper functions
 └── docs/            # Documentation
-    └── API_MIGRATION_GUIDE.md
 ```
 
 ## 🤝 Contributing
