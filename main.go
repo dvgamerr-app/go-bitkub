@@ -35,7 +35,7 @@ func main() {
 	bitkub.Initlizer(cli.Key, cli.Secret)
 
 	log.Info().Msg("📊 Fetching balances from all wallets...")
-	balances, err := QueryBalances()
+	balances, err := Balances()
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to fetch balances")
 	}

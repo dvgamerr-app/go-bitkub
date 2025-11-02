@@ -12,7 +12,7 @@ go-bitkub/
 ├── crypto/       # Crypto operations (deposit, withdraw, addresses)
 ├── fiat/         # Fiat operations (bank accounts, deposit/withdraw)
 ├── user/         # User info (limits, trading credits, history)
-└── helper/       # Utilities (dotenv, error handling)
+└── utils/        # Utilities (dotenv, error handling)
 ```
 
 ## Guidelines

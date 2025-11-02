@@ -17,8 +17,8 @@ func init() {
 	bitkub.Initlizer()
 }
 
-func TestQueryBalances(t *testing.T) {
-	result, err := QueryBalances()
+func TestBalances(t *testing.T) {
+	result, err := Balances()
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 	assert.NotNil(t, result.Coins)
@@ -26,14 +26,14 @@ func TestQueryBalances(t *testing.T) {
 	assert.GreaterOrEqual(t, result.Available, 0.0)
 }
 
-func TestQueryWallet(t *testing.T) {
-	result, err := QueryWallet()
+func TestWallet(t *testing.T) {
+	result, err := Wallet()
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 }
 
-func TestQueryCoins(t *testing.T) {
-	result, err := QueryCoins()
+func TestListCoins(t *testing.T) {
+	result, err := ListCoins()
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 	assert.IsType(t, []string{}, result)

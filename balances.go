@@ -14,7 +14,7 @@ type BitkubBalances struct {
 	Coins     map[string]market.Balance
 }
 
-func QueryBalances() (*BitkubBalances, error) {
+func Balances() (*BitkubBalances, error) {
 	var (
 		data BitkubBalances
 		err  error

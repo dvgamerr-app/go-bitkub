@@ -4,7 +4,7 @@ import (
 	"github.com/dvgamerr-app/go-bitkub/market"
 )
 
-func QueryWallet() (*market.BitkubWallet, error) {
+func Wallet() (*market.BitkubWallet, error) {
 	data, err := market.GetWallet()
 	if err != nil {
 		return nil, err
@@ -20,7 +20,7 @@ func QueryWallet() (*market.BitkubWallet, error) {
 	return data, nil
 }
 
-func QueryCoins() ([]string, error) {
+func ListCoins() ([]string, error) {
 	data, err := market.GetWallet()
 	if err != nil {
 		return nil, err
