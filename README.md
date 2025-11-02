@@ -17,6 +17,14 @@ This SDK implements the latest Bitkub API V3 specification (November 2025) with:
 
 ## 🚀 Features
 
+### WebSocket Streaming (Real-time) 🔴
+- ✅ Market trade stream
+- ✅ Market ticker stream
+- ✅ Live order book stream
+- ✅ Multiple streams subscription
+- ✅ Auto-reconnect with configurable retry
+- ✅ Graceful shutdown & error handling
+
 ### Market API (V3)
 - ✅ Non-secure endpoints (Market data, server status)
 - ✅ Secure endpoints (Trading, user info, fiat operations)
@@ -365,6 +373,15 @@ go-bitkub/
 │   ├── coins.go
 │   ├── compensations.go
 │   └── types.go
+├── stream/          # WebSocket streaming (Real-time)
+│   ├── stream.go          # Main stream client
+│   ├── types.go           # Message types
+│   ├── stream_test.go     # Tests
+│   ├── README.md          # Stream documentation
+│   └── examples/          # Usage examples
+│       ├── market/        # Market stream example
+│       ├── orderbook/     # Order book example
+│       └── timeout/       # Timeout example
 ├── utils/           # Utility functions
 │   ├── error.go
 │   └── helper.go
@@ -372,6 +389,62 @@ go-bitkub/
 ├── wallet.go        # Wallet helper functions
 └── docs/            # Documentation
 ```
+
+## 📡 WebSocket Streaming
+
+Real-time market data streaming with auto-reconnect support.
+
+### Basic Usage
+
+```go
+import "github.com/dvgamerr-app/go-bitkub/stream"
+
+// Create stream with default config
+s := stream.New(nil)
+
+// Connect to market streams
+if err := s.ConnectMarket("market.trade.thb_btc", "market.ticker.thb_btc"); err != nil {
+    panic(err)
+}
+defer s.Close()
+
+// Read messages in loop
+for msg := range s.Messages() {
+    if msg.Error != nil {
+        fmt.Printf("Error: %v\n", msg.Error)
+        continue
+    }
+    
+    fmt.Printf("[%s] %+v\n", msg.Type, msg.Data)
+}
+```
+
+### Advanced Configuration
+
+```go
+config := &stream.StreamConfig{
+    ReconnectInterval: 5 * time.Second,  // Wait before reconnect
+    MaxReconnect:      10,                // Max reconnect attempts
+    PingInterval:      30 * time.Second,  // Ping interval
+    ReadTimeout:       60 * time.Second,  // Read timeout
+}
+
+s := stream.New(config)
+```
+
+### Available Streams
+
+**Market Streams:**
+- `market.trade.<symbol>` - Real-time trades
+- `market.ticker.<symbol>` - Real-time ticker
+
+**Order Book:**
+```go
+// Connect to order book (symbol ID: 1 = THB_BTC)
+s.ConnectOrderBook(1)
+```
+
+See [`stream/README.md`](./stream/README.md) for complete documentation and examples.
 
 ## 🤝 Contributing
 
@@ -386,6 +459,7 @@ MIT License
 - [Bitkub Official Website](https://www.bitkub.com/)
 - [Bitkub V3 API Documentation](https://github.com/bitkub/bitkub-official-api-docs/blob/master/restful-api.md)
 - [Bitkub V4 API Documentation](https://github.com/bitkub/bitkub-official-api-docs/blob/master/restful-api-v4.md)
+- [Bitkub WebSocket API Documentation](https://github.com/bitkub/bitkub-official-api-docs/blob/master/websocket-api.md)
 - [Bitkub Support](https://support.bitkub.com/)
 
 ## ⚠️ Disclaimer
