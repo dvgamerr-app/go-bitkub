@@ -7,6 +7,20 @@ Go SDK for [Bitkub](https://www.bitkub.com/) Cryptocurrency Exchange API - Compl
 
 ![](./docs/example.png)
 
+**Quick Start:**
+```bash
+# Install via go install
+go install github.com/dvgamerr-app/go-bitkub/cmd/bitkub@latest
+
+# Get market ticker
+bitkub market ticker
+
+# Get BTC price
+bitkub market ticker BTC_THB
+
+# Get your balance (requires API keys)
+bitkub -k YOUR_KEY -s YOUR_SECRET market balances
+```
 ## ⚠️ Important Updates
 
 This SDK implements the latest Bitkub API V3 specification (November 2025) with:
@@ -27,21 +41,6 @@ A powerful CLI tool for interacting with Bitkub API from the terminal:
 - ✅ Crypto commands (7 total)
 - ✅ Fiat commands (4 total)
 - ✅ User commands (3 total)
-
-**Quick Start:**
-```bash
-# Install via go install
-go install github.com/dvgamerr-app/go-bitkub/cmd/bitkub@latest
-
-# Get market ticker
-bitkub market ticker
-
-# Get BTC price
-bitkub market ticker BTC_THB
-
-# Get your balance (requires API keys)
-bitkub -k YOUR_KEY -s YOUR_SECRET market balances
-```
 
 **Documentation:**
 - 📖 [Installation Guide](INSTALL.md) - Detailed installation instructions
