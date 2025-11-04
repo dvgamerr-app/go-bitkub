@@ -21,7 +21,6 @@ type Stream struct {
 	url               string
 	config            StreamConfig
 	mu                sync.RWMutex
-	reconnectCount    int
 	ctx               context.Context
 	cancel            context.CancelFunc
 	messageChannel    chan Message
