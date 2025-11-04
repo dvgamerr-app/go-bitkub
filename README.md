@@ -3,7 +3,7 @@
 [![Go Version](https://img.shields.io/badge/Go-%3E%3D%201.18-blue.svg)](https://golang.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Go SDK for [Bitkub](https://www.bitkub.com/) Cryptocurrency Exchange API - Complete implementation with full V3 & V4 API support.
+Go SDK for [Bitkub](https://www.bitkub.com/) Cryptocurrency Exchange API - Complete implementation with full V3 & V4 API support + **Command Line Interface**
 
 ![](./docs/example.png)
 
@@ -14,8 +14,38 @@ This SDK implements the latest Bitkub API V3 specification (November 2025) with:
 - ✅ Using V3 endpoints exclusively
 - ✅ Keyset-based pagination (page-based removed)
 - ✅ Simplified function names (removed V3 suffix)
+- 🆕 **CLI Tool with Cobra & Zerolog**
 
 ## 🚀 Features
+
+### 🖥️ Command Line Interface (NEW!)
+A powerful CLI tool for interacting with Bitkub API from the terminal:
+- ✅ All API endpoints accessible via commands
+- ✅ Beautiful logging output with zerolog
+- ✅ Support for .env configuration
+- ✅ Market commands (31 total)
+- ✅ Crypto commands (7 total)
+- ✅ Fiat commands (4 total)
+- ✅ User commands (3 total)
+
+**Quick Start:**
+```bash
+# Install via go install
+go install github.com/dvgamerr-app/go-bitkub/cmd/bitkub@latest
+
+# Get market ticker
+bitkub market ticker
+
+# Get BTC price
+bitkub market ticker BTC_THB
+
+# Get your balance (requires API keys)
+bitkub -k YOUR_KEY -s YOUR_SECRET market balances
+```
+
+**Documentation:**
+- 📖 [Installation Guide](INSTALL.md) - Detailed installation instructions
+- 📖 [CLI Documentation](CLI.md) - Complete CLI reference with examples
 
 ### WebSocket Streaming (Real-time) 🔴
 - ✅ Market trade stream
