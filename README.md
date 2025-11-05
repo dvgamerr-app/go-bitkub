@@ -18,6 +18,14 @@ bitkub market ticker
 # Get BTC price
 bitkub market ticker BTC_THB
 
+# Get historical data
+bitkub market history BTC_THB --resolution 1
+
+# Output in different formats
+bitkub market ticker --format json   # JSON output
+bitkub market ticker --format jsonl  # JSONL output (one JSON per line)
+bitkub market ticker --format text   # Text output (default)
+
 # Get your balance (requires API keys)
 bitkub -k YOUR_KEY -s YOUR_SECRET market balances
 ```
@@ -37,8 +45,9 @@ This SDK implements the latest Bitkub API V3 specification (November 2025) with:
 A powerful CLI tool for interacting with Bitkub API from the terminal:
 - ✅ All API endpoints accessible via commands
 - ✅ Beautiful logging output with zerolog
+- ✅ Multiple output formats (JSON, JSONL, Text)
 - ✅ Support for .env configuration
-- ✅ Market commands (31 total)
+- ✅ Market commands including historical data (31+ total)
 - ✅ Crypto commands (7 total)
 - ✅ Fiat commands (4 total)
 - ✅ User commands (3 total)
@@ -58,10 +67,11 @@ A powerful CLI tool for interacting with Bitkub API from the terminal:
 ### Market API (V3)
 - ✅ Non-secure endpoints (Market data, server status)
 - ✅ Secure endpoints (Trading, user info, fiat operations)
+- ✅ Historical data for TradingView charts
 - ✅ WebSocket token support
 - ✅ Full order management (place, cancel, history)
 - ✅ Wallet & balance operations
-- ✅ TradingView chart data
+- ✅ Real-time ticker and trade data
 
 ### Crypto API (V4) ✨
 - 📋 List crypto addresses with pagination
@@ -147,6 +157,14 @@ depth, err := market.GetDepth("btc_thb", 10)
 
 // Get recent trades
 trades, err := market.GetTrades("btc_thb", 10)
+
+// Get historical data for TradingView
+history, err := market.GetHistory(market.HistoryRequest{
+    Symbol:     "btc_thb",
+    Resolution: "60",  // 1, 5, 15, 60, 240, 1D
+    From:       1234567890,
+    To:         1234567890,
+})
 
 // Get buy orders (bids)
 bids, err := market.GetBids("btc_thb", 10)

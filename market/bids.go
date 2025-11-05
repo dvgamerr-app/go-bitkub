@@ -16,7 +16,7 @@ type BidOrder struct {
 }
 
 type BidsResponse struct {
-	bitkub.GetError
+	bitkub.Error
 	Result []BidOrder `json:"result"`
 }
 

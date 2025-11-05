@@ -24,7 +24,7 @@ type WithdrawHistoryPagination struct {
 
 // WithdrawHistoryResponse represents the response from /api/v3/fiat/withdraw-history endpoint
 type WithdrawHistoryResponse struct {
-	bitkub.GetError
+	bitkub.Error
 	Result     []WithdrawHistory         `json:"result"`
 	Pagination WithdrawHistoryPagination `json:"pagination"`
 }

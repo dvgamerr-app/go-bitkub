@@ -59,7 +59,7 @@ type MyOrderHistoryParams struct {
 }
 
 type MyOrderHistoryResponse struct {
-	bitkub.GetError
+	bitkub.Error
 	Result     []OrderHistory `json:"result"`
 	Pagination Pagination     `json:"pagination"`
 }

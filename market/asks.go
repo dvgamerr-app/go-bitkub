@@ -2,6 +2,7 @@ package market
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
@@ -18,7 +19,7 @@ type AskOrder struct {
 
 // AsksResponse represents the response from /api/v3/market/asks endpoint
 type AsksResponse struct {
-	bitkub.GetError
+	bitkub.Error
 	Result []AskOrder `json:"result"`
 }
 
@@ -29,7 +30,7 @@ type AsksResponse struct {
 func GetAsks(symbol string, limit int) ([]AskOrder, error) {
 	var result AsksResponse
 
-	url := fmt.Sprintf("/v3/market/asks?sym=%s", symbol)
+	url := fmt.Sprintf("/v3/market/asks?sym=%s", strings.ToUpper(symbol))
 	if limit > 0 {
 		url = fmt.Sprintf("%s&lmt=%d", url, limit)
 	}

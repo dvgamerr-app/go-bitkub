@@ -22,7 +22,7 @@ type CoinConvertPagination struct {
 }
 
 type CoinConvertHistoryResponse struct {
-	bitkub.GetError
+	bitkub.Error
 	Result     []CoinConvertHistory  `json:"result"`
 	Pagination CoinConvertPagination `json:"pagination"`
 }

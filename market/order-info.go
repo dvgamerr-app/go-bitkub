@@ -39,7 +39,7 @@ type OrderInfo struct {
 
 // OrderInfoResponse represents the response from /api/v3/market/order-info endpoint
 type OrderInfoResponse struct {
-	bitkub.GetError
+	bitkub.Error
 	Result OrderInfo `json:"result"`
 }
 

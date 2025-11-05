@@ -47,7 +47,7 @@ type UserLimits struct {
 }
 
 type UserLimitsResponse struct {
-	bitkub.GetError
+	bitkub.Error
 	Result UserLimits `json:"result"`
 }
 

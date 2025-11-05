@@ -5,7 +5,7 @@ import (
 )
 
 type TradingCreditsResponse struct {
-	bitkub.GetError
+	bitkub.Error
 	Result float64 `json:"result"`
 }
 

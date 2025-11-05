@@ -2,6 +2,7 @@ package market
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
@@ -13,15 +14,10 @@ type DepthResult struct {
 	Bids []DepthEntry `json:"bids"`
 }
 
-type DepthResponse struct {
-	bitkub.GetError
-	Result DepthResult `json:"result"`
-}
-
 func GetDepth(symbol string, limit int) (*DepthResult, error) {
-	var result DepthResponse
+	var result DepthResult
 
-	url := fmt.Sprintf("/v3/market/depth?sym=%s", symbol)
+	url := fmt.Sprintf("/market/depth?sym=%s", strings.ToUpper(symbol))
 	if limit > 0 {
 		url = fmt.Sprintf("%s&lmt=%d", url, limit)
 	}
@@ -30,5 +26,9 @@ func GetDepth(symbol string, limit int) (*DepthResult, error) {
 		return nil, err
 	}
 
-	return &result.Result, nil
+	if len(result.Asks) == 0 && len(result.Bids) == 0 {
+		return nil, fmt.Errorf("invalid symbol or no data available for %s", symbol)
+	}
+
+	return &result, nil
 }

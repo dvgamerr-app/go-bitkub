@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Market history command with API integration for historical data retrieval
+- Support for JSONL output formatting in CLI commands
+- Symbol normalization utility for market commands
+- Enhanced output formatting with JSON, JSONL, and table formats
+
+### Changed
+- Replaced `interface{}` with `any` type for improved type safety and readability across codebase
+- Enhanced market commands with improved output formatting options
+- Updated command flags for better usability and consistency
+- Improved ticker data handling with better type definitions
+
+### Fixed
+- Fixed `FetchNonSecure` to properly use non-secure fetch method
+- Improved ticker API response handling and data processing
+
+### Refactored
+- Removed unused `reconnectCount` field from Stream struct
+- Cleaned up market command implementations with better structure
+- Enhanced helper utilities for better code organization
+
 ## [2.0.0] - 2025-11-01
 
 ### Added - Complete API V3 Implementation

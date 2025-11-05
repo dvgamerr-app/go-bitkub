@@ -26,7 +26,7 @@ type PlaceAskResult struct {
 }
 
 type PlaceAskResponse struct {
-	bitkub.GetError
+	bitkub.Error
 	Result PlaceAskResult `json:"result"`
 }
 

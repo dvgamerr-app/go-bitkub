@@ -4,11 +4,12 @@ A command-line interface for interacting with Bitkub API, built with Go, Cobra, 
 
 ## Features
 
-- 🎯 **Market Commands**: Trading, orders, balances, and market data
+- 🎯 **Market Commands**: Trading, orders, balances, historical data, and market data
 - 💰 **Crypto Commands**: Deposits, withdrawals, and addresses management
 - 💵 **Fiat Commands**: Bank accounts, deposits, and withdrawals
 - 👤 **User Commands**: User information, limits, and trading credits
-- 📊 **Beautiful Logging**: Clean and readable output with zerolog
+- 📊 **Output Formats**: JSON, JSONL, and text format support
+- 🪵 **Beautiful Logging**: Clean and readable output with zerolog
 
 ## Installation
 
@@ -75,6 +76,11 @@ bitkub --help
 
 # Enable debug mode
 bitkub --debug [command]
+
+# Output formats
+bitkub --format json [command]   # JSON output
+bitkub --format jsonl [command]  # JSONL output (one JSON per line)
+bitkub --format text [command]   # Text output (default)
 ```
 
 ### Market Commands
@@ -85,13 +91,18 @@ bitkub market symbols
 
 # Get ticker information
 bitkub market ticker               # All symbols
-bitkub market ticker THB_BTC       # Specific symbol
+bitkub market ticker BTC_THB       # Specific symbol
 
 # Get market depth
-bitkub market depth THB_BTC --limit 10
+bitkub market depth BTC_THB --limit 10
 
 # Get recent trades
-bitkub market trades THB_BTC --limit 20
+bitkub market trades BTC_THB --limit 20
+
+# Get historical data (TradingView)
+bitkub market history BTC_THB                                    # Last 24h with 1D resolution
+bitkub market history BTC_THB --resolution 1                     # 1 minute candles
+bitkub market history BTC_THB --resolution 60 --from 1234567890  # Custom timeframe
 
 # Get account balances
 bitkub market balances
@@ -101,21 +112,21 @@ bitkub market wallet
 
 # Get open orders
 bitkub market open-orders
-bitkub market open-orders THB_BTC
+bitkub market open-orders BTC_THB
 
 # Get order history
 bitkub market order-history --page 1 --limit 20
-bitkub market order-history THB_BTC
+bitkub market order-history BTC_THB
 
 # Get order information
-bitkub market order-info THB_BTC ORDER_ID buy
+bitkub market order-info BTC_THB ORDER_ID buy
 
 # Place orders
-bitkub market place-bid THB_BTC 0.001 1000000
-bitkub market place-ask THB_BTC 0.001 1200000
+bitkub market place-bid BTC_THB 0.001 1000000
+bitkub market place-ask BTC_THB 0.001 1200000
 
 # Cancel order
-bitkub market cancel THB_BTC ORDER_ID buy
+bitkub market cancel BTC_THB ORDER_ID buy
 
 # Get user limits
 bitkub market limits
@@ -190,12 +201,12 @@ bitkub user coin-convert-history --page 1 --limit 20
 ### Check BTC price
 
 ```bash
-bitkub market ticker THB_BTC
+bitkub market ticker BTC_THB
 ```
 
 Output:
 ```
-12:00AM INF Ticker change=2.5 high24h=1250000 last=1200000 low24h=1180000 symbol=THB_BTC volume=150.5
+12:00AM INF Ticker change=2.5 high24h=1250000 last=1200000 low24h=1180000 symbol=BTC_THB volume=150.5
 ```
 
 ### Get your balance
@@ -213,7 +224,7 @@ Output:
 ### Place a buy order
 
 ```bash
-bitkub -k YOUR_KEY -s YOUR_SECRET market place-bid THB_BTC 0.001 1200000
+bitkub -k YOUR_KEY -s YOUR_SECRET market place-bid BTC_THB 0.001 1200000
 ```
 
 Output:

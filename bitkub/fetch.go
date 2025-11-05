@@ -117,12 +117,7 @@ func FetchNonSecure(method string, path string, reqBody any, resPayload any) err
 	}
 
 	res, ok := resPayload.(ResponseSecure)
-	if !ok {
-		// If response doesn't implement ResponseNonSecure, return without error check
-		return nil
-	}
-
-	if res.GetError() != 0 {
+	if ok && res.GetError() != 0 {
 		errMsg, exists := ErrorCode[res.GetError()]
 		if !exists {
 			errMsg = "Unknown error"
