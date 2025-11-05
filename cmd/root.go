@@ -98,8 +98,8 @@ func init() {
 
 	rootCmd.SetVersionTemplate(fmt.Sprintf("bitkub version %s (commit: %s, built: %s)\n", Version, Commit, Date))
 
-	rootCmd.PersistentFlags().StringVarP(&apiKey, "key", "k", os.Getenv("BTK_APIKEY"), "API Key")
-	rootCmd.PersistentFlags().StringVar(&secretKey, "secret", os.Getenv("BTK_SECRET"), "API Secret")
+	rootCmd.PersistentFlags().StringVar(&apiKey, "key", "", "Bitkub API Key")
+	rootCmd.PersistentFlags().StringVar(&secretKey, "secret", "", "Bitkub API Secret")
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug mode")
 	rootCmd.PersistentFlags().StringVarP(&format, "format", "f", "text", "Output format (text, json, jsonl)")
 }
