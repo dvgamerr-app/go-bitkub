@@ -1,6 +1,6 @@
-# go run . CLI
+# bitkub CLI
 
-A command-line interface for interacting with go run . API, built with Go, Cobra, and Zerolog.
+A command-line interface for interacting with bitkub API, built with Go, Cobra, and Zerolog.
 
 ## Features
 
@@ -29,7 +29,7 @@ git clone https://github.com/dvgamerr-app/go-bitkub.git
 cd go-bitkub
 
 # Build
-go build -o go run . ./cmd/bitkub
+go build -o bitkub ./cmd/bitkub
 
 # Or install locally
 go install ./cmd/bitkub
@@ -38,7 +38,7 @@ go install ./cmd/bitkub
 ### Run directly (Development)
 
 ```bash
-go run ./cmd/bitkub/main.go [command]
+bitkub/cmd/bitkub/main.go [command]
 ```
 
 ## Configuration
@@ -57,13 +57,13 @@ BTK_SECRET=your_BTK_SECRET
 ### 2. Command Line Flags
 
 ```bash
-go run . --key YOUR_KEY --secret YOUR_SECRET [command]
+bitkub --key YOUR_KEY --secret YOUR_SECRET [command]
 ```
 
 ### 3. Short Flags
 
 ```bash
-go run . -k YOUR_KEY --secret YOUR_SECRET [command]
+bitkub -k YOUR_KEY --secret YOUR_SECRET [command]
 ```
 
 ## Usage
@@ -72,132 +72,130 @@ go run . -k YOUR_KEY --secret YOUR_SECRET [command]
 
 ```bash
 # Show help
-go run . --help
+bitkub --help
 
 # Enable debug mode
-go run . --debug [command]
+bitkub --debug [command]
 
 # Output formats
-go run . --format json [command]   # JSON output
-go run . --format jsonl [command]  # JSONL output (one JSON per line)
-go run . --format text [command]   # Text output (default)
+bitkub --format json [command]   # JSON output
+bitkub --format jsonl [command]  # JSONL output (one JSON per line)
+bitkub --format text [command]   # Text output (default)
 ```
 
 ### Market Commands
 
 ```bash
 # Get all trading symbols
-go run . market symbols
+bitkub market symbols
 
 # Get ticker information
-go run . market ticker               # All symbols
-go run . market ticker btc_thb       # Specific symbol
+bitkub market ticker               # All symbols
+bitkub market ticker btc_thb       # Specific symbol
 
 # Get market depth
-go run . market depth btc_thb --limit 10
+bitkub market depth btc_thb --limit 10
 
 # Get recent trades
-go run . market trades btc_thb --limit 20
+bitkub market trades btc_thb --limit 20
 
 # Get historical data (TradingView)
-go run . market history btc_thb                                    # Last 24h with 1D resolution
-go run . market history btc_thb -r 1                     # 1 minute candles
-go run . market history btc_thb -r 60 --from 1234567890  # Custom timeframe
+bitkub market history btc_thb                                    # Last 24h with 1D resolution
+bitkub market history btc_thb -r 1                     # 1 minute candles
+bitkub market history btc_thb -r 60 --from 1234567890  # Custom timeframe
 
 # Get account balances
-go run . market balances
+bitkub market balances
 
 # Get wallet information
-go run . market wallet
+bitkub market wallet
 
 # Get open orders
-go run . market open-orders btc_thb
+bitkub market open-orders btc_thb
 
 # Get order history
-go run . market order-history btc_thb
-go run . market order-history btc_thb --page 1 --limit 20
+bitkub market order-history btc_thb
+bitkub market order-history btc_thb --page 1 --limit 20
 
 # Get order information
-go run . market order-info btc_thb 446958802
+bitkub market order-info btc_thb 446958802
 
 # Place orders
-go run . market buy kub_thb 10 1
-go run . market sell kub_thb 10 1
+bitkub market buy kub_thb 10 1
+bitkub market sell kub_thb 10 1
 
 # Cancel order
-go run . market cancel btc_thb 446958802
+bitkub market cancel btc_thb 446958802
 
 # Get user limits
-go run . market limits
+bitkub market limits
 
 # Get trading credits
-go run . market credits
+bitkub market credits
 
 # Get WebSocket token
-go run . market wstoken
+bitkub market wstoken
 ```
 
 ### Crypto Commands
 
 ```bash
 # Get coin information
-go run . crypto coins
-go run . crypto coins -s btc
-go run . crypto coins -s btc
-go run . crypto coins -s btc --network btc
-go run . crypto coins -s btc -n btc
+bitkub crypto coins
+bitkub crypto coins -s btc
+bitkub crypto coins -s btc --network btc
+bitkub crypto coins -s btc -n btc
 
 # Get deposit addresses
-go run . crypto addresses --page 1 --limit 20
+bitkub crypto addresses --page 1 --limit 20
 
 # Create new deposit address
-go run . crypto create-address btc btc
+bitkub crypto create-address btc btc
 
 # Get deposit history
-go run . crypto deposits --page 1 --limit 20
-go run . crypto deposits -s btc
-go run . crypto deposits -s btc
+bitkub crypto deposits --page 1 --limit 20
+bitkub crypto deposits -s btc
 
 # Get withdraw history
-go run . crypto withdraws --page 1 --limit 20
-go run . crypto withdraws -s btc
-go run . crypto withdraws -s btc
+bitkub crypto withdraws --page 1 --limit 20
+bitkub crypto withdraws -s btc
+bitkub crypto withdraws -s btc
 
 # Create withdrawal
-go run . crypto withdraw btc 0.001 ADDRESS NETWORK --memo MEMO
+bitkub crypto withdraw btc 0.001 ADDRESS NETWORK --memo MEMO
 
 # Get compensation history
-go run . crypto compensations --page 1 --limit 20
-go run . crypto compensations -s btc
+bitkub crypto compensations --page 1 --limit 20
+bitkub crypto compensations -s btc
 ```
 
 ### Fiat Commands
 
 ```bash
 # Get bank accounts
-go run . fiat accounts --page 1 --limit 20
+bitkub fiat accounts --page 1 --limit 20
 
 # Get deposit history
-go run . fiat deposit-history --page 1 --limit 20
+bitkub fiat deposit-history --page 1 --limit 20
 
 # Get withdraw history
-go run . fiat withdraw-history --page 1 --limit 20
+bitkub fiat withdraw-history --page 1 --limit 20
 
 # Create withdrawal
-go run . fiat withdraw BANK_ACCOUNT_ID 1000
+bitkub fiat withdraw BANK_ACCOUNT_ID 1000
 ```
 
 ### User Commands
 
 ```bash
 # Get user limits
-go run . user limits
+bitkub user limits
 
 # Get trading credits
-go run . user credits
+bitkub user credits
 
 # Get coin convert history
-go run . user coin-convert-history --page 1 --limit 20
+bitkub user coin-convert-history --page 1 --limit 20
 ```
 
 ## Examples
@@ -205,7 +203,7 @@ go run . user coin-convert-history --page 1 --limit 20
 ### Check BTC price
 
 ```bash
-go run . market ticker btc_thb
+bitkub market ticker btc_thb
 ```
 
 Output:
@@ -216,7 +214,7 @@ Output:
 ### Get your balance
 
 ```bash
-go run . -k YOUR_KEY --secret YOUR_SECRET market balances
+bitkub -k YOUR_KEY --secret YOUR_SECRET market balances
 ```
 
 Output:
@@ -228,7 +226,7 @@ Output:
 ### Place a buy order
 
 ```bash
-go run . -k YOUR_KEY --secret YOUR_SECRET market buy btc_thb 0.001 1200000
+bitkub -k YOUR_KEY --secret YOUR_SECRET market buy btc_thb 0.001 1200000
 ```
 
 Output:
@@ -241,7 +239,7 @@ Output:
 Enable debug logging to see detailed request/response information:
 
 ```bash
-go run . --debug market ticker
+bitkub --debug market ticker
 ```
 
 ## Features by Module
@@ -271,7 +269,7 @@ go run . --debug market ticker
 - **Go**: Programming language
 - **Cobra**: CLI framework
 - **Zerolog**: Structured logging
-- **go run . API**: v3 and v4 endpoints
+- **bitkub API**: v3 and v4 endpoints
 
 ## Development
 
