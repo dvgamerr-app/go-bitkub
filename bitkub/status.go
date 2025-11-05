@@ -14,7 +14,7 @@ type StatusResponse struct {
 func GetStatus() ([]StatusResponse, error) {
 	var result []StatusResponse
 
-	if err := FetchNonSecure("GET", "/status", nil, &result); err != nil {
+	if err := FetchNonSecure("GET", "/api/status", nil, &result); err != nil {
 		return nil, fmt.Errorf("get status: %w", err)
 	}
 
@@ -26,7 +26,7 @@ func GetStatus() ([]StatusResponse, error) {
 func GetServerTime() (int64, error) {
 	var result int64
 
-	if err := FetchNonSecure("GET", "/v3/servertime", nil, &result); err != nil {
+	if err := FetchNonSecure("GET", "/api/v3/servertime", nil, &result); err != nil {
 		return 0, fmt.Errorf("get server time: %w", err)
 	}
 

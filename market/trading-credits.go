@@ -9,7 +9,7 @@ import (
 func GetTradingCredits() (float64, error) {
 	var result bitkub.ResponseAPI
 
-	if err := bitkub.FetchSecure("POST", "/v3/user/trading-credits", nil, &result); err != nil {
+	if err := bitkub.FetchSecure("POST", "/api/v3/user/trading-credits", nil, &result); err != nil {
 		return 0, err
 	}
 

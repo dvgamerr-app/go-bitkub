@@ -33,7 +33,7 @@ type DepositHistoryParams struct {
 func GetDepositHistory(params DepositHistoryParams) (*DepositHistoryResponse, error) {
 	var response bitkub.ResponseAPI
 
-	url := "/v3/fiat/deposit-history?"
+	url := "/api/v3/fiat/deposit-history?"
 
 	if params.Page > 0 {
 		url = fmt.Sprintf("%sp=%d&", url, params.Page)

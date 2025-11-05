@@ -23,7 +23,7 @@ type BidsResponse struct {
 func GetBids(symbol string, limit int) ([]BidOrder, error) {
 	var result BidsResponse
 
-	url := fmt.Sprintf("/v3/market/bids?sym=%s", symbol)
+	url := fmt.Sprintf("/api/v3/market/bids?sym=%s", symbol)
 	if limit > 0 {
 		url = fmt.Sprintf("%s&lmt=%d", url, limit)
 	}

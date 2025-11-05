@@ -40,7 +40,7 @@ type CoinHistoryParams struct {
 func GetCoinConvertHistory(params CoinHistoryParams) (*CoinConvertHistoryResponse, error) {
 	var response bitkub.ResponseAPI
 
-	url := "/v3/user/coin-convert-history?"
+	url := "/api/v3/user/coin-convert-history?"
 
 	if params.Page > 0 {
 		url = fmt.Sprintf("%sp=%d&", url, params.Page)

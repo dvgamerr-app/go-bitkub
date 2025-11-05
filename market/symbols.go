@@ -38,7 +38,7 @@ type SymbolsResponse struct {
 func GetSymbols() ([]Symbol, error) {
 	var result SymbolsResponse
 
-	if err := bitkub.FetchNonSecure("GET", "/v3/market/symbols", nil, &result); err != nil {
+	if err := bitkub.FetchNonSecure("GET", "/api/v3/market/symbols", nil, &result); err != nil {
 		return nil, err
 	}
 

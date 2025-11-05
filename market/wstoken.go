@@ -11,7 +11,7 @@ type WSTokenResult struct {
 func GetWSToken() (string, error) {
 	var response bitkub.ResponseAPI
 
-	if err := bitkub.FetchSecure("POST", "/v3/market/wstoken", nil, &response); err != nil {
+	if err := bitkub.FetchSecure("POST", "/api/v3/market/wstoken", nil, &response); err != nil {
 		return "", err
 	}
 

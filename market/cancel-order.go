@@ -12,8 +12,7 @@ type CancelOrderRequest struct {
 
 func CancelOrder(req CancelOrderRequest) error {
 	var response bitkub.ResponseAPI
-
-	if err := bitkub.FetchSecure("POST", "/v3/market/cancel-order", req, &response); err != nil {
+	if err := bitkub.FetchSecure("POST", "/api/v3/market/cancel-order", req, &response); err != nil {
 		return err
 	}
 

@@ -30,7 +30,7 @@ type AsksResponse struct {
 func GetAsks(symbol string, limit int) ([]AskOrder, error) {
 	var result AsksResponse
 
-	url := fmt.Sprintf("/v3/market/asks?sym=%s", strings.ToUpper(symbol))
+	url := fmt.Sprintf("/api/v3/market/asks?sym=%s", strings.ToUpper(symbol))
 	if limit > 0 {
 		url = fmt.Sprintf("%s&lmt=%d", url, limit)
 	}

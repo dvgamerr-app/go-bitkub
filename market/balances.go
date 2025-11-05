@@ -12,7 +12,7 @@ type Balance struct {
 func GetBalances() (map[string]Balance, error) {
 	var result bitkub.ResponseAPI
 
-	if err := bitkub.FetchSecure("POST", "/v3/market/balances", nil, &result); err != nil {
+	if err := bitkub.FetchSecure("POST", "/api/v3/market/balances", nil, &result); err != nil {
 		return nil, err
 	}
 

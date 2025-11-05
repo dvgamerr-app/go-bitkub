@@ -51,7 +51,7 @@ type OrderInfoResponse struct {
 func GetOrderInfo(symbol, id, side string) (*OrderInfo, error) {
 	var response bitkub.ResponseAPI
 
-	url := fmt.Sprintf("/v3/market/order-info?sym=%s&id=%s&sd=%s", symbol, id, side)
+	url := fmt.Sprintf("/api/v3/market/order-info?sym=%s&id=%s&sd=%s", symbol, id, side)
 
 	if err := bitkub.FetchSecure("GET", url, nil, &response); err != nil {
 		return nil, err

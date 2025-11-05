@@ -40,7 +40,7 @@ type WithdrawHistoryParams struct {
 func GetWithdrawHistory(params WithdrawHistoryParams) (*WithdrawHistoryResponse, error) {
 	var response bitkub.ResponseAPI
 
-	url := "/v3/fiat/withdraw-history?"
+	url := "/api/v3/fiat/withdraw-history?"
 
 	if params.Page > 0 {
 		url = fmt.Sprintf("%sp=%d&", url, params.Page)

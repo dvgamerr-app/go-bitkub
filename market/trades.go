@@ -16,7 +16,7 @@ type TradesResponse struct {
 func GetTrades(symbol string, limit int) ([]Trade, error) {
 	var result TradesResponse
 
-	url := fmt.Sprintf("/v3/market/trades?sym=%s", symbol)
+	url := fmt.Sprintf("/api/v3/market/trades?sym=%s", symbol)
 	if limit > 0 {
 		url = fmt.Sprintf("%s&lmt=%d", url, limit)
 	}

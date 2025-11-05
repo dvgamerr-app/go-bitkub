@@ -32,7 +32,7 @@ type AccountsParams struct {
 func GetAccounts(params AccountsParams) (*AccountsResponse, error) {
 	var response bitkub.ResponseAPI
 
-	url := "/v3/fiat/accounts?"
+	url := "/api/v3/fiat/accounts?"
 
 	if params.Page > 0 {
 		url = fmt.Sprintf("%sp=%d&", url, params.Page)

@@ -37,7 +37,7 @@ func GetDeposits(params Deposits) (*DepositsResponse, error) {
 		queryParams.Add("created_end", params.CreatedEnd)
 	}
 
-	path := "/v4/crypto/deposits"
+	path := "/api/v4/crypto/deposits"
 	if len(queryParams) > 0 {
 		path += "?" + queryParams.Encode()
 	}

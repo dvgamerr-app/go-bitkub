@@ -41,7 +41,7 @@ func GetCompensations(params Compensations) (*CompensationsResponse, error) {
 		queryParams.Add("created_end", params.CreatedEnd)
 	}
 
-	path := "/v4/crypto/compensations"
+	path := "/api/v4/crypto/compensations"
 	if len(queryParams) > 0 {
 		path += "?" + queryParams.Encode()
 	}

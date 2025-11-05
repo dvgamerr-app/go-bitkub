@@ -7,7 +7,7 @@ import (
 	"github.com/dvgamerr-app/go-bitkub/utils"
 )
 
-const BASE_URL = "https://api.bitkub.com/api"
+const BASE_URL = "https://api.bitkub.com"
 
 var (
 	apiKey    string

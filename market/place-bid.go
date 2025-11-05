@@ -33,7 +33,7 @@ type PlaceBidResponse struct {
 func PlaceBid(req PlaceBidRequest) (*PlaceBidResult, error) {
 	var response bitkub.ResponseAPI
 
-	if err := bitkub.FetchSecure("POST", "/v3/market/place-bid", req, &response); err != nil {
+	if err := bitkub.FetchSecure("POST", "/api/v3/market/place-bid", req, &response); err != nil {
 		return nil, err
 	}
 

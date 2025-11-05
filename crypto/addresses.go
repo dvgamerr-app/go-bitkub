@@ -34,7 +34,7 @@ func GetAddresses(params Addresses) (*AddressesResponse, error) {
 		queryParams.Add("memo", params.Memo)
 	}
 
-	path := "/v4/crypto/addresses"
+	path := "/api/v4/crypto/addresses"
 	if len(queryParams) > 0 {
 		path += "?" + queryParams.Encode()
 	}
@@ -66,7 +66,7 @@ func CreateAddress(req CreateAddressRequest) ([]Address, error) {
 
 	var result bitkub.ResponseAPIV4
 
-	if err := bitkub.FetchSecureV4("POST", "/v4/crypto/addresses", req, &result); err != nil {
+	if err := bitkub.FetchSecureV4("POST", "/api/v4/crypto/addresses", req, &result); err != nil {
 		return nil, err
 	}
 

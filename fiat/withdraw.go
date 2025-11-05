@@ -32,7 +32,7 @@ type WithdrawResponse struct {
 func Withdraw(req WithdrawRequest) (*WithdrawResult, error) {
 	var response bitkub.ResponseAPI
 
-	if err := bitkub.FetchSecure("POST", "/v3/fiat/withdraw", req, &response); err != nil {
+	if err := bitkub.FetchSecure("POST", "/api/v3/fiat/withdraw", req, &response); err != nil {
 		return nil, err
 	}
 

@@ -12,7 +12,7 @@ type TradingCreditsResponse struct {
 func GetTradingCredits() (float64, error) {
 	var response bitkub.ResponseAPI
 
-	if err := bitkub.FetchSecure("POST", "/v3/user/trading-credits", nil, &response); err != nil {
+	if err := bitkub.FetchSecure("POST", "/api/v3/user/trading-credits", nil, &response); err != nil {
 		return 0, err
 	}
 

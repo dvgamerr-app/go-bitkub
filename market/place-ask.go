@@ -33,7 +33,7 @@ type PlaceAskResponse struct {
 func PlaceAsk(req PlaceAskRequest) (*PlaceAskResult, error) {
 	var response bitkub.ResponseAPI
 
-	if err := bitkub.FetchSecure("POST", "/v3/market/place-ask", req, &response); err != nil {
+	if err := bitkub.FetchSecure("POST", "/api/v3/market/place-ask", req, &response); err != nil {
 		return nil, err
 	}
 

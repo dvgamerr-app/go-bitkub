@@ -67,7 +67,7 @@ type MyOrderHistoryResponse struct {
 func GetMyOpenOrders(symbol string) ([]OpenOrder, error) {
 	var response bitkub.ResponseAPI
 
-	url := fmt.Sprintf("/v3/market/my-open-orders?sym=%s", symbol)
+	url := fmt.Sprintf("/api/v3/market/my-open-orders?sym=%s", symbol)
 
 	if err := bitkub.FetchSecure("GET", url, nil, &response); err != nil {
 		return nil, err
@@ -93,7 +93,7 @@ func GetMyOpenOrders(symbol string) ([]OpenOrder, error) {
 func GetMyOrderHistory(params MyOrderHistoryParams) (*MyOrderHistoryResponse, error) {
 	var response bitkub.ResponseAPI
 
-	url := fmt.Sprintf("/v3/market/my-order-history?sym=%s", params.Symbol)
+	url := fmt.Sprintf("/api/v3/market/my-order-history?sym=%s", params.Symbol)
 
 	if params.Page != "" {
 		url = fmt.Sprintf("%s&p=%s", url, params.Page)

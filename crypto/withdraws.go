@@ -38,7 +38,7 @@ func GetWithdraws(params Withdraws) (*WithdrawsResponse, error) {
 		queryParams.Add("created_end", params.CreatedEnd)
 	}
 
-	path := "/v4/crypto/withdraws"
+	path := "/api/v4/crypto/withdraws"
 	if len(queryParams) > 0 {
 		path += "?" + queryParams.Encode()
 	}
@@ -76,7 +76,7 @@ func CreateWithdraw(req CreateWithdrawRequest) (*CreateWithdrawResponse, error) 
 
 	var result bitkub.ResponseAPIV4
 
-	if err := bitkub.FetchSecureV4("POST", "/v4/crypto/withdraws", req, &result); err != nil {
+	if err := bitkub.FetchSecureV4("POST", "/api/v4/crypto/withdraws", req, &result); err != nil {
 		return nil, err
 	}
 

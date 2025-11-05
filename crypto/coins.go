@@ -19,7 +19,7 @@ func GetCoins(params Coins) (*CoinsResponse, error) {
 		queryParams.Add("network", params.Network)
 	}
 
-	path := "/v4/crypto/coins"
+	path := "/api/v4/crypto/coins"
 	if len(queryParams) > 0 {
 		path += "?" + queryParams.Encode()
 	}

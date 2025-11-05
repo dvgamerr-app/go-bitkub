@@ -27,7 +27,7 @@ type Ticker struct {
 func GetTicker(symbol string) ([]Ticker, error) {
 	var resultMap map[string]any
 
-	url := "/market/ticker"
+	url := "/api/market/ticker"
 	if symbol != "" {
 		url = fmt.Sprintf("%s?sym=%s", url, symbol)
 	}

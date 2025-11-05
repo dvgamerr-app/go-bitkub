@@ -54,7 +54,7 @@ type UserLimitsResponse struct {
 func GetUserLimits() (*UserLimits, error) {
 	var response bitkub.ResponseAPI
 
-	if err := bitkub.FetchSecure("POST", "/v3/user/limits", nil, &response); err != nil {
+	if err := bitkub.FetchSecure("POST", "/api/v3/user/limits", nil, &response); err != nil {
 		return nil, err
 	}
 
