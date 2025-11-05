@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/dvgamerr-app/go-bitkub/market"
 	"github.com/rs/zerolog/log"
@@ -43,12 +42,7 @@ func Balances() (*BitkubBalances, error) {
 				continue
 			}
 
-			lastPrice, err := strconv.ParseFloat(ticker[0].Last, 64)
-			if err != nil {
-				log.Warn().Err(err).Str("coin", ccy).Msg("Failed to parse ticker price")
-				continue
-			}
-			rate = lastPrice
+			rate = ticker[0].Last
 		}
 		data.Total += (coin.Available + coin.Reserved) * rate
 		data.Available += coin.Available * rate

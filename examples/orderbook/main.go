@@ -41,7 +41,7 @@ func main() {
 				fmt.Println("🌐 Global Ticker")
 			}
 
-			if data, ok := msg.Data.(map[string]interface{}); ok {
+			if data, ok := msg.Data.(map[string]any); ok {
 				if event, ok := data["event"].(string); ok {
 					fmt.Printf("   Event: %s\n", event)
 				}

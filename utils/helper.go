@@ -9,7 +9,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func PrettyPrintJSON(data interface{}) error {
+func PrettyPrintJSON(data any) error {
 	jsonData, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		return err

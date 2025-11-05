@@ -140,7 +140,7 @@ Format: `orderbook/<symbol_id>`
 
 ```go
 type Message struct {
-	Data      interface{}  // Raw message data
+	Data      any          // Raw message data
 	Type      string       // Message type (stream name or event)
 	Error     error        // Error if occurred
 	Timestamp time.Time    // Message timestamp

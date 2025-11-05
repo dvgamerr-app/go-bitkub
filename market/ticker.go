@@ -25,7 +25,7 @@ type Ticker struct {
 }
 
 func GetTicker(symbol string) ([]Ticker, error) {
-	var resultMap map[string]interface{}
+	var resultMap map[string]any
 
 	url := "/market/ticker"
 	if symbol != "" {
@@ -40,7 +40,7 @@ func GetTicker(symbol string) ([]Ticker, error) {
 
 	result := make([]Ticker, 0, len(resultMap))
 	for sym, value := range resultMap {
-		tickerData, ok := value.(map[string]interface{})
+		tickerData, ok := value.(map[string]any)
 		if !ok {
 			log.Debug().Str("symbol", sym).Interface("value", value).Msg("Skipping non-map value")
 			continue

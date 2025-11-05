@@ -50,7 +50,7 @@ var marketTickerCmd = &cobra.Command{
 			log.Fatal().Err(err).Msg("Failed to get ticker")
 		}
 		for _, t := range tickers {
-			output(map[string]interface{}{
+			output(map[string]any{
 				"symbol":  t.Symbol,
 				"last":    t.Last,
 				"high24h": t.High24hr,
@@ -465,20 +465,20 @@ var marketHistoryCmd = &cobra.Command{
 			log.Fatal().Err(err).Msg("Failed to get history")
 		}
 
-		log.Info().
-			Str("status", result.Status).
-			Int("bars", len(result.Close)).
-			Msg("History")
+		output(map[string]any{
+			"status": result.Status,
+			"bars":   len(result.Close),
+		})
 
 		for i := 0; i < len(result.Time); i++ {
-			log.Info().
-				Int64("time", result.Time[i]).
-				Float64("open", result.Open[i]).
-				Float64("high", result.High[i]).
-				Float64("low", result.Low[i]).
-				Float64("close", result.Close[i]).
-				Float64("volume", result.Volume[i]).
-				Msg("Bar")
+			output(map[string]any{
+				"time":   result.Time[i],
+				"open":   result.Open[i],
+				"high":   result.High[i],
+				"low":    result.Low[i],
+				"close":  result.Close[i],
+				"volume": result.Volume[i],
+			})
 		}
 	},
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
-type Trade [4]interface{}
+type Trade [4]any
 
 type TradesResponse struct {
 	bitkub.GetError

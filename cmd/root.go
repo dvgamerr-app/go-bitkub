@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"encoding/json"
+	"fmt"
 	"os"
 
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
@@ -18,12 +18,17 @@ var (
 	format    string
 )
 
-func output(data interface{}) {
+func output(data any) {
 	if format == "json" {
-		json.NewEncoder(os.Stdout).Encode(data)
+		jsonStr, err := stdJson.MarshalToString(data)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to marshal JSON")
+			return
+		}
+		fmt.Println(jsonStr)
 	} else {
 		switch v := data.(type) {
-		case map[string]interface{}:
+		case map[string]any:
 			event := log.Info()
 			for key, val := range v {
 				event = event.Interface(key, val)

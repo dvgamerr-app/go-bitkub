@@ -139,7 +139,7 @@ func (s *Stream) readMessages() {
 				return
 			}
 
-			var rawMsg map[string]interface{}
+			var rawMsg map[string]any
 			if err := json.Unmarshal(message, &rawMsg); err != nil {
 				s.messageChannel <- Message{
 					Error:     fmt.Errorf("json unmarshal error: %w", err),
