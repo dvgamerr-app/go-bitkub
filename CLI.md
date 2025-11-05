@@ -56,13 +56,13 @@ API_SECRET=your_api_secret
 ### 2. Command Line Flags
 
 ```bash
-bitkub-cli --key YOUR_KEY --secret YOUR_SECRET [command]
+bitkub --key YOUR_KEY --secret YOUR_SECRET [command]
 ```
 
 ### 3. Short Flags
 
 ```bash
-bitkub-cli -k YOUR_KEY -s YOUR_SECRET [command]
+bitkub -k YOUR_KEY -s YOUR_SECRET [command]
 ```
 
 ## Usage

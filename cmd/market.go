@@ -446,6 +446,43 @@ var marketWSTokenCmd = &cobra.Command{
 	},
 }
 
+var marketHistoryCmd = &cobra.Command{
+	Use:   "history [symbol]",
+	Short: "Get historical data for TradingView chart",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		resolution, _ := cmd.Flags().GetString("resolution")
+		from, _ := cmd.Flags().GetInt64("from")
+		to, _ := cmd.Flags().GetInt64("to")
+
+		result, err := market.GetHistory(market.HistoryRequest{
+			Symbol:     args[0],
+			Resolution: resolution,
+			From:       from,
+			To:         to,
+		})
+		if err != nil {
+			log.Fatal().Err(err).Msg("Failed to get history")
+		}
+
+		log.Info().
+			Str("status", result.Status).
+			Int("bars", len(result.Close)).
+			Msg("History")
+
+		for i := 0; i < len(result.Time); i++ {
+			log.Info().
+				Int64("time", result.Time[i]).
+				Float64("open", result.Open[i]).
+				Float64("high", result.High[i]).
+				Float64("low", result.Low[i]).
+				Float64("close", result.Close[i]).
+				Float64("volume", result.Volume[i]).
+				Msg("Bar")
+		}
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(marketCmd)
 
@@ -466,6 +503,7 @@ func init() {
 	marketCmd.AddCommand(marketLimitsCmd)
 	marketCmd.AddCommand(marketTradingCreditsCmd)
 	marketCmd.AddCommand(marketWSTokenCmd)
+	marketCmd.AddCommand(marketHistoryCmd)
 
 	marketTradesCmd.Flags().IntP("limit", "l", 10, "Limit number of results")
 	marketDepthCmd.Flags().IntP("limit", "l", 10, "Limit number of results")
@@ -475,4 +513,7 @@ func init() {
 	marketOrderHistoryCmd.Flags().IntP("limit", "l", 20, "Limit per page")
 	marketOrderHistoryCmd.Flags().Int64("start", 0, "Start timestamp")
 	marketOrderHistoryCmd.Flags().Int64("end", 0, "End timestamp")
+	marketHistoryCmd.Flags().StringP("resolution", "r", "1D", "Chart resolution (1, 5, 15, 60, 240, 1D)")
+	marketHistoryCmd.Flags().Int64("from", 0, "From timestamp (default: 24h ago)")
+	marketHistoryCmd.Flags().Int64("to", 0, "To timestamp (default: now)")
 }

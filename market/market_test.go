@@ -178,3 +178,64 @@ func TestGetWSToken(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 }
+
+func TestGetHistory(t *testing.T) {
+	req := HistoryRequest{
+		Symbol:     "BTC_THB",
+		Resolution: "1D",
+		From:       1650819600,
+		To:         1650902400,
+	}
+	result, err := GetHistory(req)
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, "ok", result.Status)
+	assert.Greater(t, len(result.Close), 0)
+	assert.Greater(t, len(result.Open), 0)
+	assert.Greater(t, len(result.High), 0)
+	assert.Greater(t, len(result.Low), 0)
+	assert.Greater(t, len(result.Volume), 0)
+	assert.Greater(t, len(result.Time), 0)
+}
+
+func TestGetHistoryDifferentResolutions(t *testing.T) {
+	resolutions := []string{"1", "5", "15", "60", "240", "1D"}
+	for _, res := range resolutions {
+		req := HistoryRequest{
+			Symbol:     "BTC_THB",
+			Resolution: res,
+			From:       1730736000,
+			To:         1730822400,
+		}
+		result, err := GetHistory(req)
+		assert.Nil(t, err, "Resolution %s should work", res)
+		assert.NotNil(t, result)
+		assert.Equal(t, "ok", result.Status)
+	}
+}
+
+func TestGetHistoryValidation(t *testing.T) {
+	_, err := GetHistory(HistoryRequest{})
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), "symbol is required")
+
+	_, err = GetHistory(HistoryRequest{Symbol: "BTC_THB"})
+	assert.NotNil(t, err)
+	assert.Contains(t, err.Error(), "resolution is required")
+
+	result, err := GetHistory(HistoryRequest{Symbol: "BTC_THB", Resolution: "1D"})
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, "ok", result.Status)
+}
+
+func TestGetHistoryDefault24Hours(t *testing.T) {
+	result, err := GetHistory(HistoryRequest{
+		Symbol:     "ETH_THB",
+		Resolution: "1D",
+	})
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, "ok", result.Status)
+	assert.Greater(t, len(result.Close), 0)
+}
