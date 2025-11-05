@@ -30,3 +30,8 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Update Go module proxy
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          curl -s "https://proxy.golang.org/github.com/dvgamerr-app/go-bitkub/@v/$VERSION.info" || true
