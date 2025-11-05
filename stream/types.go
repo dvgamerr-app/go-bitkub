@@ -62,9 +62,9 @@ type TradeOrder struct {
 }
 
 type OrderBookData struct {
-	Data      any `json:"data"`
-	Event     string      `json:"event"`
-	PairingID int         `json:"pairing_id,omitempty"`
+	Data      any    `json:"data"`
+	Event     string `json:"event"`
+	PairingID int    `json:"pairing_id,omitempty"`
 }
 
 type StreamConfig struct {

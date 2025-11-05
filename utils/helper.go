@@ -52,3 +52,11 @@ func CheckEnvVars(envs ...string) error {
 	}
 	return nil
 }
+
+func NormalizeSymbol(symbol string) string {
+	parts := strings.Split(strings.ToLower(symbol), "_")
+	if len(parts) == 2 {
+		return strings.ToUpper(parts[1]) + "_" + strings.ToUpper(parts[0])
+	}
+	return strings.ToUpper(symbol)
+}

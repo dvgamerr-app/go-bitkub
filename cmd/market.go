@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/dvgamerr-app/go-bitkub/market"
+	"github.com/dvgamerr-app/go-bitkub/utils"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
@@ -22,16 +23,18 @@ var marketSymbolsCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get symbols")
 		}
+		activeSymbols := []market.Symbol{}
 		for _, s := range symbols {
-			if s.Status != "active" {
-				continue
+			if s.Status == "active" {
+				activeSymbols = append(activeSymbols, s)
 			}
-
-			log.Info().
-				Str("symbol", s.Symbol).
-				Str("name", s.Name).
-				Str("status", s.Status).
-				Msg("Symbol")
+		}
+		for i, s := range activeSymbols {
+			output(map[string]any{
+				"symbol": s.Symbol,
+				"name":   s.Name,
+				"status": s.Status,
+			}, i == len(activeSymbols)-1)
 		}
 	},
 }
@@ -49,7 +52,7 @@ var marketTickerCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get ticker")
 		}
-		for _, t := range tickers {
+		for i, t := range tickers {
 			output(map[string]any{
 				"symbol":  t.Symbol,
 				"last":    t.Last,
@@ -57,7 +60,7 @@ var marketTickerCmd = &cobra.Command{
 				"low24h":  t.Low24hr,
 				"volume":  t.BaseVolume,
 				"change":  t.PercentChange,
-			})
+			}, i == len(tickers)-1)
 		}
 	},
 }
@@ -72,10 +75,10 @@ var marketTradesCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get trades")
 		}
-		for _, t := range trades {
-			log.Info().
-				Interface("trade", t).
-				Msg("Trade")
+		for i, t := range trades {
+			output(map[string]any{
+				"trade": t,
+			}, i == len(trades)-1)
 		}
 	},
 }
@@ -90,22 +93,47 @@ var marketDepthCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get depth")
 		}
-		log.Info().Int("bids", len(depth.Bids)).Int("asks", len(depth.Asks)).Msg("Order Book")
 
-		log.Info().Msg("Top 5 Bids:")
+		totalItems := 1 + len(depth.Bids) + len(depth.Asks)
+		if len(depth.Bids) > 5 {
+			totalItems = 1 + 5 + len(depth.Asks)
+		}
+		if len(depth.Asks) > 5 {
+			totalItems = 1 + len(depth.Bids) + 5
+		}
+		if len(depth.Bids) > 5 && len(depth.Asks) > 5 {
+			totalItems = 1 + 5 + 5
+		}
+		itemCount := 0
+
+		output(map[string]any{
+			"bids": len(depth.Bids),
+			"asks": len(depth.Asks),
+		}, false)
+		itemCount++
+
 		for i, bid := range depth.Bids {
 			if i >= 5 {
 				break
 			}
-			log.Info().Float64("price", bid[0]).Float64("volume", bid[1]).Msg("  Bid")
+			itemCount++
+			output(map[string]any{
+				"type":   "bid",
+				"price":  bid[0],
+				"volume": bid[1],
+			}, itemCount == totalItems)
 		}
 
-		log.Info().Msg("Top 5 Asks:")
 		for i, ask := range depth.Asks {
 			if i >= 5 {
 				break
 			}
-			log.Info().Float64("price", ask[0]).Float64("volume", ask[1]).Msg("  Ask")
+			itemCount++
+			output(map[string]any{
+				"type":   "ask",
+				"price":  ask[0],
+				"volume": ask[1],
+			}, itemCount == totalItems)
 		}
 	},
 }
@@ -120,14 +148,14 @@ var marketAsksCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get asks")
 		}
-		for _, ask := range asks {
-			log.Info().
-				Str("order_id", ask.OrderID).
-				Str("price", ask.Price).
-				Str("size", ask.Size).
-				Str("volume", ask.Volume).
-				Int64("timestamp", ask.Timestamp).
-				Msg("Ask")
+		for i, ask := range asks {
+			output(map[string]any{
+				"order_id":  ask.OrderID,
+				"price":     ask.Price,
+				"size":      ask.Size,
+				"volume":    ask.Volume,
+				"timestamp": ask.Timestamp,
+			}, i == len(asks)-1)
 		}
 	},
 }
@@ -142,14 +170,14 @@ var marketBidsCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get bids")
 		}
-		for _, bid := range bids {
-			log.Info().
-				Str("order_id", bid.OrderID).
-				Str("price", bid.Price).
-				Str("size", bid.Size).
-				Str("volume", bid.Volume).
-				Int64("timestamp", bid.Timestamp).
-				Msg("Bid")
+		for i, bid := range bids {
+			output(map[string]any{
+				"order_id":  bid.OrderID,
+				"price":     bid.Price,
+				"size":      bid.Size,
+				"volume":    bid.Volume,
+				"timestamp": bid.Timestamp,
+			}, i == len(bids)-1)
 		}
 	},
 }
@@ -162,14 +190,24 @@ var marketBalancesCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get balances")
 		}
+		filteredBalances := []struct {
+			coin    string
+			balance market.Balance
+		}{}
 		for coin, balance := range balances {
 			if balance.Available > 0 || balance.Reserved > 0 {
-				log.Info().
-					Str("coin", coin).
-					Float64("available", balance.Available).
-					Float64("reserved", balance.Reserved).
-					Msg("Balance")
+				filteredBalances = append(filteredBalances, struct {
+					coin    string
+					balance market.Balance
+				}{coin, balance})
 			}
+		}
+		for i, item := range filteredBalances {
+			output(map[string]any{
+				"coin":      item.coin,
+				"available": item.balance.Available,
+				"reserved":  item.balance.Reserved,
+			}, i == len(filteredBalances)-1)
 		}
 	},
 }
@@ -182,10 +220,23 @@ var marketWalletCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get wallet")
 		}
+		filteredWallet := []struct {
+			coin    string
+			balance float64
+		}{}
 		for coin, balance := range *wallet {
 			if balance > 0 {
-				log.Info().Str("coin", coin).Float64("balance", balance).Msg("Wallet")
+				filteredWallet = append(filteredWallet, struct {
+					coin    string
+					balance float64
+				}{coin, balance})
 			}
+		}
+		for i, item := range filteredWallet {
+			output(map[string]any{
+				"coin":    item.coin,
+				"balance": item.balance,
+			}, i == len(filteredWallet)-1)
 		}
 	},
 }
@@ -203,15 +254,15 @@ var marketOpenOrdersCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get open orders")
 		}
-		for _, order := range orders {
-			log.Info().
-				Str("id", order.ID).
-				Str("side", order.Side).
-				Str("type", order.Type).
-				Str("rate", order.Rate).
-				Str("amount", order.Amount).
-				Int64("timestamp", order.Timestamp).
-				Msg("Open Order")
+		for i, order := range orders {
+			output(map[string]any{
+				"id":        order.ID,
+				"side":      order.Side,
+				"type":      order.Type,
+				"rate":      order.Rate,
+				"amount":    order.Amount,
+				"timestamp": order.Timestamp,
+			}, i == len(orders)-1)
 		}
 	},
 }
@@ -252,23 +303,23 @@ var marketOrderHistoryCmd = &cobra.Command{
 			log.Fatal().Err(err).Msg("Failed to get order history")
 		}
 
-		log.Info().
-			Int("page", history.Pagination.Page).
-			Int("last", history.Pagination.Last).
-			Msg("Pagination")
+		output(map[string]any{
+			"page": history.Pagination.Page,
+			"last": history.Pagination.Last,
+		}, len(history.Result) == 0)
 
-		for _, order := range history.Result {
-			log.Info().
-				Str("txn_id", order.TxnID).
-				Str("order_id", order.OrderID).
-				Str("side", order.Side).
-				Str("type", order.Type).
-				Str("rate", order.Rate).
-				Str("amount", order.Amount).
-				Str("fee", order.Fee).
-				Str("credit", order.Credit).
-				Int64("timestamp", order.Timestamp).
-				Msg("Order")
+		for i, order := range history.Result {
+			output(map[string]any{
+				"txn_id":    order.TxnID,
+				"order_id":  order.OrderID,
+				"side":      order.Side,
+				"type":      order.Type,
+				"rate":      order.Rate,
+				"amount":    order.Amount,
+				"fee":       order.Fee,
+				"credit":    order.Credit,
+				"timestamp": order.Timestamp,
+			}, i == len(history.Result)-1)
 		}
 	},
 }
@@ -282,17 +333,17 @@ var marketOrderInfoCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get order info")
 		}
-		log.Info().
-			Str("id", info.ID).
-			Float64("rate", info.Rate).
-			Float64("fee", info.Fee).
-			Float64("credit", info.Credit).
-			Float64("amount", info.Amount).
-			Float64("filled", info.Filled).
-			Str("status", info.Status).
-			Str("parent", info.Parent).
-			Str("client_id", info.ClientID).
-			Msg("Order Info")
+		output(map[string]any{
+			"id":        info.ID,
+			"rate":      info.Rate,
+			"fee":       info.Fee,
+			"credit":    info.Credit,
+			"amount":    info.Amount,
+			"filled":    info.Filled,
+			"status":    info.Status,
+			"parent":    info.Parent,
+			"client_id": info.ClientID,
+		})
 	},
 }
 
@@ -325,15 +376,15 @@ var marketPlaceBidCmd = &cobra.Command{
 			log.Fatal().Err(err).Msg("Failed to place bid")
 		}
 
-		log.Info().
-			Str("id", result.ID).
-			Str("type", result.Type).
-			Float64("amount", result.Amount).
-			Float64("rate", result.Rate).
-			Float64("fee", result.Fee).
-			Float64("credit", result.Credit).
-			Str("timestamp", result.Timestamp).
-			Msg("Bid Placed")
+		output(map[string]any{
+			"id":        result.ID,
+			"type":      result.Type,
+			"amount":    result.Amount,
+			"rate":      result.Rate,
+			"fee":       result.Fee,
+			"credit":    result.Credit,
+			"timestamp": result.Timestamp,
+		})
 	},
 }
 
@@ -366,15 +417,15 @@ var marketPlaceAskCmd = &cobra.Command{
 			log.Fatal().Err(err).Msg("Failed to place ask")
 		}
 
-		log.Info().
-			Str("id", result.ID).
-			Str("type", result.Type).
-			Float64("amount", result.Amount).
-			Float64("rate", result.Rate).
-			Float64("fee", result.Fee).
-			Float64("credit", result.Credit).
-			Str("timestamp", result.Timestamp).
-			Msg("Ask Placed")
+		output(map[string]any{
+			"id":        result.ID,
+			"type":      result.Type,
+			"amount":    result.Amount,
+			"rate":      result.Rate,
+			"fee":       result.Fee,
+			"credit":    result.Credit,
+			"timestamp": result.Timestamp,
+		})
 	},
 }
 
@@ -393,11 +444,12 @@ var marketCancelOrderCmd = &cobra.Command{
 			log.Fatal().Err(err).Msg("Failed to cancel order")
 		}
 
-		log.Info().
-			Str("symbol", args[0]).
-			Str("order_id", args[1]).
-			Str("side", args[2]).
-			Msg("Order Cancelled")
+		output(map[string]any{
+			"symbol":   args[0],
+			"order_id": args[1],
+			"side":     args[2],
+			"status":   "cancelled",
+		})
 	},
 }
 
@@ -410,15 +462,16 @@ var marketLimitsCmd = &cobra.Command{
 			log.Fatal().Err(err).Msg("Failed to get limits")
 		}
 
-		log.Info().
-			Float64("deposit", limits.Limits.Crypto.Deposit).
-			Float64("withdraw", limits.Limits.Crypto.Withdraw).
-			Msg("Crypto Limits")
-
-		log.Info().
-			Float64("deposit", limits.Limits.Fiat.Deposit).
-			Float64("withdraw", limits.Limits.Fiat.Withdraw).
-			Msg("Fiat Limits")
+		output(map[string]any{
+			"crypto": map[string]any{
+				"deposit":  limits.Limits.Crypto.Deposit,
+				"withdraw": limits.Limits.Crypto.Withdraw,
+			},
+			"fiat": map[string]any{
+				"deposit":  limits.Limits.Fiat.Deposit,
+				"withdraw": limits.Limits.Fiat.Withdraw,
+			},
+		})
 	},
 }
 
@@ -430,7 +483,9 @@ var marketTradingCreditsCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get trading credits")
 		}
-		log.Info().Float64("credits", credits).Msg("Trading Credits")
+		output(map[string]any{
+			"credits": credits,
+		})
 	},
 }
 
@@ -442,7 +497,9 @@ var marketWSTokenCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get WS token")
 		}
-		log.Info().Str("token", token).Msg("WebSocket Token")
+		output(map[string]any{
+			"token": token,
+		})
 	},
 }
 
@@ -455,8 +512,10 @@ var marketHistoryCmd = &cobra.Command{
 		from, _ := cmd.Flags().GetInt64("from")
 		to, _ := cmd.Flags().GetInt64("to")
 
+		symbol := utils.NormalizeSymbol(args[0])
+
 		result, err := market.GetHistory(market.HistoryRequest{
-			Symbol:     args[0],
+			Symbol:     symbol,
 			Resolution: resolution,
 			From:       from,
 			To:         to,
@@ -465,10 +524,10 @@ var marketHistoryCmd = &cobra.Command{
 			log.Fatal().Err(err).Msg("Failed to get history")
 		}
 
-		output(map[string]any{
-			"status": result.Status,
-			"bars":   len(result.Close),
-		})
+		log.Info().
+			Str("status", result.Status).
+			Int("bars", len(result.Close)).
+			Msg("Symbol")
 
 		for i := 0; i < len(result.Time); i++ {
 			output(map[string]any{
@@ -478,7 +537,7 @@ var marketHistoryCmd = &cobra.Command{
 				"low":    result.Low[i],
 				"close":  result.Close[i],
 				"volume": result.Volume[i],
-			})
+			}, i == len(result.Time)-1)
 		}
 	},
 }

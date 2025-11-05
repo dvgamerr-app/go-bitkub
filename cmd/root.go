@@ -12,20 +12,35 @@ import (
 )
 
 var (
-	apiKey    string
-	secretKey string
-	debug     bool
-	format    string
+	apiKey      string
+	secretKey   string
+	debug       bool
+	format      string
+	isFirstLine bool = true
 )
 
-func output(data any) {
+func output(data any, isLastLine ...bool) {
 	if format == "json" {
+		if isFirstLine {
+			fmt.Print("[")
+			isFirstLine = false
+		} else {
+			fmt.Print(",")
+		}
+
 		jsonStr, err := stdJson.MarshalToString(data)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to marshal JSON")
 			return
 		}
-		fmt.Println(jsonStr)
+
+		if len(isLastLine) > 0 && isLastLine[0] {
+			fmt.Print(jsonStr)
+			fmt.Print("]")
+			isFirstLine = true
+		} else {
+			fmt.Print(jsonStr)
+		}
 	} else {
 		switch v := data.(type) {
 		case map[string]any:
@@ -45,12 +60,15 @@ var rootCmd = &cobra.Command{
 	Short: "Bitkub API CLI Tool",
 	Long:  "A command-line interface for interacting with Bitkub API",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-
-		if debug {
-			zerolog.SetGlobalLevel(zerolog.DebugLevel)
+		if format == "json" {
+			zerolog.SetGlobalLevel(zerolog.Disabled)
 		} else {
-			zerolog.SetGlobalLevel(zerolog.InfoLevel)
+			log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+			if debug {
+				zerolog.SetGlobalLevel(zerolog.DebugLevel)
+			} else {
+				zerolog.SetGlobalLevel(zerolog.InfoLevel)
+			}
 		}
 
 		if err := bitkub.Initlizer(apiKey, secretKey); err != nil {
