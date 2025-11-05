@@ -63,7 +63,7 @@ bitkub --key YOUR_KEY --secret YOUR_SECRET [command]
 ### 3. Short Flags
 
 ```bash
-bitkub -k YOUR_KEY -s YOUR_SECRET [command]
+bitkub -k YOUR_KEY --secret YOUR_SECRET [command]
 ```
 
 ## Usage
@@ -91,18 +91,18 @@ bitkub market symbols
 
 # Get ticker information
 bitkub market ticker               # All symbols
-bitkub market ticker BTC_THB       # Specific symbol
+bitkub market ticker THB_BTC       # Specific symbol
 
 # Get market depth
-bitkub market depth BTC_THB --limit 10
+bitkub market depth THB_BTC --limit 10
 
 # Get recent trades
-bitkub market trades BTC_THB --limit 20
+bitkub market trades THB_BTC --limit 20
 
 # Get historical data (TradingView)
-bitkub market history BTC_THB                                    # Last 24h with 1D resolution
-bitkub market history BTC_THB --resolution 1                     # 1 minute candles
-bitkub market history BTC_THB --resolution 60 --from 1234567890  # Custom timeframe
+bitkub market history THB_BTC                                    # Last 24h with 1D resolution
+bitkub market history THB_BTC --resolution 1                     # 1 minute candles
+bitkub market history THB_BTC --resolution 60 --from 1234567890  # Custom timeframe
 
 # Get account balances
 bitkub market balances
@@ -112,21 +112,21 @@ bitkub market wallet
 
 # Get open orders
 bitkub market open-orders
-bitkub market open-orders BTC_THB
+bitkub market open-orders THB_BTC
 
 # Get order history
 bitkub market order-history --page 1 --limit 20
-bitkub market order-history BTC_THB
+bitkub market order-history THB_BTC
 
 # Get order information
-bitkub market order-info BTC_THB ORDER_ID buy
+bitkub market order-info THB_BTC ORDER_ID buy
 
 # Place orders
-bitkub market place-bid BTC_THB 0.001 1000000
-bitkub market place-ask BTC_THB 0.001 1200000
+bitkub market place-bid THB_BTC 0.001 1000000
+bitkub market place-ask THB_BTC 0.001 1200000
 
 # Cancel order
-bitkub market cancel BTC_THB ORDER_ID buy
+bitkub market cancel THB_BTC ORDER_ID buy
 
 # Get user limits
 bitkub market limits
@@ -144,7 +144,9 @@ bitkub market wstoken
 # Get coin information
 bitkub crypto coins
 bitkub crypto coins --symbol BTC
+bitkub crypto coins -s BTC
 bitkub crypto coins --symbol BTC --network BTC
+bitkub crypto coins -s BTC -n BTC
 
 # Get deposit addresses
 bitkub crypto addresses --page 1 --limit 20
@@ -155,16 +157,19 @@ bitkub crypto create-address BTC BTC
 # Get deposit history
 bitkub crypto deposits --page 1 --limit 20
 bitkub crypto deposits --symbol BTC
+bitkub crypto deposits -s BTC
 
 # Get withdraw history
 bitkub crypto withdraws --page 1 --limit 20
 bitkub crypto withdraws --symbol BTC
+bitkub crypto withdraws -s BTC
 
 # Create withdrawal
 bitkub crypto withdraw BTC 0.001 ADDRESS NETWORK --memo MEMO
 
 # Get compensation history
 bitkub crypto compensations --page 1 --limit 20
+bitkub crypto compensations -s BTC
 ```
 
 ### Fiat Commands
@@ -201,18 +206,18 @@ bitkub user coin-convert-history --page 1 --limit 20
 ### Check BTC price
 
 ```bash
-bitkub market ticker BTC_THB
+bitkub market ticker THB_BTC
 ```
 
 Output:
 ```
-12:00AM INF Ticker change=2.5 high24h=1250000 last=1200000 low24h=1180000 symbol=BTC_THB volume=150.5
+12:00AM INF Ticker change=2.5 high24h=1250000 last=1200000 low24h=1180000 symbol=THB_BTC volume=150.5
 ```
 
 ### Get your balance
 
 ```bash
-bitkub -k YOUR_KEY -s YOUR_SECRET market balances
+bitkub -k YOUR_KEY --secret YOUR_SECRET market balances
 ```
 
 Output:
@@ -224,7 +229,7 @@ Output:
 ### Place a buy order
 
 ```bash
-bitkub -k YOUR_KEY -s YOUR_SECRET market place-bid BTC_THB 0.001 1200000
+bitkub -k YOUR_KEY --secret YOUR_SECRET market place-bid THB_BTC 0.001 1200000
 ```
 
 Output:

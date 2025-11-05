@@ -93,7 +93,7 @@ func init() {
 	}
 
 	rootCmd.PersistentFlags().StringVarP(&apiKey, "key", "k", os.Getenv("API_KEY"), "API Key")
-	rootCmd.PersistentFlags().StringVarP(&secretKey, "secret", "s", os.Getenv("API_SECRET"), "API Secret")
+	rootCmd.PersistentFlags().StringVar(&secretKey, "secret", os.Getenv("API_SECRET"), "API Secret")
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug mode")
 	rootCmd.PersistentFlags().StringVarP(&format, "format", "f", "text", "Output format (text, json, jsonl)")
 }
