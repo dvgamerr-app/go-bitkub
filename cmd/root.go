@@ -92,8 +92,8 @@ func init() {
 		log.Debug().Err(err).Msg("No .env file loaded")
 	}
 
-	rootCmd.PersistentFlags().StringVarP(&apiKey, "key", "k", os.Getenv("API_KEY"), "API Key")
-	rootCmd.PersistentFlags().StringVar(&secretKey, "secret", os.Getenv("API_SECRET"), "API Secret")
+	rootCmd.PersistentFlags().StringVarP(&apiKey, "key", "k", os.Getenv("BTK_APIKEY"), "API Key")
+	rootCmd.PersistentFlags().StringVar(&secretKey, "secret", os.Getenv("BTK_SECRET"), "API Secret")
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug mode")
 	rootCmd.PersistentFlags().StringVarP(&format, "format", "f", "text", "Output format (text, json, jsonl)")
 }

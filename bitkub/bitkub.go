@@ -48,12 +48,12 @@ func Initlizer(key ...string) error {
 	}
 
 	if apiKey == "" || secretKey == "" {
-		if err := utils.CheckEnvVars("BTK_APIKEY", "BTK_SECRETKEY"); err != nil {
+		if err := utils.CheckEnvVars("BTK_APIKEY", "BTK_SECRET"); err != nil {
 			return err
 		}
 
 		apiKey = os.Getenv("BTK_APIKEY")
-		secretKey = os.Getenv("BTK_SECRETKEY")
+		secretKey = os.Getenv("BTK_SECRET")
 	}
 	return nil
 }

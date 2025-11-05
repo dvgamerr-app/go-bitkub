@@ -111,7 +111,7 @@ import (
 func main() {
     // Initialize with API credentials
     bitkub.Initlizer("YOUR_API_KEY", "YOUR_SECRET_KEY")
-    // Or use environment variables BTK_APIKEY and BTK_SECRETKEY
+    // Or use environment variables BTK_APIKEY and BTK_SECRET
     bitkub.Initlizer()
     
     // Get wallet balance
@@ -349,7 +349,7 @@ compensations, err := crypto.GetCompensations(crypto.Compensations{
 2. **Use environment variables** for credentials:
    ```bash
    export BTK_APIKEY="your_api_key"
-   export BTK_SECRETKEY="your_secret_key"
+   export BTK_SECRET="your_secret_key"
    ```
 3. **Use IP whitelist** in Bitkub API settings
 4. **Implement rate limiting** in your application
@@ -372,7 +372,7 @@ See [official documentation](https://github.com/bitkub/bitkub-official-api-docs/
 ```bash
 # Set your credentials
 export BTK_APIKEY="your_api_key"
-export BTK_SECRETKEY="your_secret_key"
+export BTK_SECRET="your_secret_key"
 
 # Run tests
 go test ./... -v

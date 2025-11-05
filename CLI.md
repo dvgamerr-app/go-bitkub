@@ -50,8 +50,8 @@ Set your API credentials using one of these methods:
 Create a `.env` file:
 
 ```env
-API_KEY=your_api_key
-API_SECRET=your_api_secret
+BTK_APIKEY=your_api_key
+BTK_SECRET=your_BTK_SECRET
 ```
 
 ### 2. Command Line Flags

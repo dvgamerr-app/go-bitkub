@@ -61,20 +61,20 @@ bitkub market depth BTC_THB --limit 5
 
 Create `.env` file:
 ```env
-API_KEY=your_api_key_here
-API_SECRET=your_api_secret_here
+BTK_APIKEY=your_api_key_here
+BTK_SECRET=your_BTK_SECRET_here
 ```
 
 ### Method 2: Command Line Flags
 
 ```bash
-bitkub -k YOUR_KEY -s YOUR_SECRET market balances
+bitkub --key YOUR_KEY --secret YOUR_SECRET market balances
 ```
 
 ### Method 3: Short Flags
 
 ```bash
-bitkub -k YOUR_KEY -s YOUR_SECRET market balances
+bitkub --key YOUR_KEY --secret YOUR_SECRET market balances
 ```
 
 ## Common Commands
@@ -88,29 +88,29 @@ bitkub market depth BTC_THB --limit 10   # Order book
 bitkub market trades BTC_THB --limit 20  # Recent trades
 
 # Account operations (requires API keys)
-bitkub -k KEY -s SECRET market balances          # Your balances
-bitkub -k KEY -s SECRET market wallet            # Wallet info
-bitkub -k KEY -s SECRET market open-orders       # Open orders
-bitkub -k KEY -s SECRET market order-history     # Order history
+bitkub --key YOUR_KEY --secret YOUR_SECRET market balances          # Your balances
+bitkub --key YOUR_KEY --secret YOUR_SECRET market wallet            # Wallet info
+bitkub --key YOUR_KEY --secret YOUR_SECRET market open-orders       # Open orders
+bitkub --key YOUR_KEY --secret YOUR_SECRET market order-history     # Order history
 
 # Trading (requires API keys)
-bitkub -k KEY -s SECRET market buy BTC_THB 0.001 3500000   # Buy
-bitkub -k KEY -s SECRET market sell BTC_THB 0.001 3600000   # Sell
-bitkub -k KEY -s SECRET market cancel BTC_THB ORDER_ID buy       # Cancel
+bitkub --key YOUR_KEY --secret YOUR_SECRET market buy BTC_THB 0.001 3500000   # Buy
+bitkub --key YOUR_KEY --secret YOUR_SECRET market sell BTC_THB 0.001 3600000   # Sell
+bitkub --key YOUR_KEY --secret YOUR_SECRET market cancel BTC_THB ORDER_ID buy       # Cancel
 
 # Crypto operations (requires API keys)
-bitkub -k KEY -s SECRET crypto addresses             # Deposit addresses
-bitkub -k KEY -s SECRET crypto deposits              # Deposit history
-bitkub -k KEY -s SECRET crypto withdraws             # Withdraw history
+bitkub --key YOUR_KEY --secret YOUR_SECRET crypto addresses             # Deposit addresses
+bitkub --key YOUR_KEY --secret YOUR_SECRET crypto deposits              # Deposit history
+bitkub --key YOUR_KEY --secret YOUR_SECRET crypto withdraws             # Withdraw history
 
 # Fiat operations (requires API keys)
-bitkub -k KEY -s SECRET fiat accounts                # Bank accounts
-bitkub -k KEY -s SECRET fiat deposit-history         # Deposits
-bitkub -k KEY -s SECRET fiat withdraw-history        # Withdraws
+bitkub --key YOUR_KEY --secret YOUR_SECRET fiat accounts                # Bank accounts
+bitkub --key YOUR_KEY --secret YOUR_SECRET fiat deposit-history         # Deposits
+bitkub --key YOUR_KEY --secret YOUR_SECRET fiat withdraw-history        # Withdraws
 
 # User information (requires API keys)
-bitkub -k KEY -s SECRET user limits                  # Trading limits
-bitkub -k KEY -s SECRET user credits                 # Trading credits
+bitkub --key YOUR_KEY --secret YOUR_SECRET user limits                  # Trading limits
+bitkub --key YOUR_KEY --secret YOUR_SECRET user credits                 # Trading credits
 ```
 
 ## Debug Mode
