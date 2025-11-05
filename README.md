@@ -212,14 +212,14 @@ cancelReq := market.CancelOrderRequest{
 err = market.CancelOrder(cancelReq)
 
 // Get open orders
-orders, err := market.GetMyOpenOrders("btc_thb")
+orders, err := market.GetOpenOrders("btc_thb")
 
 // Get order history (with keyset pagination)
-historyParams := market.MyOrderHistoryParams{
+historyParams := market.OrderHistoryParams{
     Symbol: "BTC_THB",
     Limit:  "10",
 }
-orderHistory, err := market.GetMyOrderHistory(historyParams)
+orderHistory, err := market.GetOrderHistory(historyParams)
 
 // Get order info
 orderInfo, err := market.GetOrderInfo("btc_thb", "12345", "buy")

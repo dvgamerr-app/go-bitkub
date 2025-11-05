@@ -46,7 +46,7 @@ var marketTickerCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		symbol := ""
 		if len(args) > 0 {
-			symbol = args[0]
+			symbol = utils.NormalizeSymbol(args[0])
 		}
 		tickers, err := market.GetTicker(symbol)
 		if err != nil {
@@ -71,13 +71,17 @@ var marketTradesCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		limit, _ := cmd.Flags().GetInt("limit")
-		trades, err := market.GetTrades(args[0], limit)
+		symbol := utils.UppercaseSymbol(args[0])
+		trades, err := market.GetTrades(symbol, limit)
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get trades")
 		}
 		for i, t := range trades {
 			output(map[string]any{
-				"trade": t,
+				"timestamp": t[0],
+				"rate":      t[1],
+				"amount":    t[2],
+				"side":      t[3],
 			}, i == len(trades)-1)
 		}
 	},
@@ -89,7 +93,8 @@ var marketDepthCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		limit, _ := cmd.Flags().GetInt("limit")
-		depth, err := market.GetDepth(args[0], limit)
+		symbol := utils.NormalizeSymbol(args[0])
+		depth, err := market.GetDepth(symbol, limit)
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get depth")
 		}
@@ -144,7 +149,8 @@ var marketAsksCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		limit, _ := cmd.Flags().GetInt("limit")
-		asks, err := market.GetAsks(args[0], limit)
+		symbol := utils.NormalizeSymbol(args[0])
+		asks, err := market.GetAsks(symbol, limit)
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get asks")
 		}
@@ -166,7 +172,8 @@ var marketBidsCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		limit, _ := cmd.Flags().GetInt("limit")
-		bids, err := market.GetBids(args[0], limit)
+		symbol := utils.NormalizeSymbol(args[0])
+		bids, err := market.GetBids(symbol, limit)
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get bids")
 		}
@@ -244,16 +251,18 @@ var marketWalletCmd = &cobra.Command{
 var marketOpenOrdersCmd = &cobra.Command{
 	Use:   "open-orders [symbol]",
 	Short: "Get open orders",
-	Args:  cobra.MaximumNArgs(1),
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		symbol := ""
-		if len(args) > 0 {
-			symbol = args[0]
-		}
-		orders, err := market.GetMyOpenOrders(symbol)
+		symbol := utils.UppercaseSymbol(args[0])
+		orders, err := market.GetOpenOrders(symbol)
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get open orders")
 		}
+
+		if len(orders) == 0 {
+			log.Info().Msg("Empty open order")
+		}
+
 		for i, order := range orders {
 			output(map[string]any{
 				"id":        order.ID,
@@ -268,16 +277,14 @@ var marketOpenOrdersCmd = &cobra.Command{
 }
 
 var marketOrderHistoryCmd = &cobra.Command{
-	Use:   "order-history [symbol]",
+	Use:   "order-history <symbol>",
 	Short: "Get order history",
-	Args:  cobra.MaximumNArgs(1),
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		params := market.MyOrderHistoryParams{
-			Page:  "1",
-			Limit: "20",
-		}
-		if len(args) > 0 {
-			params.Symbol = args[0]
+		params := market.OrderHistoryParams{
+			Symbol: utils.UppercaseSymbol(args[0]),
+			Page:   "1",
+			Limit:  "20",
 		}
 
 		page, _ := cmd.Flags().GetInt("page")
@@ -298,7 +305,7 @@ var marketOrderHistoryCmd = &cobra.Command{
 			params.End = strconv.FormatInt(end, 10)
 		}
 
-		history, err := market.GetMyOrderHistory(params)
+		history, err := market.GetOrderHistory(params)
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get order history")
 		}
@@ -327,9 +334,14 @@ var marketOrderHistoryCmd = &cobra.Command{
 var marketOrderInfoCmd = &cobra.Command{
 	Use:   "order-info [symbol] [order-id] [side]",
 	Short: "Get order information",
-	Args:  cobra.ExactArgs(3),
+	Args:  cobra.RangeArgs(2, 3),
 	Run: func(cmd *cobra.Command, args []string) {
-		info, err := market.GetOrderInfo(args[0], args[1], args[2])
+		symbol := utils.UppercaseSymbol(args[0])
+		side := "buy"
+		if len(args) > 2 {
+			side = args[2]
+		}
+		info, err := market.GetOrderInfo(symbol, args[1], side)
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get order info")
 		}
@@ -365,7 +377,7 @@ var marketPlaceBidCmd = &cobra.Command{
 		}
 
 		req := market.PlaceBidRequest{
-			Symbol: args[0],
+			Symbol: utils.NormalizeSymbol(args[0]),
 			Amount: amount,
 			Rate:   rate,
 			Type:   "limit",
@@ -406,7 +418,7 @@ var marketPlaceAskCmd = &cobra.Command{
 		}
 
 		req := market.PlaceAskRequest{
-			Symbol: args[0],
+			Symbol: utils.NormalizeSymbol(args[0]),
 			Amount: amount,
 			Rate:   rate,
 			Type:   "limit",
@@ -435,7 +447,7 @@ var marketCancelOrderCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(3),
 	Run: func(cmd *cobra.Command, args []string) {
 		req := market.CancelOrderRequest{
-			Symbol: args[0],
+			Symbol: utils.NormalizeSymbol(args[0]),
 			ID:     args[1],
 			Side:   args[2],
 		}
@@ -512,10 +524,8 @@ var marketHistoryCmd = &cobra.Command{
 		from, _ := cmd.Flags().GetInt64("from")
 		to, _ := cmd.Flags().GetInt64("to")
 
-		symbol := utils.NormalizeSymbol(args[0])
-
 		result, err := market.GetHistory(market.HistoryRequest{
-			Symbol:     symbol,
+			Symbol:     args[0],
 			Resolution: resolution,
 			From:       from,
 			To:         to,

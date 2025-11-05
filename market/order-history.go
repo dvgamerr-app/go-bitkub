@@ -48,7 +48,7 @@ type Pagination struct {
 	HasNext bool   `json:"has_next,omitempty"`
 }
 
-type MyOrderHistoryParams struct {
+type OrderHistoryParams struct {
 	Symbol         string
 	Page           string
 	Limit          string
@@ -58,13 +58,13 @@ type MyOrderHistoryParams struct {
 	PaginationType string
 }
 
-type MyOrderHistoryResponse struct {
+type OrderHistoryResponse struct {
 	bitkub.Error
 	Result     []OrderHistory `json:"result"`
 	Pagination Pagination     `json:"pagination"`
 }
 
-func GetMyOpenOrders(symbol string) ([]OpenOrder, error) {
+func GetOpenOrders(symbol string) ([]OpenOrder, error) {
 	var response bitkub.ResponseAPI
 
 	url := fmt.Sprintf("/api/v3/market/my-open-orders?sym=%s", symbol)
@@ -90,7 +90,7 @@ func GetMyOpenOrders(symbol string) ([]OpenOrder, error) {
 	return result, nil
 }
 
-func GetMyOrderHistory(params MyOrderHistoryParams) (*MyOrderHistoryResponse, error) {
+func GetOrderHistory(params OrderHistoryParams) (*OrderHistoryResponse, error) {
 	var response bitkub.ResponseAPI
 
 	url := fmt.Sprintf("/api/v3/market/my-order-history?sym=%s", params.Symbol)
@@ -127,7 +127,7 @@ func GetMyOrderHistory(params MyOrderHistoryParams) (*MyOrderHistoryResponse, er
 		return nil, err
 	}
 
-	var result MyOrderHistoryResponse
+	var result OrderHistoryResponse
 	if err = stdJson.Unmarshal(byteData, &result); err != nil {
 		return nil, err
 	}

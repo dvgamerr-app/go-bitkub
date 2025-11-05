@@ -176,7 +176,7 @@ func fetch(secure bool, method string, path string, reqBody any) (*http.Response
 }
 
 func getServerTime() (string, error) {
-	resp, err := httpClient.Get(fmt.Sprintf("%s%s", BASE_URL, "/v3/servertime"))
+	resp, err := httpClient.Get(fmt.Sprintf("%s%s", BASE_URL, "/api/v3/servertime"))
 	if err != nil {
 		return "0", err
 	}
@@ -188,7 +188,7 @@ func getServerTime() (string, error) {
 	}
 
 	timeStr := string(result)
-	timeStr = strings.Trim(timeStr, "\"")
+	timeStr = strings.Trim(timeStr, "\" \n\r")
 
 	return timeStr, nil
 }

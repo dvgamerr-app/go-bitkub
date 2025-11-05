@@ -47,8 +47,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `market.PlaceBid()` - Create buy order with post-only support
 - `market.PlaceAsk()` - Create sell order with post-only support
 - `market.CancelOrder()` - Cancel an open order
-- `market.GetMyOpenOrders()` - List all open orders
-- `market.GetMyOrderHistory()` - Get order history with keyset pagination
+- `market.GetOpenOrders()` - List all open orders
+- `market.GetOrderHistory()` - Get order history with keyset pagination
 - `market.GetOrderInfo()` - Get detailed order information
 - `market.GetWSToken()` - Get WebSocket authentication token
 - `market.GetWallet()` - Get user available balances

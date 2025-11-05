@@ -70,8 +70,8 @@ func TestGetUserLimits(t *testing.T) {
 	assert.NotNil(t, result)
 }
 
-func TestGetMyOpenOrders(t *testing.T) {
-	result, err := GetMyOpenOrders("btc_thb")
+func TestGetOpenOrders(t *testing.T) {
+	result, err := GetOpenOrders("btc_thb")
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 }

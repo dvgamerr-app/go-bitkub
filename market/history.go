@@ -39,7 +39,7 @@ func GetHistory(req HistoryRequest) (*HistoryResponse, error) {
 		req.To = time.Now().Unix()
 	}
 
-	url := fmt.Sprintf("/api/tradingview/history?symbol=%s&resolution=%s&from=%d&to=%d",
+	url := fmt.Sprintf("/tradingview/history?symbol=%s&resolution=%s&from=%d&to=%d",
 		req.Symbol, req.Resolution, req.From, req.To)
 
 	var result HistoryResponse

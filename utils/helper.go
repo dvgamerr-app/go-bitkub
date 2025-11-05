@@ -60,3 +60,7 @@ func NormalizeSymbol(symbol string) string {
 	}
 	return strings.ToUpper(symbol)
 }
+
+func UppercaseSymbol(symbol string) string {
+	return strings.ToUpper(symbol)
+}
