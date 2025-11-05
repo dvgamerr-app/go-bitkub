@@ -94,8 +94,8 @@ bitkub -k KEY -s SECRET market open-orders       # Open orders
 bitkub -k KEY -s SECRET market order-history     # Order history
 
 # Trading (requires API keys)
-bitkub -k KEY -s SECRET market place-bid BTC_THB 0.001 3500000   # Buy
-bitkub -k KEY -s SECRET market place-ask BTC_THB 0.001 3600000   # Sell
+bitkub -k KEY -s SECRET market buy BTC_THB 0.001 3500000   # Buy
+bitkub -k KEY -s SECRET market sell BTC_THB 0.001 3600000   # Sell
 bitkub -k KEY -s SECRET market cancel BTC_THB ORDER_ID buy       # Cancel
 
 # Crypto operations (requires API keys)

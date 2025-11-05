@@ -190,7 +190,7 @@ bidReq := market.PlaceBidRequest{
     Amount:   1000,
     Rate:     2500000,
     Type:     "limit",
-    ClientID: "my-order-1",
+    ClientID: "order-1",
 }
 bidResult, err := market.PlaceBid(bidReq)
 
@@ -398,7 +398,7 @@ go-bitkub/
 │   ├── place-bid.go
 │   ├── place-ask.go
 │   ├── cancel-order.go
-│   ├── my-order-history.go
+│   ├── order-history.go
 │   ├── order-info.go
 │   ├── balances.go
 │   ├── wallet.go

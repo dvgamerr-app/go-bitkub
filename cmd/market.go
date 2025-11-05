@@ -360,7 +360,7 @@ var marketOrderInfoCmd = &cobra.Command{
 }
 
 var marketPlaceBidCmd = &cobra.Command{
-	Use:   "place-bid [symbol] [amount] [rate]",
+	Use:   "buy [symbol] [amount] [rate]",
 	Short: "Place a bid order (buy)",
 	Args:  cobra.ExactArgs(3),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -377,7 +377,7 @@ var marketPlaceBidCmd = &cobra.Command{
 		}
 
 		req := market.PlaceBidRequest{
-			Symbol: utils.NormalizeSymbol(args[0]),
+			Symbol: utils.UppercaseSymbol(args[0]),
 			Amount: amount,
 			Rate:   rate,
 			Type:   "limit",
@@ -401,7 +401,7 @@ var marketPlaceBidCmd = &cobra.Command{
 }
 
 var marketPlaceAskCmd = &cobra.Command{
-	Use:   "place-ask [symbol] [amount] [rate]",
+	Use:   "sell [symbol] [amount] [rate]",
 	Short: "Place an ask order (sell)",
 	Args:  cobra.ExactArgs(3),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -418,7 +418,7 @@ var marketPlaceAskCmd = &cobra.Command{
 		}
 
 		req := market.PlaceAskRequest{
-			Symbol: utils.NormalizeSymbol(args[0]),
+			Symbol: utils.UppercaseSymbol(args[0]),
 			Amount: amount,
 			Rate:   rate,
 			Type:   "limit",
@@ -444,12 +444,17 @@ var marketPlaceAskCmd = &cobra.Command{
 var marketCancelOrderCmd = &cobra.Command{
 	Use:   "cancel [symbol] [order-id] [side]",
 	Short: "Cancel an order",
-	Args:  cobra.ExactArgs(3),
+	Args:  cobra.RangeArgs(2, 3),
 	Run: func(cmd *cobra.Command, args []string) {
+		side := "buy"
+		if len(args) > 2 {
+			side = args[2]
+		}
+
 		req := market.CancelOrderRequest{
-			Symbol: utils.NormalizeSymbol(args[0]),
+			Symbol: utils.UppercaseSymbol(args[0]),
 			ID:     args[1],
-			Side:   args[2],
+			Side:   side,
 		}
 
 		if err := market.CancelOrder(req); err != nil {
@@ -459,7 +464,7 @@ var marketCancelOrderCmd = &cobra.Command{
 		output(map[string]any{
 			"symbol":   args[0],
 			"order_id": args[1],
-			"side":     args[2],
+			"side":     side,
 			"status":   "cancelled",
 		})
 	},
