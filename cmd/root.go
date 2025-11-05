@@ -17,6 +17,9 @@ var (
 	debug       bool
 	format      string
 	isFirstLine bool = true
+	Version          = "dev"
+	Commit           = "none"
+	Date             = "unknown"
 )
 
 func output(data any, isLastLine ...bool) {
@@ -64,9 +67,10 @@ func output(data any, isLastLine ...bool) {
 }
 
 var rootCmd = &cobra.Command{
-	Use:   "bitkub",
-	Short: "Bitkub API CLI Tool",
-	Long:  "A command-line interface for interacting with Bitkub API",
+	Use:     "bitkub",
+	Short:   "Bitkub API CLI Tool",
+	Long:    "A command-line interface for interacting with Bitkub API",
+	Version: Version,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if format == "json" || format == "jsonl" {
 			zerolog.SetGlobalLevel(zerolog.Disabled)
@@ -91,6 +95,8 @@ func init() {
 	if err := utils.LoadDotEnv(); err != nil {
 		log.Debug().Err(err).Msg("No .env file loaded")
 	}
+
+	rootCmd.SetVersionTemplate(fmt.Sprintf("bitkub version %s (commit: %s, built: %s)\n", Version, Commit, Date))
 
 	rootCmd.PersistentFlags().StringVarP(&apiKey, "key", "k", os.Getenv("BTK_APIKEY"), "API Key")
 	rootCmd.PersistentFlags().StringVar(&secretKey, "secret", os.Getenv("BTK_SECRET"), "API Secret")

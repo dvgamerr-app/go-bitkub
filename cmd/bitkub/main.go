@@ -5,5 +5,8 @@ import (
 )
 
 func main() {
+	cmd.Version = "dev"
+	cmd.Commit = "none"
+	cmd.Date = "unknown"
 	cmd.Execute()
 }

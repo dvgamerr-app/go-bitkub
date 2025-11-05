@@ -22,13 +22,12 @@ builds:
         goarch: arm64
     ldflags:
       - -s -w
-      - -X main.version={{.Version}}
-      - -X main.commit={{.Commit}}
-      - -X main.date={{.Date}}
+      - -X github.com/dvgamerr-app/go-bitkub/cmd.Version={{.Version}}
+      - -X github.com/dvgamerr-app/go-bitkub/cmd.Commit={{.Commit}}
+      - -X github.com/dvgamerr-app/go-bitkub/cmd.Date={{.Date}}
 
 archives:
   - id: default
-    format: tar.gz
     name_template: >-
       {{ .ProjectName }}_
       {{- .Version }}_
@@ -37,9 +36,8 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    format_overrides:
-      - goos: windows
-        format: zip
+    builds:
+      - bitkub
     files:
       - LICENSE
       - README.md
