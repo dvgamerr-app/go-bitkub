@@ -2,9 +2,9 @@ package market
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
+	"github.com/dvgamerr-app/go-bitkub/utils"
 )
 
 // AskOrder represents an open sell order
@@ -30,7 +30,7 @@ type AsksResponse struct {
 func GetAsks(symbol string, limit int) ([]AskOrder, error) {
 	var result AsksResponse
 
-	url := fmt.Sprintf("/api/v3/market/asks?sym=%s", strings.ToUpper(symbol))
+	url := fmt.Sprintf("/api/v3/market/asks?sym=%s", utils.UppercaseSymbol(symbol))
 	if limit > 0 {
 		url = fmt.Sprintf("%s&lmt=%d", url, limit)
 	}

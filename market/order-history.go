@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
+	"github.com/dvgamerr-app/go-bitkub/utils"
 )
 
 type OpenOrder struct {
@@ -67,7 +68,7 @@ type OrderHistoryResponse struct {
 func GetOpenOrders(symbol string) ([]OpenOrder, error) {
 	var response bitkub.ResponseAPI
 
-	url := fmt.Sprintf("/api/v3/market/my-open-orders?sym=%s", symbol)
+	url := fmt.Sprintf("/api/v3/market/my-open-orders?sym=%s", utils.UppercaseSymbol(symbol))
 
 	if err := bitkub.FetchSecure("GET", url, nil, &response); err != nil {
 		return nil, err
@@ -93,7 +94,7 @@ func GetOpenOrders(symbol string) ([]OpenOrder, error) {
 func GetOrderHistory(params OrderHistoryParams) (*OrderHistoryResponse, error) {
 	var response bitkub.ResponseAPI
 
-	url := fmt.Sprintf("/api/v3/market/my-order-history?sym=%s", params.Symbol)
+	url := fmt.Sprintf("/api/v3/market/my-order-history?sym=%s", utils.UppercaseSymbol(params.Symbol))
 
 	if params.Page != "" {
 		url = fmt.Sprintf("%s&p=%s", url, params.Page)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
+	"github.com/dvgamerr-app/go-bitkub/utils"
 	"github.com/rs/zerolog/log"
 )
 
@@ -29,7 +30,7 @@ func GetTicker(symbol string) ([]Ticker, error) {
 
 	url := "/api/market/ticker"
 	if symbol != "" {
-		url = fmt.Sprintf("%s?sym=%s", url, symbol)
+		url = fmt.Sprintf("%s?sym=%s", url, utils.UppercaseSymbol(symbol))
 	}
 
 	if err := bitkub.FetchNonSecure("GET", url, nil, &resultMap); err != nil {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
+	"github.com/dvgamerr-app/go-bitkub/utils"
 )
 
 // OrderHistoryItem represents an order history item in order info
@@ -51,7 +52,7 @@ type OrderInfoResponse struct {
 func GetOrderInfo(symbol, id, side string) (*OrderInfo, error) {
 	var response bitkub.ResponseAPI
 
-	url := fmt.Sprintf("/api/v3/market/order-info?sym=%s&id=%s&sd=%s", symbol, id, side)
+	url := fmt.Sprintf("/api/v3/market/order-info?sym=%s&id=%s&sd=%s", utils.UppercaseSymbol(symbol), id, side)
 
 	if err := bitkub.FetchSecure("GET", url, nil, &response); err != nil {
 		return nil, err

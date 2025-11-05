@@ -2,6 +2,7 @@ package market
 
 import (
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
+	"github.com/dvgamerr-app/go-bitkub/utils"
 )
 
 type CancelOrderRequest struct {
@@ -12,6 +13,9 @@ type CancelOrderRequest struct {
 
 func CancelOrder(req CancelOrderRequest) error {
 	var response bitkub.ResponseAPI
+
+	req.Symbol = utils.UppercaseSymbol(req.Symbol)
+
 	if err := bitkub.FetchSecure("POST", "/api/v3/market/cancel-order", req, &response); err != nil {
 		return err
 	}

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
+	"github.com/dvgamerr-app/go-bitkub/utils"
 )
 
 type HistoryRequest struct {
@@ -40,7 +41,7 @@ func GetHistory(req HistoryRequest) (*HistoryResponse, error) {
 	}
 
 	url := fmt.Sprintf("/tradingview/history?symbol=%s&resolution=%s&from=%d&to=%d",
-		req.Symbol, req.Resolution, req.From, req.To)
+		utils.UppercaseSymbol(req.Symbol), req.Resolution, req.From, req.To)
 
 	var result HistoryResponse
 	if err := bitkub.FetchNonSecure("GET", url, nil, &result); err != nil {

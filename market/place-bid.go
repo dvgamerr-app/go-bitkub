@@ -2,6 +2,7 @@ package market
 
 import (
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
+	"github.com/dvgamerr-app/go-bitkub/utils"
 )
 
 type PlaceBidRequest struct {
@@ -32,6 +33,8 @@ type PlaceBidResponse struct {
 
 func PlaceBid(req PlaceBidRequest) (*PlaceBidResult, error) {
 	var response bitkub.ResponseAPI
+
+	req.Symbol = utils.UppercaseSymbol(req.Symbol)
 
 	if err := bitkub.FetchSecure("POST", "/api/v3/market/place-bid", req, &response); err != nil {
 		return nil, err

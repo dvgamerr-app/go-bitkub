@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
+	"github.com/dvgamerr-app/go-bitkub/utils"
 )
 
 type Trade [4]any
@@ -16,7 +17,7 @@ type TradesResponse struct {
 func GetTrades(symbol string, limit int) ([]Trade, error) {
 	var result TradesResponse
 
-	url := fmt.Sprintf("/api/v3/market/trades?sym=%s", symbol)
+	url := fmt.Sprintf("/api/v3/market/trades?sym=%s", utils.UppercaseSymbol(symbol))
 	if limit > 0 {
 		url = fmt.Sprintf("%s&lmt=%d", url, limit)
 	}
