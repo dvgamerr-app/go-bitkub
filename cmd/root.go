@@ -20,7 +20,8 @@ var (
 )
 
 func output(data any, isLastLine ...bool) {
-	if format == "json" {
+	switch format {
+	case "json":
 		if isFirstLine {
 			fmt.Print("[")
 			isFirstLine = false
@@ -41,7 +42,14 @@ func output(data any, isLastLine ...bool) {
 		} else {
 			fmt.Print(jsonStr)
 		}
-	} else {
+	case "jsonl":
+		jsonStr, err := stdJson.MarshalToString(data)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to marshal JSON")
+			return
+		}
+		fmt.Println(jsonStr)
+	default:
 		switch v := data.(type) {
 		case map[string]any:
 			event := log.Info()
@@ -60,7 +68,7 @@ var rootCmd = &cobra.Command{
 	Short: "Bitkub API CLI Tool",
 	Long:  "A command-line interface for interacting with Bitkub API",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		if format == "json" {
+		if format == "json" || format == "jsonl" {
 			zerolog.SetGlobalLevel(zerolog.Disabled)
 		} else {
 			log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
@@ -87,7 +95,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&apiKey, "key", "k", os.Getenv("API_KEY"), "API Key")
 	rootCmd.PersistentFlags().StringVarP(&secretKey, "secret", "s", os.Getenv("API_SECRET"), "API Secret")
 	rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "Enable debug mode")
-	rootCmd.PersistentFlags().StringVarP(&format, "format", "f", "text", "Output format (text, json)")
+	rootCmd.PersistentFlags().StringVarP(&format, "format", "f", "text", "Output format (text, json, jsonl)")
 }
 
 func Execute() {
