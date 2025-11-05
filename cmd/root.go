@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"os"
 
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
@@ -17,16 +18,29 @@ var (
 	format    string
 )
 
+func output(data interface{}) {
+	if format == "json" {
+		json.NewEncoder(os.Stdout).Encode(data)
+	} else {
+		switch v := data.(type) {
+		case map[string]interface{}:
+			event := log.Info()
+			for key, val := range v {
+				event = event.Interface(key, val)
+			}
+			event.Send()
+		default:
+			log.Info().Interface("data", data).Send()
+		}
+	}
+}
+
 var rootCmd = &cobra.Command{
 	Use:   "bitkub",
 	Short: "Bitkub API CLI Tool",
 	Long:  "A command-line interface for interacting with Bitkub API",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		if format == "json" {
-			log.Logger = zerolog.New(os.Stderr).With().Timestamp().Logger()
-		} else {
-			log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-		}
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
 		if debug {
 			zerolog.SetGlobalLevel(zerolog.DebugLevel)

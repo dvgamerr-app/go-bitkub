@@ -50,14 +50,14 @@ var marketTickerCmd = &cobra.Command{
 			log.Fatal().Err(err).Msg("Failed to get ticker")
 		}
 		for _, t := range tickers {
-			log.Info().
-				Str("symbol", t.Symbol).
-				Str("last", t.Last).
-				Str("high24h", t.High24hr).
-				Str("low24h", t.Low24hr).
-				Str("volume", t.BaseVolume).
-				Str("change", t.PercentChange).
-				Msg("Ticker")
+			output(map[string]interface{}{
+				"symbol":  t.Symbol,
+				"last":    t.Last,
+				"high24h": t.High24hr,
+				"low24h":  t.Low24hr,
+				"volume":  t.BaseVolume,
+				"change":  t.PercentChange,
+			})
 		}
 	},
 }

@@ -106,7 +106,7 @@ func FetchSecureV4(method string, path string, reqBody any, resPayload any) erro
 }
 
 func FetchNonSecure(method string, path string, reqBody any, resPayload any) error {
-	resp, err := fetch(true, method, path, reqBody)
+	resp, err := fetch(false, method, path, reqBody)
 	if err != nil {
 		return fmt.Errorf("decoding response: %+v", err)
 	}
