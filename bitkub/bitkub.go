@@ -2,7 +2,10 @@ package bitkub
 
 import (
 	"fmt"
+	"io"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/dvgamerr-app/go-bitkub/utils"
 )
@@ -18,6 +21,12 @@ type ResponseAPI struct {
 	Error   int    `json:"error"`
 	Message string `json:"message"`
 	Result  any    `json:"result"`
+}
+
+type StatusResponse struct {
+	Name    string `json:"name"`
+	Status  string `json:"status"`
+	Message string `json:"message"`
 }
 
 // CheckResponseError checks if the response has an error and returns an error if it does
@@ -56,4 +65,51 @@ func Initlizer(key ...string) error {
 		secretKey = os.Getenv("BTK_SECRET")
 	}
 	return nil
+}
+
+func GetStatus() ([]StatusResponse, error) {
+	var result []StatusResponse
+
+	if err := FetchNonSecure("GET", "/api/status", nil, &result); err != nil {
+		return nil, fmt.Errorf("get status: %w", err)
+	}
+
+	return result, nil
+}
+
+func GetServerTime() (string, error) {
+	var lastErr error
+	for attempt := 1; attempt <= 3; attempt++ {
+		if attempt > 1 {
+			backoff := time.Duration(attempt-1) * 500 * time.Millisecond
+			time.Sleep(backoff)
+		}
+
+		resp, err := apiBitkubTime.Get(fmt.Sprintf("%s%s", BASE_URL, "/api/v3/servertime"))
+		if err != nil {
+			lastErr = err
+			if attempt < 3 {
+				continue
+			}
+			return "0", fmt.Errorf("(%d) %v", attempt, lastErr)
+		}
+
+		result, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
+
+		if err != nil {
+			lastErr = err
+			if attempt < 3 {
+				continue
+			}
+			return "0", fmt.Errorf("(%d) %v", attempt, lastErr)
+		}
+
+		timeStr := string(result)
+		timeStr = strings.Trim(timeStr, "\" \n\r")
+
+		return timeStr, nil
+	}
+
+	return "0", fmt.Errorf("(retry) %v", lastErr)
 }

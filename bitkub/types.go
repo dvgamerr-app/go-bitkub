@@ -9,15 +9,6 @@ func (e *Error) GetError() int {
 	return e.Error
 }
 
-type PaginationInfo struct {
-	Page    int    `json:"page,omitempty"`
-	Last    int    `json:"last,omitempty"`
-	Next    *int   `json:"next,omitempty"`
-	Prev    *int   `json:"prev,omitempty"`
-	Cursor  string `json:"cursor,omitempty"`
-	HasNext bool   `json:"has_next,omitempty"`
-}
-
 type OrderSide string
 
 const (

@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -36,7 +35,7 @@ func init() {
 
 	apiBitkubTime = &http.Client{
 		Transport: httpTransport,
-		Timeout:   5 * time.Second,
+		Timeout:   3 * time.Second,
 	}
 }
 
@@ -137,7 +136,7 @@ func FetchNonSecure(method string, path string, reqBody any, resPayload any) err
 func fetch(secure bool, method string, path string, reqBody any) (*http.Response, error) {
 	var payload []byte = nil
 
-	serverTime, err := getServerTime()
+	serverTime, err := GetServerTime()
 	if err != nil {
 		return nil, fmt.Errorf("server time: %+v", err)
 	}
@@ -179,41 +178,4 @@ func fetch(secure bool, method string, path string, reqBody any) (*http.Response
 
 	log.Debug().Int("status", resp.StatusCode).Str("method", method).Str("path", path).Send()
 	return resp, nil
-}
-
-func getServerTime() (string, error) {
-	var lastErr error
-	for attempt := 1; attempt <= 3; attempt++ {
-		if attempt > 1 {
-			backoff := time.Duration(attempt-1) * 500 * time.Millisecond
-			time.Sleep(backoff)
-		}
-
-		resp, err := apiBitkubTime.Get(fmt.Sprintf("%s%s", BASE_URL, "/api/v3/servertime"))
-		if err != nil {
-			lastErr = err
-			if attempt < 3 {
-				continue
-			}
-			return "0", fmt.Errorf("(%d) %v", attempt, lastErr)
-		}
-
-		result, err := io.ReadAll(resp.Body)
-		resp.Body.Close()
-
-		if err != nil {
-			lastErr = err
-			if attempt < 3 {
-				continue
-			}
-			return "0", fmt.Errorf("(%d) %v", attempt, lastErr)
-		}
-
-		timeStr := string(result)
-		timeStr = strings.Trim(timeStr, "\" \n\r")
-
-		return timeStr, nil
-	}
-
-	return "0", fmt.Errorf("(retry) %v", lastErr)
 }
