@@ -30,7 +30,7 @@ func GetTicker(symbol string) ([]Ticker, error) {
 
 	url := "/api/market/ticker"
 	if symbol != "" {
-		url = fmt.Sprintf("%s?sym=%s", url, utils.UppercaseSymbol(symbol))
+		url = fmt.Sprintf("%s?sym=%s", url, utils.NormalizeSymbol(symbol))
 	}
 
 	if err := bitkub.FetchNonSecure("GET", url, nil, &resultMap); err != nil {

@@ -17,7 +17,7 @@ type DepthResult struct {
 func GetDepth(symbol string, limit int) (*DepthResult, error) {
 	var result DepthResult
 
-	url := fmt.Sprintf("/api/market/depth?sym=%s", utils.UppercaseSymbol(symbol))
+	url := fmt.Sprintf("/api/market/depth?sym=%s", utils.NormalizeSymbol(symbol))
 	if limit > 0 {
 		url = fmt.Sprintf("%s&lmt=%d", url, limit)
 	}

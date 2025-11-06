@@ -16,10 +16,10 @@ go install github.com/dvgamerr-app/go-bitkub/cmd/bitkub@latest
 bitkub market ticker
 
 # Get BTC price
-bitkub market ticker BTC_THB
+bitkub market ticker btc_thb
 
 # Get historical data
-bitkub market history BTC_THB --resolution 1
+bitkub market history btc_thb --resolution 1
 
 # Output in different formats
 bitkub market ticker --format json   # JSON output
