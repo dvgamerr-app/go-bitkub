@@ -1,7 +1,9 @@
 # Bitkub Go SDK
 
-[![Go Version](https://img.shields.io/badge/Go-%3E%3D%201.18-blue.svg)](https://golang.org/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Testing](https://github.com/dvgamerr-app/go-bitkub/actions/workflows/testing.yml/badge.svg?branch=main)](https://github.com/dvgamerr-app/go-bitkub/actions/workflows/testing.yml)
+[![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://golang.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289DA?style=flat&logo=discord)](https://discord.gg/QDccF497Mw)
 
 Go SDK for [Bitkub](https://www.bitkub.com/) Cryptocurrency Exchange API - Complete implementation with full V3 & V4 API support + **Command Line Interface**
 

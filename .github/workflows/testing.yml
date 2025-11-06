@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  test:
     runs-on: ubuntu-latest
     env:
       BTK_APIKEY: ${{ secrets.BTK_APIKEY }}
