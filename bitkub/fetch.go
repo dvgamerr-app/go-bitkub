@@ -36,7 +36,7 @@ func init() {
 
 	apiBitkubTime = &http.Client{
 		Transport: httpTransport,
-		Timeout:   1 * time.Second,
+		Timeout:   5 * time.Second,
 	}
 }
 
@@ -184,6 +184,11 @@ func fetch(secure bool, method string, path string, reqBody any) (*http.Response
 func getServerTime() (string, error) {
 	var lastErr error
 	for attempt := 1; attempt <= 3; attempt++ {
+		if attempt > 1 {
+			backoff := time.Duration(attempt-1) * 500 * time.Millisecond
+			time.Sleep(backoff)
+		}
+
 		resp, err := apiBitkubTime.Get(fmt.Sprintf("%s%s", BASE_URL, "/api/v3/servertime"))
 		if err != nil {
 			lastErr = err
@@ -192,11 +197,16 @@ func getServerTime() (string, error) {
 			}
 			return "0", fmt.Errorf("(%d) %v", attempt, lastErr)
 		}
-		defer resp.Body.Close()
 
 		result, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
+
 		if err != nil {
-			return "0", fmt.Errorf("(%d) %v", attempt, err)
+			lastErr = err
+			if attempt < 3 {
+				continue
+			}
+			return "0", fmt.Errorf("(%d) %v", attempt, lastErr)
 		}
 
 		timeStr := string(result)

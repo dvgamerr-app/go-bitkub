@@ -90,8 +90,8 @@ bitkub --format text [command]   # Text output (default)
 bitkub market symbols
 
 # Get ticker information
-bitkub market ticker               # All symbols
-bitkub market ticker btc_thb       # Specific symbol
+bitkub market ticker
+bitkub market ticker btc_thb
 
 # Get market depth
 bitkub market depth btc_thb --limit 10
@@ -100,7 +100,7 @@ bitkub market depth btc_thb --limit 10
 bitkub market trades btc_thb --limit 20
 
 # Get historical data (TradingView)
-bitkub market history btc_thb                                    # Last 24h with 1D resolution
+bitkub market history btc_thb                          # Last 24h with 1D resolution
 bitkub market history btc_thb -r 1                     # 1 minute candles
 bitkub market history btc_thb -r 60 --from 1234567890  # Custom timeframe
 
