@@ -1,0 +1,30 @@
+name: Testing
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      BTK_APIKEY: ${{ secrets.BTK_APIKEY }}
+      BTK_SECRET: ${{ secrets.BTK_SECRET }}
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔧 Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+      
+      - name: 🧪 Testing
+        run: |
+          go test -v ./bitkub ./crypto ./fiat ./market ./stream ./user
