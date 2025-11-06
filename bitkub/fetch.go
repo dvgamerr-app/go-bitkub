@@ -16,21 +16,27 @@ import (
 )
 
 var (
-	httpClient *http.Client
+	apiBitkub     *http.Client
+	apiBitkubTime *http.Client
+	httpTransport *http.Transport
 )
 
 func init() {
-	// Connection pooling optimization
-	transport := &http.Transport{
+	httpTransport = &http.Transport{
 		MaxIdleConns:        100,
 		MaxIdleConnsPerHost: 10,
 		IdleConnTimeout:     90 * time.Second,
 		DisableKeepAlives:   false,
 	}
 
-	httpClient = &http.Client{
-		Transport: transport,
+	apiBitkub = &http.Client{
+		Transport: httpTransport,
 		Timeout:   30 * time.Second,
+	}
+
+	apiBitkubTime = &http.Client{
+		Transport: httpTransport,
+		Timeout:   1 * time.Second,
 	}
 }
 
@@ -165,7 +171,7 @@ func fetch(secure bool, method string, path string, reqBody any) (*http.Response
 		req.Header.Set("X-BTK-SIGN", signature)
 	}
 
-	resp, err := httpClient.Do(req)
+	resp, err := apiBitkub.Do(req)
 	if err != nil {
 		log.Warn().Int("status", resp.StatusCode).Str("method", method).Str("path", path).Err(err).Stack().Send()
 		return nil, fmt.Errorf("making request: %+v", err)
@@ -176,19 +182,28 @@ func fetch(secure bool, method string, path string, reqBody any) (*http.Response
 }
 
 func getServerTime() (string, error) {
-	resp, err := httpClient.Get(fmt.Sprintf("%s%s", BASE_URL, "/api/v3/servertime"))
-	if err != nil {
-		return "0", err
+	var lastErr error
+	for attempt := 1; attempt <= 3; attempt++ {
+		resp, err := apiBitkubTime.Get(fmt.Sprintf("%s%s", BASE_URL, "/api/v3/servertime"))
+		if err != nil {
+			lastErr = err
+			if attempt < 3 {
+				continue
+			}
+			return "0", fmt.Errorf("(%d) %v", attempt, lastErr)
+		}
+		defer resp.Body.Close()
+
+		result, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return "0", fmt.Errorf("(%d) %v", attempt, err)
+		}
+
+		timeStr := string(result)
+		timeStr = strings.Trim(timeStr, "\" \n\r")
+
+		return timeStr, nil
 	}
-	defer resp.Body.Close()
 
-	result, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "0", err
-	}
-
-	timeStr := string(result)
-	timeStr = strings.Trim(timeStr, "\" \n\r")
-
-	return timeStr, nil
+	return "0", fmt.Errorf("(retry) %v", lastErr)
 }
