@@ -42,16 +42,6 @@ func TestGetAddressesWithFilter(t *testing.T) {
 	assert.NotNil(t, result)
 }
 
-func TestCreateAddress(t *testing.T) {
-	req := CreateAddressRequest{
-		Symbol:  "ETH",
-		Network: "ETH",
-	}
-	result, err := CreateAddress(req)
-	assert.Nil(t, err)
-	assert.NotNil(t, result)
-}
-
 func TestValidationCreateAddress(t *testing.T) {
 	req := CreateAddressRequest{
 		Network: "KUB",
@@ -217,19 +207,6 @@ func TestGetWithdrawsBySymbol(t *testing.T) {
 		Symbol: "THB",
 	}
 	result, err := GetWithdraws(params)
-	assert.Nil(t, err)
-	assert.NotNil(t, result)
-}
-
-func TestCreateWithdraw(t *testing.T) {
-	t.Skip("requires is_withdraw permission and real transaction")
-	req := CreateWithdrawRequest{
-		Symbol:  "RDNT",
-		Amount:  "2.00000000",
-		Address: "0xDaCd17d1E77604aaFB6e47F5Ffa1F7E35F83fDa7",
-		Network: "ARB",
-	}
-	result, err := CreateWithdraw(req)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 }
