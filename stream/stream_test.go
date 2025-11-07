@@ -39,7 +39,6 @@ func TestMarketTrade(t *testing.T) {
 			}
 
 			messageCount++
-			t.Logf("Message #%d [%s]: %+v", messageCount, msg.Type, msg.Data)
 
 			if messageCount >= maxMessages {
 				t.Log("Received enough messages, stopping...")
@@ -73,7 +72,6 @@ func TestMarketTicker(t *testing.T) {
 			}
 
 			messageCount++
-			t.Logf("Ticker #%d: %+v", messageCount, msg.Data)
 
 			if messageCount >= 5 {
 				return
@@ -110,7 +108,6 @@ func TestMultipleStreams(t *testing.T) {
 			}
 
 			messageCount++
-			t.Logf("Message #%d [%s]: %+v", messageCount, msg.Type, msg.Data)
 
 			if messageCount >= 20 {
 				return
@@ -143,7 +140,6 @@ func TestOrderBook(t *testing.T) {
 			}
 
 			messageCount++
-			t.Logf("OrderBook #%d [%s]: %+v", messageCount, msg.Type, msg.Data)
 
 			if messageCount >= 10 {
 				return
