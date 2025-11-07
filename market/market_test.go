@@ -2,6 +2,7 @@ package market
 
 import (
 	"testing"
+	"time"
 
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 	"github.com/dvgamerr-app/go-bitkub/utils"
@@ -16,7 +17,7 @@ func init() {
 }
 
 func TestGetAsks(t *testing.T) {
-	result, err := GetAsks("btc_thb", 10)
+	result, err := GetAsks("kub_thb", 10)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 }
@@ -28,27 +29,28 @@ func TestGetBalances(t *testing.T) {
 }
 
 func TestGetBids(t *testing.T) {
-	result, err := GetBids("btc_thb", 10)
+	result, err := GetBids("kub_thb", 10)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 }
 
 func TestCancelOrder(t *testing.T) {
 	bidResult, err := PlaceBid(PlaceBidRequest{
-		Symbol: "btc_thb",
+		Symbol: "kub_thb",
 		Amount: 100,
-		Rate:   100,
+		Rate:   1,
 		Type:   "limit",
 	})
 	if err != nil {
 		t.Skipf("Cannot create bid order for test: %v", err)
 		return
 	}
+	time.Sleep(1 * time.Second)
 	assert.NotNil(t, bidResult)
 	assert.NotEmpty(t, bidResult.ID)
 
 	request := CancelOrderRequest{
-		Symbol: "btc_thb",
+		Symbol: "kub_thb",
 		ID:     bidResult.ID,
 		Side:   "buy",
 	}
@@ -57,7 +59,7 @@ func TestCancelOrder(t *testing.T) {
 }
 
 func TestGetDepth(t *testing.T) {
-	result, err := GetDepth("thb_usdt", 10)
+	result, err := GetDepth("kub_thb", 10)
 	if err != nil {
 		t.Skipf("Skipping test: %v", err)
 	}
@@ -71,30 +73,33 @@ func TestGetUserLimits(t *testing.T) {
 }
 
 func TestGetOpenOrders(t *testing.T) {
-	result, err := GetOpenOrders("btc_thb")
+	result, err := GetOpenOrders("kub_thb")
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 }
 
 func TestGetOrderInfo(t *testing.T) {
 	bidResult, err := PlaceBid(PlaceBidRequest{
-		Symbol: "btc_thb",
+		Symbol: "kub_thb",
 		Amount: 100,
-		Rate:   100,
+		Rate:   1,
 		Type:   "limit",
 	})
 	if err != nil {
 		t.Skipf("Cannot create bid order for test: %v", err)
 		return
 	}
+	time.Sleep(1 * time.Second)
 
-	result, err := GetOrderInfo("btc_thb", bidResult.ID, "buy")
+	result, err := GetOrderInfo("kub_thb", bidResult.ID, "buy")
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 	assert.Equal(t, bidResult.ID, result.ID)
 
+	time.Sleep(1 * time.Second)
+
 	_ = CancelOrder(CancelOrderRequest{
-		Symbol: "btc_thb",
+		Symbol: "kub_thb",
 		ID:     bidResult.ID,
 		Side:   "buy",
 	})
@@ -102,30 +107,32 @@ func TestGetOrderInfo(t *testing.T) {
 
 func TestPlaceAsk(t *testing.T) {
 	result, err := PlaceAsk(PlaceAskRequest{
-		Symbol: "btc_thb",
-		Amount: 100,
+		Symbol: "kub_thb",
+		Amount: 1,
 		Rate:   100,
 		Type:   "limit",
 	})
 	if err != nil {
-		t.Skipf("Cannot place ask order (may need BTC balance): %v", err)
+		t.Skipf("Cannot place ask: %v", err)
 		return
 	}
 	assert.NotNil(t, result)
 	assert.NotEmpty(t, result.ID)
 
-	_ = CancelOrder(CancelOrderRequest{
-		Symbol: "btc_thb",
+	time.Sleep(1 * time.Second)
+	err = CancelOrder(CancelOrderRequest{
+		Symbol: "kub_thb",
 		ID:     result.ID,
 		Side:   "sell",
 	})
+	assert.Nil(t, err)
 }
 
 func TestPlaceBid(t *testing.T) {
 	request := PlaceBidRequest{
-		Symbol: "btc_thb",
+		Symbol: "kub_thb",
 		Amount: 100,
-		Rate:   100,
+		Rate:   1,
 		Type:   "limit",
 	}
 	result, err := PlaceBid(request)
@@ -134,15 +141,16 @@ func TestPlaceBid(t *testing.T) {
 	assert.NotEmpty(t, result.ID)
 
 	if err != nil {
-		t.Skipf("Cannot place ask order (may need BTC balance): %v", err)
+		t.Skipf("Cannot place ask order: %v", err)
 		return
 	}
-
-	_ = CancelOrder(CancelOrderRequest{
-		Symbol: "btc_thb",
+	time.Sleep(1 * time.Second)
+	err = CancelOrder(CancelOrderRequest{
+		Symbol: "kub_thb",
 		ID:     result.ID,
 		Side:   "buy",
 	})
+	assert.Nil(t, err)
 }
 
 func TestGetSymbols(t *testing.T) {
@@ -152,13 +160,13 @@ func TestGetSymbols(t *testing.T) {
 }
 
 func TestGetTicker(t *testing.T) {
-	result, err := GetTicker("btc_thb")
+	result, err := GetTicker("kub_thb")
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 }
 
 func TestGetTrades(t *testing.T) {
-	result, err := GetTrades("btc_thb", 10)
+	result, err := GetTrades("kub_thb", 10)
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 }
@@ -183,7 +191,7 @@ func TestGetWSToken(t *testing.T) {
 
 func TestGetHistory(t *testing.T) {
 	req := HistoryRequest{
-		Symbol:     "BTC_THB",
+		Symbol:     "kub_THB",
 		Resolution: "1D",
 		From:       1650819600,
 		To:         1650902400,
@@ -204,7 +212,7 @@ func TestGetHistoryDifferentResolutions(t *testing.T) {
 	resolutions := []string{"1", "5", "15", "60", "240", "1D"}
 	for _, res := range resolutions {
 		req := HistoryRequest{
-			Symbol:     "BTC_THB",
+			Symbol:     "kub_THB",
 			Resolution: res,
 			From:       1730736000,
 			To:         1730822400,
@@ -221,11 +229,10 @@ func TestGetHistoryValidation(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "symbol is required")
 
-	_, err = GetHistory(HistoryRequest{Symbol: "BTC_THB"})
-	assert.NotNil(t, err)
-	assert.Contains(t, err.Error(), "resolution is required")
+	_, err = GetHistory(HistoryRequest{Symbol: "kub_THB"})
+	assert.Nil(t, err)
 
-	result, err := GetHistory(HistoryRequest{Symbol: "BTC_THB", Resolution: "1D"})
+	result, err := GetHistory(HistoryRequest{Symbol: "kub_THB", Resolution: "1D"})
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 	assert.Equal(t, "ok", result.Status)

@@ -33,10 +33,11 @@ func GetHistory(req HistoryRequest) (*HistoryResponse, error) {
 		req.Resolution = "60"
 	}
 	if req.From == 0 {
-		req.To = time.Now().Unix()
+		if req.To == 0 {
+			req.To = time.Now().Unix()
+		}
 		req.From = req.To - 86400
-	}
-	if req.To == 0 {
+	} else if req.To == 0 {
 		req.To = time.Now().Unix()
 	}
 
