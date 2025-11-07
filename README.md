@@ -66,6 +66,21 @@ A powerful CLI tool for interacting with Bitkub API from the terminal:
 - ✅ Auto-reconnect with configurable retry
 - ✅ Graceful shutdown & error handling
 
+#### CLI Streaming Examples
+```bash
+# Trade stream (5 messages default)
+bitkub stream trade thb_btc
+
+# Ticker stream continuous
+bitkub stream ticker thb_btc -t
+
+# JSONL output
+bitkub --format jsonl stream trade thb_btc -n 2
+
+# JSON array output
+bitkub --format json stream ticker thb_btc -n 5
+```
+
 ### Market API (V3)
 - ✅ Non-secure endpoints (Market data, server status)
 - ✅ Secure endpoints (Trading, user info, fiat operations)

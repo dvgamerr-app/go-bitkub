@@ -137,6 +137,31 @@ bitkub market credits
 bitkub market wstoken
 ```
 
+### Stream Commands
+
+```bash
+# Stream 5 trade messages (default)
+bitkub stream trade thb_btc
+
+# Stream 10 trade messages
+bitkub stream trade thb_btc -n 10
+
+# Stream trades continuously
+bitkub stream trade thb_btc -t
+
+# Stream 3 ticker updates
+bitkub stream ticker thb_btc -n 3
+
+# Stream ticker continuously
+bitkub stream ticker thb_btc -t
+
+# JSONL output
+bitkub --format jsonl stream trade thb_btc -n 2
+
+# JSON array output
+bitkub --format json stream ticker thb_btc -n 5
+```
+
 ### Crypto Commands
 
 ```bash
@@ -245,11 +270,8 @@ bitkub --debug market ticker
 ## Features by Module
 
 ### Market Module (17 commands)
-- ✅ Symbols, Ticker, Trades, Depth
-- ✅ Asks, Bids, Balances, Wallet
-- ✅ Open Orders, Order History, Order Info
-- ✅ Place Bid/Ask, Cancel Order
-- ✅ User Limits, Trading Credits, WS Token
+- ✅ Stream trade (WebSocket)
+- ✅ Stream ticker (WebSocket)
 
 ### Crypto Module (7 commands)
 - ✅ Coins, Addresses, Create Address
