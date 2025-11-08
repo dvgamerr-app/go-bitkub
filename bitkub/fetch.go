@@ -2,6 +2,7 @@ package bitkub
 
 import (
 	"bytes"
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
@@ -9,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -18,6 +20,11 @@ var (
 	apiBitkub     *http.Client
 	apiBitkubTime *http.Client
 	httpTransport *http.Transport
+	bufferPool    = sync.Pool{
+		New: func() any {
+			return new(bytes.Buffer)
+		},
+	}
 )
 
 func init() {
@@ -51,7 +58,11 @@ type ResponseSecure interface {
 }
 
 func FetchSecure(method string, path string, reqBody any, resPayload any) error {
-	resp, err := fetch(true, method, path, reqBody)
+	return FetchSecureWithContext(context.Background(), method, path, reqBody, resPayload)
+}
+
+func FetchSecureWithContext(ctx context.Context, method string, path string, reqBody any, resPayload any) error {
+	resp, err := fetchWithContext(ctx, true, method, path, reqBody)
 	if err != nil {
 		return fmt.Errorf("decoding response: %+v", err)
 	}
@@ -75,17 +86,25 @@ func FetchSecure(method string, path string, reqBody any, resPayload any) error 
 }
 
 func FetchSecureV4(method string, path string, reqBody any, resPayload any) error {
-	resp, err := fetch(true, method, path, reqBody)
+	return FetchSecureV4WithContext(context.Background(), method, path, reqBody, resPayload)
+}
+
+func FetchSecureV4WithContext(ctx context.Context, method string, path string, reqBody any, resPayload any) error {
+	resp, err := fetchWithContext(ctx, true, method, path, reqBody)
 	if err != nil {
 		return fmt.Errorf("decoding response: %+v", err)
 	}
 	defer resp.Body.Close()
 
-	// Read body once
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
+	buf := bufferPool.Get().(*bytes.Buffer)
+	buf.Reset()
+	defer bufferPool.Put(buf)
+
+	if _, err := io.Copy(buf, resp.Body); err != nil {
 		return fmt.Errorf("reading response body: %+v", err)
 	}
+
+	bodyBytes := buf.Bytes()
 
 	if resp.StatusCode > 299 {
 		bodyString := string(bodyBytes)
@@ -111,7 +130,11 @@ func FetchSecureV4(method string, path string, reqBody any, resPayload any) erro
 }
 
 func FetchNonSecure(method string, path string, reqBody any, resPayload any) error {
-	resp, err := fetch(false, method, path, reqBody)
+	return FetchNonSecureWithContext(context.Background(), method, path, reqBody, resPayload)
+}
+
+func FetchNonSecureWithContext(ctx context.Context, method string, path string, reqBody any, resPayload any) error {
+	resp, err := fetchWithContext(ctx, false, method, path, reqBody)
 	if err != nil {
 		return fmt.Errorf("decoding response: %+v", err)
 	}
@@ -133,7 +156,7 @@ func FetchNonSecure(method string, path string, reqBody any, resPayload any) err
 	return nil
 }
 
-func fetch(secure bool, method string, path string, reqBody any) (*http.Response, error) {
+func fetchWithContext(ctx context.Context, secure bool, method string, path string, reqBody any) (*http.Response, error) {
 	var payload []byte = nil
 
 	serverTime, err := GetServerTime()
@@ -142,13 +165,18 @@ func fetch(secure bool, method string, path string, reqBody any) (*http.Response
 	}
 
 	if reqBody != nil {
-		payload, err = json.Marshal(reqBody)
-		if err != nil {
+		buf := bufferPool.Get().(*bytes.Buffer)
+		buf.Reset()
+		defer bufferPool.Put(buf)
+
+		if err := json.NewEncoder(buf).Encode(reqBody); err != nil {
 			return nil, fmt.Errorf("marshaling json: %+v", err)
 		}
+		payload = make([]byte, buf.Len())
+		copy(payload, buf.Bytes())
 	}
 
-	req, err := http.NewRequest(method, fmt.Sprintf("%s%s", BASE_URL, path), bytes.NewBuffer(payload))
+	req, err := http.NewRequestWithContext(ctx, method, fmt.Sprintf("%s%s", BASE_URL, path), bytes.NewBuffer(payload))
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %+v", err)
 	}
