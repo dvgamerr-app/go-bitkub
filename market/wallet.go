@@ -17,15 +17,5 @@ func GetWallet() (*BitkubWallet, error) {
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(result.Result)
-	if err != nil {
-		return nil, err
-	}
-
-	data := BitkubWallet{}
-
-	if err = stdJson.Unmarshal(byteData, &data); err != nil {
-		return nil, err
-	}
-	return &data, nil
+	return bitkub.DecodeResult[BitkubWallet](result.Result)
 }

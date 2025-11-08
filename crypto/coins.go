@@ -28,15 +28,5 @@ func GetCoins(params Coins) (*CoinsResponse, error) {
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(result.Data)
-	if err != nil {
-		return nil, err
-	}
-
-	data := CoinsResponse{}
-	if err = stdJson.Unmarshal(byteData, &data); err != nil {
-		return nil, err
-	}
-
-	return &data, nil
+	return bitkub.DecodeResult[CoinsResponse](result.Data)
 }

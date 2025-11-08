@@ -44,15 +44,5 @@ func PlaceBid(req PlaceBidRequest) (*PlaceBidResult, error) {
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(response.Result)
-	if err != nil {
-		return nil, err
-	}
-
-	var result PlaceBidResult
-	if err = stdJson.Unmarshal(byteData, &result); err != nil {
-		return nil, err
-	}
-
-	return &result, nil
+	return bitkub.DecodeResult[PlaceBidResult](response.Result)
 }

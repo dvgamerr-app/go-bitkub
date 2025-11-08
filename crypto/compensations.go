@@ -50,15 +50,5 @@ func GetCompensations(params Compensations) (*CompensationsResponse, error) {
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(result.Data)
-	if err != nil {
-		return nil, err
-	}
-
-	data := CompensationsResponse{}
-	if err = stdJson.Unmarshal(byteData, &data); err != nil {
-		return nil, err
-	}
-
-	return &data, nil
+	return bitkub.DecodeResult[CompensationsResponse](result.Data)
 }

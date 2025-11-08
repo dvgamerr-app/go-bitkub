@@ -20,15 +20,10 @@ func GetTradingCredits() (float64, error) {
 		return 0, err
 	}
 
-	byteData, err := stdJson.Marshal(response.Result)
+	result, err := bitkub.DecodeResult[float64](response.Result)
 	if err != nil {
 		return 0, err
 	}
 
-	var result float64
-	if err = stdJson.Unmarshal(byteData, &result); err != nil {
-		return 0, err
-	}
-
-	return result, nil
+	return *result, nil
 }

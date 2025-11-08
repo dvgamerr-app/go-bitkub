@@ -54,15 +54,5 @@ func GetDepositHistory(params DepositHistoryParams) (*DepositHistoryResponse, er
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(response)
-	if err != nil {
-		return nil, err
-	}
-
-	var result DepositHistoryResponse
-	if err = stdJson.Unmarshal(byteData, &result); err != nil {
-		return nil, err
-	}
-
-	return &result, nil
+	return bitkub.DecodeResult[DepositHistoryResponse](response)
 }

@@ -20,15 +20,10 @@ func GetBalances() (map[string]Balance, error) {
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(result.Result)
+	data, err := bitkub.DecodeResult[map[string]Balance](result.Result)
 	if err != nil {
 		return nil, err
 	}
 
-	data := map[string]Balance{}
-
-	if err = stdJson.Unmarshal(byteData, &data); err != nil {
-		return nil, err
-	}
-	return data, nil
+	return *data, nil
 }

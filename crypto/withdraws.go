@@ -47,17 +47,7 @@ func GetWithdraws(params Withdraws) (*WithdrawsResponse, error) {
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(result.Data)
-	if err != nil {
-		return nil, err
-	}
-
-	data := WithdrawsResponse{}
-	if err = stdJson.Unmarshal(byteData, &data); err != nil {
-		return nil, err
-	}
-
-	return &data, nil
+	return bitkub.DecodeResult[WithdrawsResponse](result.Data)
 }
 
 func CreateWithdraw(req CreateWithdrawRequest) (*CreateWithdrawResponse, error) {
@@ -80,15 +70,5 @@ func CreateWithdraw(req CreateWithdrawRequest) (*CreateWithdrawResponse, error) 
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(result.Data)
-	if err != nil {
-		return nil, err
-	}
-
-	data := CreateWithdrawResponse{}
-	if err = stdJson.Unmarshal(byteData, &data); err != nil {
-		return nil, err
-	}
-
-	return &data, nil
+	return bitkub.DecodeResult[CreateWithdrawResponse](result.Data)
 }

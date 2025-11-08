@@ -43,17 +43,7 @@ func GetAddresses(params Addresses) (*AddressesResponse, error) {
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(result.Data)
-	if err != nil {
-		return nil, err
-	}
-
-	data := AddressesResponse{}
-	if err = stdJson.Unmarshal(byteData, &data); err != nil {
-		return nil, err
-	}
-
-	return &data, nil
+	return bitkub.DecodeResult[AddressesResponse](result.Data)
 }
 
 func CreateAddress(req CreateAddressRequest) ([]Address, error) {
@@ -70,15 +60,10 @@ func CreateAddress(req CreateAddressRequest) ([]Address, error) {
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(result.Data)
+	data, err := bitkub.DecodeResult[[]Address](result.Data)
 	if err != nil {
 		return nil, err
 	}
 
-	data := []Address{}
-	if err = stdJson.Unmarshal(byteData, &data); err != nil {
-		return nil, err
-	}
-
-	return data, nil
+	return *data, nil
 }

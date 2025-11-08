@@ -40,15 +40,5 @@ func Withdraw(req WithdrawRequest) (*WithdrawResult, error) {
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(response.Result)
-	if err != nil {
-		return nil, err
-	}
-
-	var result WithdrawResult
-	if err = stdJson.Unmarshal(byteData, &result); err != nil {
-		return nil, err
-	}
-
-	return &result, nil
+	return bitkub.DecodeResult[WithdrawResult](response.Result)
 }

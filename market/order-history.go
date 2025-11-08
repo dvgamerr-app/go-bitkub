@@ -78,17 +78,12 @@ func GetOpenOrders(symbol string) ([]OpenOrder, error) {
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(response.Result)
+	result, err := bitkub.DecodeResult[[]OpenOrder](response.Result)
 	if err != nil {
 		return nil, err
 	}
 
-	var result []OpenOrder
-	if err = stdJson.Unmarshal(byteData, &result); err != nil {
-		return nil, err
-	}
-
-	return result, nil
+	return *result, nil
 }
 
 func GetOrderHistory(params OrderHistoryParams) (*OrderHistoryResponse, error) {
@@ -123,15 +118,5 @@ func GetOrderHistory(params OrderHistoryParams) (*OrderHistoryResponse, error) {
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(response)
-	if err != nil {
-		return nil, err
-	}
-
-	var result OrderHistoryResponse
-	if err = stdJson.Unmarshal(byteData, &result); err != nil {
-		return nil, err
-	}
-
-	return &result, nil
+	return bitkub.DecodeResult[OrderHistoryResponse](response)
 }

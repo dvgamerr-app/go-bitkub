@@ -62,15 +62,5 @@ func GetWithdrawHistory(params WithdrawHistoryParams) (*WithdrawHistoryResponse,
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(response)
-	if err != nil {
-		return nil, err
-	}
-
-	var result WithdrawHistoryResponse
-	if err = stdJson.Unmarshal(byteData, &result); err != nil {
-		return nil, err
-	}
-
-	return &result, nil
+	return bitkub.DecodeResult[WithdrawHistoryResponse](response)
 }

@@ -1,6 +1,27 @@
 package bitkub
 
-// Error represents the error response from Bitkub API
+import (
+	"fmt"
+
+	jsoniter "github.com/json-iterator/go"
+)
+
+var stdJson = jsoniter.ConfigCompatibleWithStandardLibrary
+
+func DecodeResult[T any](result any) (*T, error) {
+	byteData, err := stdJson.Marshal(result)
+	if err != nil {
+		return nil, fmt.Errorf("marshal result: %w", err)
+	}
+
+	var data T
+	if err = stdJson.Unmarshal(byteData, &data); err != nil {
+		return nil, fmt.Errorf("unmarshal result: %w", err)
+	}
+
+	return &data, nil
+}
+
 type Error struct {
 	Error int `json:"error"`
 }

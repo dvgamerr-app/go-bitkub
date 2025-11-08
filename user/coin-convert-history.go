@@ -76,15 +76,5 @@ func GetCoinConvertHistory(params CoinHistoryParams) (*CoinConvertHistoryRespons
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(response)
-	if err != nil {
-		return nil, err
-	}
-
-	var result CoinConvertHistoryResponse
-	if err = stdJson.Unmarshal(byteData, &result); err != nil {
-		return nil, err
-	}
-
-	return &result, nil
+	return bitkub.DecodeResult[CoinConvertHistoryResponse](response)
 }

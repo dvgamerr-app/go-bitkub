@@ -53,15 +53,5 @@ func GetAccounts(params AccountsParams) (*AccountsResponse, error) {
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(response)
-	if err != nil {
-		return nil, err
-	}
-
-	var result AccountsResponse
-	if err = stdJson.Unmarshal(byteData, &result); err != nil {
-		return nil, err
-	}
-
-	return &result, nil
+	return bitkub.DecodeResult[AccountsResponse](response)
 }

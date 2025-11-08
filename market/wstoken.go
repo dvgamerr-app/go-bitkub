@@ -19,19 +19,12 @@ func GetWSToken() (string, error) {
 		return "", err
 	}
 
-	// API returns token as a string directly in result
 	if token, ok := response.Result.(string); ok {
 		return token, nil
 	}
 
-	// Fallback: try to unmarshal as object
-	byteData, err := stdJson.Marshal(response.Result)
+	result, err := bitkub.DecodeResult[WSTokenResult](response.Result)
 	if err != nil {
-		return "", err
-	}
-
-	var result WSTokenResult
-	if err = stdJson.Unmarshal(byteData, &result); err != nil {
 		return "", err
 	}
 

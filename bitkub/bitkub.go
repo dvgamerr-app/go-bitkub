@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/dvgamerr-app/go-bitkub/utils"
@@ -13,8 +14,11 @@ import (
 const BASE_URL = "https://api.bitkub.com"
 
 var (
-	apiKey    string
-	secretKey string
+	apiKey         string
+	secretKey      string
+	timeOffsetMs   int64
+	timeOffsetOnce sync.Once
+	timeOffsetErr  error
 )
 
 type ResponseAPI struct {
@@ -78,38 +82,66 @@ func GetStatus() ([]StatusResponse, error) {
 }
 
 func GetServerTime() (string, error) {
-	var lastErr error
-	for attempt := 1; attempt <= 3; attempt++ {
-		if attempt > 1 {
-			backoff := time.Duration(attempt-1) * 500 * time.Millisecond
-			time.Sleep(backoff)
-		}
-
-		resp, err := apiBitkubTime.Get(fmt.Sprintf("%s%s", BASE_URL, "/api/v3/servertime"))
-		if err != nil {
-			lastErr = err
-			if attempt < 3 {
-				continue
+	timeOffsetOnce.Do(func() {
+		var lastErr error
+		for attempt := 1; attempt <= 3; attempt++ {
+			if attempt > 1 {
+				backoff := time.Duration(attempt-1) * 500 * time.Millisecond
+				time.Sleep(backoff)
 			}
-			return "0", fmt.Errorf("(%d) %v", attempt, lastErr)
-		}
 
-		result, err := io.ReadAll(resp.Body)
-		resp.Body.Close()
-
-		if err != nil {
-			lastErr = err
-			if attempt < 3 {
-				continue
+			resp, err := apiBitkubTime.Get(fmt.Sprintf("%s%s", BASE_URL, "/api/v3/servertime"))
+			if err != nil {
+				lastErr = err
+				if attempt < 3 {
+					continue
+				}
+				timeOffsetErr = fmt.Errorf("(%d) %v", attempt, lastErr)
+				return
 			}
-			return "0", fmt.Errorf("(%d) %v", attempt, lastErr)
+
+			result, err := io.ReadAll(resp.Body)
+			resp.Body.Close()
+
+			if err != nil {
+				lastErr = err
+				if attempt < 3 {
+					continue
+				}
+				timeOffsetErr = fmt.Errorf("(%d) %v", attempt, lastErr)
+				return
+			}
+
+			timeStr := string(result)
+			timeStr = strings.Trim(timeStr, "\" \n\r")
+
+			serverTime, err := time.Parse("2006-01-02T15:04:05.999Z07:00", timeStr)
+			if err != nil {
+				serverTimeMs := int64(0)
+				fmt.Sscanf(timeStr, "%d", &serverTimeMs)
+				if serverTimeMs > 0 {
+					timeOffsetMs = serverTimeMs - time.Now().UnixMilli()
+					return
+				}
+				lastErr = err
+				if attempt < 3 {
+					continue
+				}
+				timeOffsetErr = fmt.Errorf("parse time (%d) %v", attempt, lastErr)
+				return
+			}
+
+			timeOffsetMs = serverTime.UnixMilli() - time.Now().UnixMilli()
+			return
 		}
 
-		timeStr := string(result)
-		timeStr = strings.Trim(timeStr, "\" \n\r")
+		timeOffsetErr = fmt.Errorf("(retry) %v", lastErr)
+	})
 
-		return timeStr, nil
+	if timeOffsetErr != nil {
+		return "0", timeOffsetErr
 	}
 
-	return "0", fmt.Errorf("(retry) %v", lastErr)
+	currentTime := time.Now().UnixMilli() + timeOffsetMs
+	return fmt.Sprintf("%d", currentTime), nil
 }

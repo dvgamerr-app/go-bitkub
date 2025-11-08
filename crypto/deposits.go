@@ -46,15 +46,5 @@ func GetDeposits(params Deposits) (*DepositsResponse, error) {
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(result.Data)
-	if err != nil {
-		return nil, err
-	}
-
-	data := DepositsResponse{}
-	if err = stdJson.Unmarshal(byteData, &data); err != nil {
-		return nil, err
-	}
-
-	return &data, nil
+	return bitkub.DecodeResult[DepositsResponse](result.Data)
 }

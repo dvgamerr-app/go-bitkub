@@ -62,15 +62,5 @@ func GetUserLimits() (*UserLimits, error) {
 		return nil, err
 	}
 
-	byteData, err := stdJson.Marshal(response.Result)
-	if err != nil {
-		return nil, err
-	}
-
-	var result UserLimits
-	if err = stdJson.Unmarshal(byteData, &result); err != nil {
-		return nil, err
-	}
-
-	return &result, nil
+	return bitkub.DecodeResult[UserLimits](response.Result)
 }
