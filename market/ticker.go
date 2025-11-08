@@ -1,15 +1,15 @@
 package market
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 	"github.com/dvgamerr-app/go-bitkub/utils"
-	"github.com/rs/zerolog/log"
 )
 
 type Ticker struct {
-	Symbol        string  `json:"symbol"`
+	Symbol        string  `json:"-"`
 	ID            int     `json:"id"`
 	Last          float64 `json:"last"`
 	LowestAsk     float64 `json:"lowestAsk"`
@@ -26,7 +26,7 @@ type Ticker struct {
 }
 
 func GetTicker(symbol string) ([]Ticker, error) {
-	var resultMap map[string]any
+	var resultMap map[string]json.RawMessage
 
 	url := "/api/market/ticker"
 	if symbol != "" {
@@ -37,57 +37,13 @@ func GetTicker(symbol string) ([]Ticker, error) {
 		return nil, err
 	}
 
-	log.Debug().Interface("resultMap", resultMap).Msg("Ticker response")
-
 	result := make([]Ticker, 0, len(resultMap))
-	for sym, value := range resultMap {
-		tickerData, ok := value.(map[string]any)
-		if !ok {
-			log.Debug().Str("symbol", sym).Interface("value", value).Msg("Skipping non-map value")
+	for sym, rawData := range resultMap {
+		var ticker Ticker
+		if err := json.Unmarshal(rawData, &ticker); err != nil {
 			continue
 		}
-
-		ticker := Ticker{Symbol: sym}
-		if id, ok := tickerData["id"].(float64); ok {
-			ticker.ID = int(id)
-		}
-		if last, ok := tickerData["last"].(float64); ok {
-			ticker.Last = last
-		}
-		if lowestAsk, ok := tickerData["lowestAsk"].(float64); ok {
-			ticker.LowestAsk = lowestAsk
-		}
-		if highestBid, ok := tickerData["highestBid"].(float64); ok {
-			ticker.HighestBid = highestBid
-		}
-		if percentChange, ok := tickerData["percentChange"].(float64); ok {
-			ticker.PercentChange = percentChange
-		}
-		if baseVolume, ok := tickerData["baseVolume"].(float64); ok {
-			ticker.BaseVolume = baseVolume
-		}
-		if quoteVolume, ok := tickerData["quoteVolume"].(float64); ok {
-			ticker.QuoteVolume = quoteVolume
-		}
-		if isFrozen, ok := tickerData["isFrozen"].(float64); ok {
-			ticker.IsFrozen = int(isFrozen)
-		}
-		if high24hr, ok := tickerData["high24hr"].(float64); ok {
-			ticker.High24hr = high24hr
-		}
-		if low24hr, ok := tickerData["low24hr"].(float64); ok {
-			ticker.Low24hr = low24hr
-		}
-		if change, ok := tickerData["change"].(float64); ok {
-			ticker.Change = change
-		}
-		if prevClose, ok := tickerData["prevClose"].(float64); ok {
-			ticker.PrevClose = prevClose
-		}
-		if prevOpen, ok := tickerData["prevOpen"].(float64); ok {
-			ticker.PrevOpen = prevOpen
-		}
-
+		ticker.Symbol = sym
 		result = append(result, ticker)
 	}
 
