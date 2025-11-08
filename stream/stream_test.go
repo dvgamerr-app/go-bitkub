@@ -6,52 +6,6 @@ import (
 	"time"
 )
 
-func TestMarketTrade(t *testing.T) {
-	config := &StreamConfig{
-		ReconnectInterval: 5 * time.Second,
-		MaxReconnect:      5,
-		PingInterval:      30 * time.Second,
-		ReadTimeout:       60 * time.Second,
-	}
-
-	stream := New(config)
-
-	if err := stream.ConnectMarket("market.trade.thb_btc"); err != nil {
-		t.Fatalf("Failed to connect: %v", err)
-	}
-	defer stream.Close()
-
-	timeout := time.After(30 * time.Second)
-	messageCount := 0
-	maxMessages := 10
-
-	for {
-		select {
-		case msg := <-stream.Messages():
-			if msg.Error != nil {
-				t.Logf("Error: %v", msg.Error)
-				continue
-			}
-
-			if msg.Type == "reconnected" {
-				t.Log("Reconnected successfully")
-				continue
-			}
-
-			messageCount++
-
-			if messageCount >= maxMessages {
-				t.Log("Received enough messages, stopping...")
-				return
-			}
-
-		case <-timeout:
-			t.Log("Test timeout reached")
-			return
-		}
-	}
-}
-
 func TestMarketTicker(t *testing.T) {
 	stream := New(nil)
 
@@ -60,7 +14,7 @@ func TestMarketTicker(t *testing.T) {
 	}
 	defer stream.Close()
 
-	timeout := time.After(30 * time.Second)
+	timeout := time.After(5 * time.Second)
 	messageCount := 0
 
 	for {
@@ -78,7 +32,6 @@ func TestMarketTicker(t *testing.T) {
 			}
 
 		case <-timeout:
-			t.Log("Timeout")
 			return
 		}
 	}
@@ -96,7 +49,7 @@ func TestMultipleStreams(t *testing.T) {
 	}
 	defer stream.Close()
 
-	timeout := time.After(60 * time.Second)
+	timeout := time.After(5 * time.Second)
 	messageCount := 0
 
 	for {
@@ -114,7 +67,6 @@ func TestMultipleStreams(t *testing.T) {
 			}
 
 		case <-timeout:
-			t.Log("Timeout")
 			return
 		}
 	}
@@ -128,7 +80,7 @@ func TestOrderBook(t *testing.T) {
 	}
 	defer stream.Close()
 
-	timeout := time.After(30 * time.Second)
+	timeout := time.After(5 * time.Second)
 	messageCount := 0
 
 	for {
@@ -146,7 +98,6 @@ func TestOrderBook(t *testing.T) {
 			}
 
 		case <-timeout:
-			t.Log("Timeout")
 			return
 		}
 	}

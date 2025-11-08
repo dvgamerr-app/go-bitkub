@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -36,6 +37,7 @@ func New(config *StreamConfig) *Stream {
 			MaxReconnect:      10,
 			PingInterval:      DefaultPingTime,
 			ReadTimeout:       DefaultTimeout,
+			MessageBuffer:     100,
 		}
 	} else {
 		if config.PingInterval <= 0 {
@@ -47,6 +49,9 @@ func New(config *StreamConfig) *Stream {
 		if config.ReconnectInterval <= 0 {
 			config.ReconnectInterval = 5 * time.Second
 		}
+		if config.MessageBuffer <= 0 {
+			config.MessageBuffer = 100
+		}
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -54,7 +59,7 @@ func New(config *StreamConfig) *Stream {
 		config:         *config,
 		ctx:            ctx,
 		cancel:         cancel,
-		messageChannel: make(chan Message, 100),
+		messageChannel: make(chan Message, config.MessageBuffer),
 		lastPong:       time.Now(),
 	}
 }
@@ -139,27 +144,30 @@ func (s *Stream) readMessages() {
 				return
 			}
 
-			var rawMsg map[string]any
-			if err := json.Unmarshal(message, &rawMsg); err != nil {
-				s.messageChannel <- Message{
-					Error:     fmt.Errorf("json unmarshal error: %w", err),
+			decoder := json.NewDecoder(bytes.NewReader(message))
+			for decoder.More() {
+				var rawMsg map[string]any
+				if err := decoder.Decode(&rawMsg); err != nil {
+					s.messageChannel <- Message{
+						Error:     fmt.Errorf("json decode error: %w", err),
+						Timestamp: time.Now(),
+					}
+					break
+				}
+
+				msg := Message{
+					Data:      rawMsg,
 					Timestamp: time.Now(),
 				}
-				continue
-			}
 
-			msg := Message{
-				Data:      rawMsg,
-				Timestamp: time.Now(),
-			}
+				if event, ok := rawMsg["event"].(string); ok {
+					msg.Type = event
+				} else if stream, ok := rawMsg["stream"].(string); ok {
+					msg.Type = stream
+				}
 
-			if event, ok := rawMsg["event"].(string); ok {
-				msg.Type = event
-			} else if stream, ok := rawMsg["stream"].(string); ok {
-				msg.Type = stream
+				s.messageChannel <- msg
 			}
-
-			s.messageChannel <- msg
 		}
 	}
 }
