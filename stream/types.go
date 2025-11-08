@@ -72,6 +72,7 @@ type StreamConfig struct {
 	MaxReconnect      int
 	PingInterval      time.Duration
 	ReadTimeout       time.Duration
+	MessageBuffer     int
 }
 
 type Message struct {

@@ -11,7 +11,6 @@ import (
 	"io"
 	"net/http"
 	"sync"
-	"time"
 
 	"github.com/rs/zerolog/log"
 )
@@ -28,21 +27,27 @@ var (
 )
 
 func init() {
+	initHTTPClients()
+}
+
+func initHTTPClients() {
+	cfg := GetConfig()
+
 	httpTransport = &http.Transport{
-		MaxIdleConns:        100,
+		MaxIdleConns:        cfg.MaxIdleConns,
 		MaxIdleConnsPerHost: 10,
-		IdleConnTimeout:     90 * time.Second,
+		IdleConnTimeout:     cfg.IdleConnTimeout,
 		DisableKeepAlives:   false,
 	}
 
 	apiBitkub = &http.Client{
 		Transport: httpTransport,
-		Timeout:   30 * time.Second,
+		Timeout:   cfg.APITimeout,
 	}
 
 	apiBitkubTime = &http.Client{
 		Transport: httpTransport,
-		Timeout:   3 * time.Second,
+		Timeout:   cfg.ServerTimeout,
 	}
 }
 

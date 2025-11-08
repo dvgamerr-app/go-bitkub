@@ -13,12 +13,25 @@ import (
 
 const BASE_URL = "https://api.bitkub.com"
 
+type Config struct {
+	APITimeout      time.Duration
+	ServerTimeout   time.Duration
+	MaxIdleConns    int
+	IdleConnTimeout time.Duration
+}
+
 var (
 	apiKey         string
 	secretKey      string
 	timeOffsetMs   int64
 	timeOffsetOnce sync.Once
 	timeOffsetErr  error
+	config         = Config{
+		APITimeout:      30 * time.Second,
+		ServerTimeout:   5 * time.Second,
+		MaxIdleConns:    100,
+		IdleConnTimeout: 90 * time.Second,
+	}
 )
 
 type ResponseAPI struct {
@@ -52,6 +65,26 @@ type ResponseAPIV4 struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
 	Data    any    `json:"data"`
+}
+
+func SetConfig(cfg Config) {
+	if cfg.APITimeout > 0 {
+		config.APITimeout = cfg.APITimeout
+	}
+	if cfg.ServerTimeout > 0 {
+		config.ServerTimeout = cfg.ServerTimeout
+	}
+	if cfg.MaxIdleConns > 0 {
+		config.MaxIdleConns = cfg.MaxIdleConns
+	}
+	if cfg.IdleConnTimeout > 0 {
+		config.IdleConnTimeout = cfg.IdleConnTimeout
+	}
+	initHTTPClients()
+}
+
+func GetConfig() Config {
+	return config
 }
 
 func Initlizer(key ...string) error {
