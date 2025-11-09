@@ -92,9 +92,7 @@ var rootCmd = &cobra.Command{
 func init() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
-	if err := utils.LoadDotEnv(); err != nil {
-		log.Debug().Err(err).Msg("No .env file loaded")
-	}
+	utils.LoadDotEnv()
 
 	rootCmd.SetVersionTemplate(fmt.Sprintf("bitkub version %s (commit: %s, built: %s)\n", Version, Commit, Date))
 
