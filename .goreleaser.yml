@@ -22,9 +22,6 @@ builds:
         goarch: arm64
     ldflags:
       - -s -w
-      - -X github.com/dvgamerr-app/go-bitkub/cmd.Version={{.Version}}
-      - -X github.com/dvgamerr-app/go-bitkub/cmd.Commit={{.Commit}}
-      - -X github.com/dvgamerr-app/go-bitkub/cmd.Date={{.Date}}
 
 archives:
   - id: default

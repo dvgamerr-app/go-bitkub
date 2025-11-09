@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 	"os"
+	dbg "runtime/debug"
+	"strings"
 
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 	"github.com/dvgamerr-app/go-bitkub/utils"
@@ -21,6 +23,29 @@ var (
 	Commit           = "none"
 	Date             = "unknown"
 )
+
+func init() {
+	if Version == "dev" {
+		if info, ok := dbg.ReadBuildInfo(); ok {
+			if info.Main.Version != "" && info.Main.Version != "(devel)" {
+				Version = info.Main.Version
+			}
+			for _, setting := range info.Settings {
+				switch setting.Key {
+				case "vcs.revision":
+					if len(setting.Value) >= 7 {
+						Commit = setting.Value[:7]
+					} else {
+						Commit = setting.Value
+					}
+				case "vcs.time":
+					Date = strings.Replace(setting.Value, "T", " ", 1)
+					Date = strings.Replace(Date, "Z", "", 1)
+				}
+			}
+		}
+	}
+}
 
 func output(data any, isLastLine ...bool) {
 	switch format {
