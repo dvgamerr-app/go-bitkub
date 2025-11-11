@@ -469,42 +469,6 @@ var marketCancelOrderCmd = &cobra.Command{
 	},
 }
 
-var marketLimitsCmd = &cobra.Command{
-	Use:   "limits",
-	Short: "Get user trading limits",
-	Run: func(cmd *cobra.Command, args []string) {
-		limits, err := market.GetUserLimits()
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to get limits")
-		}
-
-		output(map[string]any{
-			"crypto": map[string]any{
-				"deposit":  limits.Limits.Crypto.Deposit,
-				"withdraw": limits.Limits.Crypto.Withdraw,
-			},
-			"fiat": map[string]any{
-				"deposit":  limits.Limits.Fiat.Deposit,
-				"withdraw": limits.Limits.Fiat.Withdraw,
-			},
-		})
-	},
-}
-
-var marketTradingCreditsCmd = &cobra.Command{
-	Use:   "credits",
-	Short: "Get trading credits",
-	Run: func(cmd *cobra.Command, args []string) {
-		credits, err := market.GetTradingCredits()
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to get trading credits")
-		}
-		output(map[string]any{
-			"credits": credits,
-		})
-	},
-}
-
 var marketWSTokenCmd = &cobra.Command{
 	Use:   "wstoken",
 	Short: "Get WebSocket token",
@@ -573,8 +537,6 @@ func init() {
 	marketCmd.AddCommand(marketPlaceBidCmd)
 	marketCmd.AddCommand(marketPlaceAskCmd)
 	marketCmd.AddCommand(marketCancelOrderCmd)
-	marketCmd.AddCommand(marketLimitsCmd)
-	marketCmd.AddCommand(marketTradingCreditsCmd)
 	marketCmd.AddCommand(marketWSTokenCmd)
 	marketCmd.AddCommand(marketHistoryCmd)
 

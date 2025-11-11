@@ -419,8 +419,6 @@ go-bitkub/
 │   ├── order-info.go
 │   ├── balances.go
 │   ├── wallet.go
-│   ├── trading-credits.go
-│   ├── limit.go
 │   └── wstoken.go
 ├── user/            # User API (V3) endpoints
 │   ├── trading-credits.go

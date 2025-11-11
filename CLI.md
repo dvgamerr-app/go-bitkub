@@ -127,12 +127,6 @@ bitkub market sell kub_thb 10 1
 # Cancel order
 bitkub market cancel btc_thb 446958802
 
-# Get user limits
-bitkub market limits
-
-# Get trading credits
-bitkub market credits
-
 # Get WebSocket token
 bitkub market wstoken
 ```

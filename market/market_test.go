@@ -66,12 +66,6 @@ func TestGetDepth(t *testing.T) {
 	assert.NotNil(t, result)
 }
 
-func TestGetUserLimits(t *testing.T) {
-	result, err := GetUserLimits()
-	assert.Nil(t, err)
-	assert.NotNil(t, result)
-}
-
 func TestGetOpenOrders(t *testing.T) {
 	result, err := GetOpenOrders("kub_thb")
 	assert.Nil(t, err)
@@ -167,12 +161,6 @@ func TestGetTicker(t *testing.T) {
 
 func TestGetTrades(t *testing.T) {
 	result, err := GetTrades("kub_thb", 10)
-	assert.Nil(t, err)
-	assert.NotNil(t, result)
-}
-
-func TestGetTradingCredits(t *testing.T) {
-	result, err := GetTradingCredits()
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 }
