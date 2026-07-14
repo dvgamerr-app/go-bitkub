@@ -385,15 +385,24 @@ See [official documentation](https://github.com/bitkub/bitkub-official-api-docs/
 
 ## 🧪 Testing
 
-### Run Tests (Requires API credentials)
+### Run Tests
+```bash
+# Default test suite (offline-safe / deterministic)
+go test ./... -v
+```
+
+### Run Integration Tests (Hits live Bitkub APIs)
 ```bash
 # Set your credentials
 export BTK_APIKEY="your_api_key"
 export BTK_SECRET="your_secret_key"
 
-# Run tests
-go test ./... -v
+# Run live API tests explicitly
+go test -tags=integration ./... -v
 ```
+
+Integration tests hit real Bitkub endpoints and may require account-specific permissions.
+In particular, `fiat` integration tests need fiat features enabled on the target account.
 
 ## 📁 Project Structure
 
@@ -532,4 +541,3 @@ This is an unofficial SDK. Use at your own risk. Always test thoroughly before u
 ---
 
 **Note**: This SDK implements the Bitkub API specification as of November 2025. API specifications are subject to change by Bitkub.
-
