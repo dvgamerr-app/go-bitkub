@@ -103,6 +103,7 @@ bitkub --format json stream ticker thb_btc -n 5
 - ✅ Type-safe API responses
 - ✅ Proper error handling
 - ✅ Connection pooling & optimization
+- ✅ Public requests skip server-time synchronization and HMAC work
 - ✅ HMAC SHA256 signature authentication
 - ✅ Rate limit awareness
 
@@ -387,9 +388,14 @@ See [official documentation](https://github.com/bitkub/bitkub-official-api-docs/
 
 ### Run Tests
 ```bash
-# Default test suite (offline-safe / deterministic)
+# Run all unit and WebSocket smoke tests
 go test ./... -v
+
+# Run deterministic package tests without live WebSocket smoke tests
+go test ./bitkub ./crypto ./fiat ./market ./user ./utils -v
 ```
+
+The `stream` package tests open live WebSocket connections. Run the deterministic package list when network access is unavailable.
 
 ### Run Integration Tests (Hits live Bitkub APIs)
 ```bash
@@ -404,6 +410,13 @@ go test -tags=integration ./... -v
 Integration tests hit real Bitkub endpoints and may require account-specific permissions.
 In particular, `fiat` integration tests need fiat features enabled on the target account.
 
+### Build and Static Checks
+```bash
+gofmt -w <changed-go-files>
+go vet ./...
+go build ./...
+```
+
 ## 📁 Project Structure
 
 ```
@@ -411,8 +424,8 @@ go-bitkub/
 ├── bitkub/          # Core API client and authentication
 │   ├── bitkub.go    # Initialization and configuration
 │   ├── fetch.go     # HTTP client with v3 & v4 support
+│   ├── fetch_test.go # Offline HTTP/authentication regression tests
 │   ├── error.go     # Error code mappings
-│   ├── status.go    # System status endpoints
 │   └── types.go     # Common type definitions
 ├── market/          # Market API (V3) endpoints
 │   ├── symbols.go
@@ -457,8 +470,8 @@ go-bitkub/
 ├── utils/           # Utility functions
 │   ├── error.go
 │   └── helper.go
-├── balances.go      # Balance aggregation helper
-├── wallet.go        # Wallet helper functions
+├── cmd/              # Cobra CLI commands
+├── examples/         # SDK usage examples
 └── docs/            # Documentation
 ```
 

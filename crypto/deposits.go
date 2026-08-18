@@ -2,9 +2,6 @@ package crypto
 
 import (
 	"net/url"
-	"strconv"
-
-	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
 type Deposits struct {
@@ -15,36 +12,15 @@ type Deposits struct {
 }
 
 func GetDeposits(params Deposits) (*DepositsResponse, error) {
-	var result bitkub.ResponseAPIV4
-
 	queryParams := url.Values{}
-	if params.Page > 0 {
-		queryParams.Add("page", strconv.Itoa(params.Page))
-	}
-	if params.Limit > 0 {
-		queryParams.Add("limit", strconv.Itoa(params.Limit))
-	}
+	addPagination(queryParams, params.Pagination)
 	if params.Symbol != "" {
-		queryParams.Add("symbol", params.Symbol)
+		queryParams.Set("symbol", params.Symbol)
 	}
 	if params.Status != "" {
-		queryParams.Add("status", params.Status)
+		queryParams.Set("status", params.Status)
 	}
-	if params.CreatedStart != "" {
-		queryParams.Add("created_start", params.CreatedStart)
-	}
-	if params.CreatedEnd != "" {
-		queryParams.Add("created_end", params.CreatedEnd)
-	}
+	addDateRange(queryParams, params.DateRange)
 
-	path := "/api/v4/crypto/deposits"
-	if len(queryParams) > 0 {
-		path += "?" + queryParams.Encode()
-	}
-
-	if err := bitkub.FetchSecureV4("GET", path, nil, &result); err != nil {
-		return nil, err
-	}
-
-	return bitkub.DecodeResult[DepositsResponse](result.Data)
+	return fetchV4[DepositsResponse]("GET", pathWithQuery("/api/v4/crypto/deposits", queryParams), nil)
 }

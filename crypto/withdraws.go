@@ -3,9 +3,6 @@ package crypto
 import (
 	"fmt"
 	"net/url"
-	"strconv"
-
-	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
 type Withdraws struct {
@@ -16,38 +13,17 @@ type Withdraws struct {
 }
 
 func GetWithdraws(params Withdraws) (*WithdrawsResponse, error) {
-	var result bitkub.ResponseAPIV4
-
 	queryParams := url.Values{}
-	if params.Page > 0 {
-		queryParams.Add("page", strconv.Itoa(params.Page))
-	}
-	if params.Limit > 0 {
-		queryParams.Add("limit", strconv.Itoa(params.Limit))
-	}
+	addPagination(queryParams, params.Pagination)
 	if params.Symbol != "" {
-		queryParams.Add("symbol", params.Symbol)
+		queryParams.Set("symbol", params.Symbol)
 	}
 	if params.Status != "" {
-		queryParams.Add("status", params.Status)
+		queryParams.Set("status", params.Status)
 	}
-	if params.CreatedStart != "" {
-		queryParams.Add("created_start", params.CreatedStart)
-	}
-	if params.CreatedEnd != "" {
-		queryParams.Add("created_end", params.CreatedEnd)
-	}
+	addDateRange(queryParams, params.DateRange)
 
-	path := "/api/v4/crypto/withdraws"
-	if len(queryParams) > 0 {
-		path += "?" + queryParams.Encode()
-	}
-
-	if err := bitkub.FetchSecureV4("GET", path, nil, &result); err != nil {
-		return nil, err
-	}
-
-	return bitkub.DecodeResult[WithdrawsResponse](result.Data)
+	return fetchV4[WithdrawsResponse]("GET", pathWithQuery("/api/v4/crypto/withdraws", queryParams), nil)
 }
 
 func CreateWithdraw(req CreateWithdrawRequest) (*CreateWithdrawResponse, error) {
@@ -64,11 +40,5 @@ func CreateWithdraw(req CreateWithdrawRequest) (*CreateWithdrawResponse, error) 
 		return nil, fmt.Errorf("network is required")
 	}
 
-	var result bitkub.ResponseAPIV4
-
-	if err := bitkub.FetchSecureV4("POST", "/api/v4/crypto/withdraws", req, &result); err != nil {
-		return nil, err
-	}
-
-	return bitkub.DecodeResult[CreateWithdrawResponse](result.Data)
+	return fetchV4[CreateWithdrawResponse]("POST", "/api/v4/crypto/withdraws", req)
 }

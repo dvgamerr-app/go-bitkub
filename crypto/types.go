@@ -1,5 +1,45 @@
 package crypto
 
+import (
+	"net/url"
+	"strconv"
+
+	"github.com/dvgamerr-app/go-bitkub/bitkub"
+)
+
+func addPagination(query url.Values, pagination Pagination) {
+	if pagination.Page > 0 {
+		query.Set("page", strconv.Itoa(pagination.Page))
+	}
+	if pagination.Limit > 0 {
+		query.Set("limit", strconv.Itoa(pagination.Limit))
+	}
+}
+
+func addDateRange(query url.Values, dateRange DateRange) {
+	if dateRange.CreatedStart != "" {
+		query.Set("created_start", dateRange.CreatedStart)
+	}
+	if dateRange.CreatedEnd != "" {
+		query.Set("created_end", dateRange.CreatedEnd)
+	}
+}
+
+func pathWithQuery(path string, query url.Values) string {
+	if len(query) == 0 {
+		return path
+	}
+	return path + "?" + query.Encode()
+}
+
+func fetchV4[T any](method, path string, request any) (*T, error) {
+	var response bitkub.ResponseAPIV4
+	if err := bitkub.FetchSecureV4(method, path, request, &response); err != nil {
+		return nil, err
+	}
+	return bitkub.DecodeResult[T](response.Data)
+}
+
 type Pagination struct {
 	Page  int
 	Limit int

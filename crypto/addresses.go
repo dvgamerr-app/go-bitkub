@@ -3,9 +3,6 @@ package crypto
 import (
 	"fmt"
 	"net/url"
-	"strconv"
-
-	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
 type Addresses struct {
@@ -15,35 +12,19 @@ type Addresses struct {
 }
 
 func GetAddresses(params Addresses) (*AddressesResponse, error) {
-	var result bitkub.ResponseAPIV4
-
 	queryParams := url.Values{}
-	if params.Page > 0 {
-		queryParams.Add("page", strconv.Itoa(params.Page))
-	}
-	if params.Limit > 0 {
-		queryParams.Add("limit", strconv.Itoa(params.Limit))
-	}
+	addPagination(queryParams, params.Pagination)
 	if params.Symbol != "" {
-		queryParams.Add("symbol", params.Symbol)
+		queryParams.Set("symbol", params.Symbol)
 	}
 	if params.Network != "" {
-		queryParams.Add("network", params.Network)
+		queryParams.Set("network", params.Network)
 	}
 	if params.Memo != "" {
-		queryParams.Add("memo", params.Memo)
+		queryParams.Set("memo", params.Memo)
 	}
 
-	path := "/api/v4/crypto/addresses"
-	if len(queryParams) > 0 {
-		path += "?" + queryParams.Encode()
-	}
-
-	if err := bitkub.FetchSecureV4("GET", path, nil, &result); err != nil {
-		return nil, err
-	}
-
-	return bitkub.DecodeResult[AddressesResponse](result.Data)
+	return fetchV4[AddressesResponse]("GET", pathWithQuery("/api/v4/crypto/addresses", queryParams), nil)
 }
 
 func CreateAddress(req CreateAddressRequest) ([]Address, error) {
@@ -54,13 +35,7 @@ func CreateAddress(req CreateAddressRequest) ([]Address, error) {
 		return nil, fmt.Errorf("network is required")
 	}
 
-	var result bitkub.ResponseAPIV4
-
-	if err := bitkub.FetchSecureV4("POST", "/api/v4/crypto/addresses", req, &result); err != nil {
-		return nil, err
-	}
-
-	data, err := bitkub.DecodeResult[[]Address](result.Data)
+	data, err := fetchV4[[]Address]("POST", "/api/v4/crypto/addresses", req)
 	if err != nil {
 		return nil, err
 	}

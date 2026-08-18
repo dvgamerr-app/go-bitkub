@@ -1,10 +1,24 @@
 package crypto
 
 import (
+	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestQueryHelpers(t *testing.T) {
+	query := url.Values{}
+	addPagination(query, Pagination{Page: 2, Limit: 25})
+	addDateRange(query, DateRange{CreatedStart: "2026-01-01", CreatedEnd: "2026-01-31"})
+
+	assert.Equal(
+		t,
+		"/items?created_end=2026-01-31&created_start=2026-01-01&limit=25&page=2",
+		pathWithQuery("/items", query),
+	)
+	assert.Equal(t, "/items", pathWithQuery("/items", url.Values{}))
+}
 
 func TestCreateAddressValidationOffline(t *testing.T) {
 	req := CreateAddressRequest{
