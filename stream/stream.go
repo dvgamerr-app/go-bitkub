@@ -1,9 +1,7 @@
 package stream
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
@@ -112,64 +110,6 @@ func (s *Stream) connect() error {
 	go s.pingPong()
 
 	return nil
-}
-
-func (s *Stream) readMessages() {
-	defer func() {
-		s.mu.Lock()
-		s.isConnected = false
-		s.mu.Unlock()
-	}()
-
-	for {
-		select {
-		case <-s.ctx.Done():
-			return
-		default:
-			if s.conn == nil {
-				return
-			}
-
-			s.conn.SetReadDeadline(time.Now().Add(s.config.ReadTimeout))
-			_, message, err := s.conn.ReadMessage()
-			if err != nil {
-				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-					s.messageChannel <- Message{
-						Error:     err,
-						Timestamp: time.Now(),
-					}
-				}
-
-				s.handleReconnect()
-				return
-			}
-
-			decoder := json.NewDecoder(bytes.NewReader(message))
-			for decoder.More() {
-				var rawMsg map[string]any
-				if err := decoder.Decode(&rawMsg); err != nil {
-					s.messageChannel <- Message{
-						Error:     fmt.Errorf("json decode error: %w", err),
-						Timestamp: time.Now(),
-					}
-					break
-				}
-
-				msg := Message{
-					Data:      rawMsg,
-					Timestamp: time.Now(),
-				}
-
-				if event, ok := rawMsg["event"].(string); ok {
-					msg.Type = event
-				} else if stream, ok := rawMsg["stream"].(string); ok {
-					msg.Type = stream
-				}
-
-				s.messageChannel <- msg
-			}
-		}
-	}
 }
 
 func (s *Stream) pingPong() {

@@ -35,23 +35,11 @@ func tailLoop(s *stream.Stream, limit int, continuous bool, filterType string) {
 			if !ok {
 				return
 			}
-			if msg.Error != nil {
-				log.Error().Err(msg.Error).Msg("stream error")
-				if !continuous {
-					return
-				}
-				continue
+			printed, stop := handleStreamMessage(msg, continuous, filterType)
+			if printed {
+				count++
 			}
-			if filterType != "" && msg.Type != filterType {
-				continue
-			}
-			output(map[string]any{
-				"type": msg.Type,
-				"data": msg.Data,
-				"ts":   msg.Timestamp.UnixMilli(),
-			})
-			count++
-			if !continuous && limit > 0 && count >= limit {
+			if stop || limitReached(printed, continuous, limit, count) {
 				return
 			}
 		case <-interrupt:
@@ -61,43 +49,46 @@ func tailLoop(s *stream.Stream, limit int, continuous bool, filterType string) {
 	}
 }
 
-var streamTradeCmd = &cobra.Command{
-	Use:   "trade [symbol]",
-	Short: "Stream trade data",
-	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		symbol := args[0]
-		count, _ := cmd.Flags().GetInt("count")
-		tail, _ := cmd.Flags().GetBool("tail")
-		streamName := "market.trade." + symbol
-		s := streamConnect(streamName)
-		defer func() {
-			if !tail {
-				s.Close()
-			}
-		}()
-		tailLoop(s, count, tail, streamName)
-	},
+func handleStreamMessage(msg stream.Message, continuous bool, filterType string) (printed bool, stop bool) {
+	if msg.Error != nil {
+		log.Error().Err(msg.Error).Msg("stream error")
+		return false, !continuous
+	}
+	if filterType != "" && msg.Type != filterType {
+		return false, false
+	}
+	output(map[string]any{
+		"type": msg.Type,
+		"data": msg.Data,
+		"ts":   msg.Timestamp.UnixMilli(),
+	})
+	return true, false
 }
 
-var streamTickerCmd = &cobra.Command{
-	Use:   "ticker [symbol]",
-	Short: "Stream ticker data",
-	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		symbol := args[0]
-		count, _ := cmd.Flags().GetInt("count")
-		tail, _ := cmd.Flags().GetBool("tail")
-		streamName := "market.ticker." + symbol
-		s := streamConnect(streamName)
-		defer func() {
-			if !tail {
-				s.Close()
-			}
-		}()
-		tailLoop(s, count, tail, streamName)
-	},
+func newStreamCmd(kind string, short string) *cobra.Command {
+	return &cobra.Command{
+		Use:   kind + " [symbol]",
+		Short: short,
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			count, _ := cmd.Flags().GetInt("count")
+			tail, _ := cmd.Flags().GetBool("tail")
+			streamName := "market." + kind + "." + args[0]
+			s := streamConnect(streamName)
+			defer func() {
+				if !tail {
+					s.Close()
+				}
+			}()
+			tailLoop(s, count, tail, streamName)
+		},
+	}
 }
+
+var (
+	streamTradeCmd  = newStreamCmd("trade", "Stream trade data")
+	streamTickerCmd = newStreamCmd("ticker", "Stream ticker data")
+)
 
 func init() {
 	rootCmd.AddCommand(streamCmd)
@@ -108,4 +99,8 @@ func init() {
 		c.Flags().IntP("count", "n", 5, "Number of messages to show")
 		c.Flags().BoolP("tail", "t", false, "Continue streaming until interrupted")
 	}
+}
+
+func limitReached(printed bool, continuous bool, limit int, count int) bool {
+	return printed && !continuous && limit > 0 && count >= limit
 }

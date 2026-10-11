@@ -1,8 +1,6 @@
 package fiat
 
 import (
-	"fmt"
-
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
@@ -30,28 +28,5 @@ type AccountsParams struct {
 }
 
 func GetAccounts(params AccountsParams) (*AccountsResponse, error) {
-	var response bitkub.ResponseAPI
-
-	url := "/api/v3/fiat/accounts?"
-
-	if params.Page > 0 {
-		url = fmt.Sprintf("%sp=%d&", url, params.Page)
-	}
-	if params.Limit > 0 {
-		url = fmt.Sprintf("%slmt=%d&", url, params.Limit)
-	}
-
-	if url[len(url)-1] == '&' || url[len(url)-1] == '?' {
-		url = url[:len(url)-1]
-	}
-
-	if err := bitkub.FetchSecure("POST", url, nil, &response); err != nil {
-		return nil, err
-	}
-
-	if err := response.CheckResponseError(); err != nil {
-		return nil, err
-	}
-
-	return bitkub.DecodeResult[AccountsResponse](response)
+	return fetchPage[AccountsResponse]("/api/v3/fiat/accounts", params.Page, params.Limit)
 }

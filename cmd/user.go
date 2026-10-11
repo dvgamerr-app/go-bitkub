@@ -53,29 +53,13 @@ var userCoinConvertHistoryCmd = &cobra.Command{
 	Use:   "coin-convert-history",
 	Short: "Get coin convert history",
 	Run: func(cmd *cobra.Command, args []string) {
-		params := user.CoinHistoryParams{}
-
-		page, _ := cmd.Flags().GetInt("page")
-		limit, _ := cmd.Flags().GetInt("limit")
-
-		if page > 0 {
-			params.Page = page
-		}
-		if limit > 0 {
-			params.Limit = limit
-		}
-
-		history, err := user.GetCoinConvertHistory(params)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to get coin convert history")
-		}
-
-		log.Info().
-			Int("page", history.Pagination.Page).
-			Int("last", history.Pagination.Last).
-			Msg("Pagination")
-
-		for _, item := range history.Result {
+		runPaged(cmd, "Failed to get coin convert history", func(page int, limit int) (int, int, []user.CoinConvertHistory, error) {
+			res, err := user.GetCoinConvertHistory(user.CoinHistoryParams{Page: page, Limit: limit})
+			if err != nil {
+				return 0, 0, nil, err
+			}
+			return res.Pagination.Page, res.Pagination.Last, res.Result, nil
+		}, func(item user.CoinConvertHistory) {
 			log.Info().
 				Str("transaction_id", item.TransactionID).
 				Str("from_currency", item.FromCurrency).
@@ -84,7 +68,7 @@ var userCoinConvertHistoryCmd = &cobra.Command{
 				Str("status", item.Status).
 				Int64("timestamp", item.Timestamp).
 				Msg("Convert")
-		}
+		})
 	},
 }
 

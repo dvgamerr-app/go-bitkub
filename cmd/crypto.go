@@ -21,9 +21,7 @@ var cryptoCoinsCmd = &cobra.Command{
 		symbol, _ := cmd.Flags().GetString("symbol")
 		network, _ := cmd.Flags().GetString("network")
 
-		if symbol != "" {
-			params.Symbol = symbol
-		}
+		params.Symbol = symbol
 		if network != "" {
 			params.Network = network
 		}
@@ -50,26 +48,17 @@ var cryptoAddressesCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		params := crypto.Addresses{}
 
-		page, _ := cmd.Flags().GetInt("page")
-		limit, _ := cmd.Flags().GetInt("limit")
+		page, limit := pageFlags(cmd)
 
-		if page > 0 {
-			params.Page = page
-		}
-		if limit > 0 {
-			params.Limit = limit
-		}
+		params.Page = page
+		params.Limit = limit
 
 		addresses, err := crypto.GetAddresses(params)
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get addresses")
 		}
 
-		log.Info().
-			Int("page", addresses.Page).
-			Int("total_page", addresses.TotalPage).
-			Int("total_item", addresses.TotalItem).
-			Msg("Pagination")
+		logPagination(addresses.PaginatedResponse)
 
 		for _, addr := range addresses.Items {
 			log.Info().
@@ -113,46 +102,13 @@ var cryptoDepositsCmd = &cobra.Command{
 	Use:   "deposits",
 	Short: "Get deposit history",
 	Run: func(cmd *cobra.Command, args []string) {
-		params := crypto.Deposits{}
-
-		page, _ := cmd.Flags().GetInt("page")
-		limit, _ := cmd.Flags().GetInt("limit")
-		symbol, _ := cmd.Flags().GetString("symbol")
-
-		if page > 0 {
-			params.Page = page
-		}
-		if limit > 0 {
-			params.Limit = limit
-		}
-		if symbol != "" {
-			params.Symbol = symbol
-		}
-
-		deposits, err := crypto.GetDeposits(params)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to get deposits")
-		}
-
-		log.Info().
-			Int("page", deposits.Page).
-			Int("total_page", deposits.TotalPage).
-			Int("total_item", deposits.TotalItem).
-			Msg("Pagination")
-
-		for _, dep := range deposits.Items {
-			log.Info().
-				Str("hash", dep.Hash).
-				Str("symbol", dep.Symbol).
-				Str("network", dep.Network).
-				Str("amount", dep.Amount).
-				Str("from_address", dep.FromAddress).
-				Str("to_address", dep.ToAddress).
-				Int("confirmations", dep.Confirmations).
-				Str("status", dep.Status).
-				Str("created_at", dep.CreatedAt).
-				Msg("Deposit")
-		}
+		runHistory(cmd, "Failed to get deposits", func(pagination crypto.Pagination, symbol string) (crypto.PaginatedResponse, []crypto.Deposit, error) {
+			res, err := crypto.GetDeposits(crypto.Deposits{Pagination: pagination, Symbol: symbol})
+			if err != nil {
+				return crypto.PaginatedResponse{}, nil, err
+			}
+			return res.PaginatedResponse, res.Items, nil
+		}, logDeposit)
 	},
 }
 
@@ -160,46 +116,13 @@ var cryptoWithdrawsCmd = &cobra.Command{
 	Use:   "withdraws",
 	Short: "Get withdraw history",
 	Run: func(cmd *cobra.Command, args []string) {
-		params := crypto.Withdraws{}
-
-		page, _ := cmd.Flags().GetInt("page")
-		limit, _ := cmd.Flags().GetInt("limit")
-		symbol, _ := cmd.Flags().GetString("symbol")
-
-		if page > 0 {
-			params.Page = page
-		}
-		if limit > 0 {
-			params.Limit = limit
-		}
-		if symbol != "" {
-			params.Symbol = symbol
-		}
-
-		withdraws, err := crypto.GetWithdraws(params)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to get withdraws")
-		}
-
-		log.Info().
-			Int("page", withdraws.Page).
-			Int("total_page", withdraws.TotalPage).
-			Int("total_item", withdraws.TotalItem).
-			Msg("Pagination")
-
-		for _, wth := range withdraws.Items {
-			log.Info().
-				Str("txn_id", wth.TxnID).
-				Str("hash", wth.Hash).
-				Str("symbol", wth.Symbol).
-				Str("network", wth.Network).
-				Str("amount", wth.Amount).
-				Str("fee", wth.Fee).
-				Str("address", wth.Address).
-				Str("status", wth.Status).
-				Str("created_at", wth.CreatedAt).
-				Msg("Withdraw")
-		}
+		runHistory(cmd, "Failed to get withdraws", func(pagination crypto.Pagination, symbol string) (crypto.PaginatedResponse, []crypto.Withdraw, error) {
+			res, err := crypto.GetWithdraws(crypto.Withdraws{Pagination: pagination, Symbol: symbol})
+			if err != nil {
+				return crypto.PaginatedResponse{}, nil, err
+			}
+			return res.PaginatedResponse, res.Items, nil
+		}, logWithdraw)
 	},
 }
 
@@ -241,30 +164,19 @@ var cryptoCompensationsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		params := crypto.Compensations{}
 
-		page, _ := cmd.Flags().GetInt("page")
-		limit, _ := cmd.Flags().GetInt("limit")
+		page, limit := pageFlags(cmd)
 		symbol, _ := cmd.Flags().GetString("symbol")
 
-		if page > 0 {
-			params.Page = page
-		}
-		if limit > 0 {
-			params.Limit = limit
-		}
-		if symbol != "" {
-			params.Symbol = symbol
-		}
+		params.Page = page
+		params.Limit = limit
+		params.Symbol = symbol
 
 		comps, err := crypto.GetCompensations(params)
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to get compensations")
 		}
 
-		log.Info().
-			Int("page", comps.Page).
-			Int("total_page", comps.TotalPage).
-			Int("total_item", comps.TotalItem).
-			Msg("Pagination")
+		logPagination(comps.PaginatedResponse)
 
 		for _, comp := range comps.Items {
 			log.Info().
@@ -309,4 +221,40 @@ func init() {
 	cryptoCompensationsCmd.Flags().IntP("page", "p", 1, "Page number")
 	cryptoCompensationsCmd.Flags().IntP("limit", "l", 20, "Limit per page")
 	cryptoCompensationsCmd.Flags().StringP("symbol", "s", "", "Filter by symbol")
+}
+
+func logPagination(p crypto.PaginatedResponse) {
+	log.Info().
+		Int("page", p.Page).
+		Int("total_page", p.TotalPage).
+		Int("total_item", p.TotalItem).
+		Msg("Pagination")
+}
+
+func logDeposit(dep crypto.Deposit) {
+	log.Info().
+		Str("hash", dep.Hash).
+		Str("symbol", dep.Symbol).
+		Str("network", dep.Network).
+		Str("amount", dep.Amount).
+		Str("from_address", dep.FromAddress).
+		Str("to_address", dep.ToAddress).
+		Int("confirmations", dep.Confirmations).
+		Str("status", dep.Status).
+		Str("created_at", dep.CreatedAt).
+		Msg("Deposit")
+}
+
+func logWithdraw(wth crypto.Withdraw) {
+	log.Info().
+		Str("txn_id", wth.TxnID).
+		Str("hash", wth.Hash).
+		Str("symbol", wth.Symbol).
+		Str("network", wth.Network).
+		Str("amount", wth.Amount).
+		Str("fee", wth.Fee).
+		Str("address", wth.Address).
+		Str("status", wth.Status).
+		Str("created_at", wth.CreatedAt).
+		Msg("Withdraw")
 }
