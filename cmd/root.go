@@ -109,6 +109,7 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
+		bitkub.SetLogger(log.Logger)
 		if err := bitkub.Initlizer(apiKey, secretKey); err != nil {
 			log.Debug().Err(err).Msg("API credentials not set, only public commands are available")
 		}

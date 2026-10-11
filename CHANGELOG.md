@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - `market.GetDepth` and `bitkub market depth` use the V3 depth endpoint instead of the unresponsive legacy one
 
 ### Added
+- `bitkub.SetLogger`: the SDK no longer prints debug logs by default when used as a library; the CLI enables them with `--debug`
 - `bitkub.ErrMissingCredentials`: secure requests without API credentials fail before any network call with a clear message
 - Version-free release archive names so `releases/latest/download/go-bitkub_<Os>_<Arch>.tar.gz` always points at the newest build
 - Windows release archives are published as `.zip`

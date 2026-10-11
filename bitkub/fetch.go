@@ -12,7 +12,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog"
 )
 
 var (
@@ -221,10 +221,16 @@ func fetchWithContext(ctx context.Context, secure bool, method string, path stri
 
 	resp, err := apiBitkub.Do(req)
 	if err != nil {
-		log.Warn().Str("method", method).Str("path", path).Err(err).Stack().Send()
+		logger.Warn().Str("method", method).Str("path", path).Err(err).Stack().Send()
 		return nil, fmt.Errorf("making request: %w", err)
 	}
 
-	log.Debug().Int("status", resp.StatusCode).Str("method", method).Str("path", path).Send()
+	logger.Debug().Int("status", resp.StatusCode).Str("method", method).Str("path", path).Send()
 	return resp, nil
+}
+
+var logger = zerolog.Nop()
+
+func SetLogger(l zerolog.Logger) {
+	logger = l
 }
