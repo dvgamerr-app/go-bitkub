@@ -126,50 +126,64 @@ func (s *Stream) readMessages() {
 		case <-s.ctx.Done():
 			return
 		default:
-			if s.conn == nil {
+			if !s.readFrame() {
 				return
-			}
-
-			s.conn.SetReadDeadline(time.Now().Add(s.config.ReadTimeout))
-			_, message, err := s.conn.ReadMessage()
-			if err != nil {
-				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-					s.messageChannel <- Message{
-						Error:     err,
-						Timestamp: time.Now(),
-					}
-				}
-
-				s.handleReconnect()
-				return
-			}
-
-			decoder := json.NewDecoder(bytes.NewReader(message))
-			for decoder.More() {
-				var rawMsg map[string]any
-				if err := decoder.Decode(&rawMsg); err != nil {
-					s.messageChannel <- Message{
-						Error:     fmt.Errorf("json decode error: %w", err),
-						Timestamp: time.Now(),
-					}
-					break
-				}
-
-				msg := Message{
-					Data:      rawMsg,
-					Timestamp: time.Now(),
-				}
-
-				if event, ok := rawMsg["event"].(string); ok {
-					msg.Type = event
-				} else if stream, ok := rawMsg["stream"].(string); ok {
-					msg.Type = stream
-				}
-
-				s.messageChannel <- msg
 			}
 		}
 	}
+}
+
+func (s *Stream) readFrame() bool {
+	if s.conn == nil {
+		return false
+	}
+
+	s.conn.SetReadDeadline(time.Now().Add(s.config.ReadTimeout))
+	_, message, err := s.conn.ReadMessage()
+	if err != nil {
+		if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+			s.messageChannel <- Message{
+				Error:     err,
+				Timestamp: time.Now(),
+			}
+		}
+
+		s.handleReconnect()
+		return false
+	}
+
+	s.dispatchFrame(message)
+	return true
+}
+
+func (s *Stream) dispatchFrame(frame []byte) {
+	decoder := json.NewDecoder(bytes.NewReader(frame))
+	for decoder.More() {
+		var rawMsg map[string]any
+		if err := decoder.Decode(&rawMsg); err != nil {
+			s.messageChannel <- Message{
+				Error:     fmt.Errorf("json decode error: %w", err),
+				Timestamp: time.Now(),
+			}
+			return
+		}
+
+		s.messageChannel <- Message{
+			Type:      messageType(rawMsg),
+			Data:      rawMsg,
+			Timestamp: time.Now(),
+		}
+	}
+}
+
+func messageType(rawMsg map[string]any) string {
+	if event, ok := rawMsg["event"].(string); ok {
+		return event
+	}
+	if stream, ok := rawMsg["stream"].(string); ok {
+		return stream
+	}
+	return ""
 }
 
 func (s *Stream) pingPong() {

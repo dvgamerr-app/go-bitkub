@@ -97,22 +97,35 @@ func FetchSecureV4(method string, path string, reqBody any, resPayload any) erro
 }
 
 func FetchSecureV4WithContext(ctx context.Context, method string, path string, reqBody any, resPayload any) error {
-	resp, err := fetchWithContext(ctx, true, method, path, reqBody)
+	body, err := fetchBody(ctx, method, path, reqBody)
 	if err != nil {
 		return err
 	}
+
+	return decodeV4(body, resPayload)
+}
+
+func fetchBody(ctx context.Context, method string, path string, reqBody any) ([]byte, error) {
+	resp, err := fetchWithContext(ctx, true, method, path, reqBody)
+	if err != nil {
+		return nil, err
+	}
 	defer resp.Body.Close()
 
-	bodyBytes, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("reading response body: %w", err)
+		return nil, fmt.Errorf("reading response body: %w", err)
 	}
 
 	if resp.StatusCode > 299 {
-		return statusError(resp, string(bodyBytes))
+		return nil, statusError(resp, string(body))
 	}
 
-	if err = json.Unmarshal(bodyBytes, resPayload); err != nil {
+	return body, nil
+}
+
+func decodeV4(body []byte, resPayload any) error {
+	if err := json.Unmarshal(body, resPayload); err != nil {
 		return fmt.Errorf("decoding response: %w", err)
 	}
 

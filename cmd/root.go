@@ -25,24 +25,25 @@ var (
 )
 
 func init() {
-	if Version == "dev" {
-		if info, ok := dbg.ReadBuildInfo(); ok {
-			if info.Main.Version != "" && info.Main.Version != "(devel)" {
-				Version = info.Main.Version
-			}
-			for _, setting := range info.Settings {
-				switch setting.Key {
-				case "vcs.revision":
-					if len(setting.Value) >= 7 {
-						Commit = setting.Value[:7]
-					} else {
-						Commit = setting.Value
-					}
-				case "vcs.time":
-					Date = strings.Replace(setting.Value, "T", " ", 1)
-					Date = strings.Replace(Date, "Z", "", 1)
-				}
-			}
+	if Version != "dev" {
+		return
+	}
+	if info, ok := dbg.ReadBuildInfo(); ok {
+		applyBuildInfo(info)
+	}
+}
+
+func applyBuildInfo(info *dbg.BuildInfo) {
+	if info.Main.Version != "" && info.Main.Version != "(devel)" {
+		Version = info.Main.Version
+	}
+	for _, setting := range info.Settings {
+		switch setting.Key {
+		case "vcs.revision":
+			Commit = setting.Value[:min(len(setting.Value), 7)]
+		case "vcs.time":
+			Date = strings.Replace(setting.Value, "T", " ", 1)
+			Date = strings.Replace(Date, "Z", "", 1)
 		}
 	}
 }

@@ -142,51 +142,41 @@ var marketDepthCmd = &cobra.Command{
 	},
 }
 
-var marketAsksCmd = &cobra.Command{
-	Use:   "asks [symbol]",
-	Short: "Get ask orders",
-	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		limit, _ := cmd.Flags().GetInt("limit")
-		symbol := args[0]
-		asks, err := market.GetAsks(symbol, limit)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to get asks")
-		}
-		for i, ask := range asks {
-			output(map[string]any{
-				"order_id":  ask.OrderID,
-				"price":     ask.Price,
-				"size":      ask.Size,
-				"volume":    ask.Volume,
-				"timestamp": ask.Timestamp,
-			}, i == len(asks)-1)
-		}
-	},
+func newOrderBookCmd(side string, short string, fetch func(symbol string, limit int) ([]market.AskOrder, error)) *cobra.Command {
+	return &cobra.Command{
+		Use:   side + " [symbol]",
+		Short: short,
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			limit, _ := cmd.Flags().GetInt("limit")
+			orders, err := fetch(args[0], limit)
+			if err != nil {
+				log.Fatal().Err(err).Msg("Failed to get " + side)
+			}
+			for i, order := range orders {
+				output(map[string]any{
+					"order_id":  order.OrderID,
+					"price":     order.Price,
+					"size":      order.Size,
+					"volume":    order.Volume,
+					"timestamp": order.Timestamp,
+				}, i == len(orders)-1)
+			}
+		},
+	}
 }
 
-var marketBidsCmd = &cobra.Command{
-	Use:   "bids [symbol]",
-	Short: "Get bid orders",
-	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		limit, _ := cmd.Flags().GetInt("limit")
-		symbol := args[0]
+var marketAsksCmd = newOrderBookCmd("asks", "Get ask orders", market.GetAsks)
+
+var marketBidsCmd = newOrderBookCmd("bids", "Get bid orders",
+	func(symbol string, limit int) ([]market.AskOrder, error) {
 		bids, err := market.GetBids(symbol, limit)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to get bids")
-		}
+		orders := make([]market.AskOrder, len(bids))
 		for i, bid := range bids {
-			output(map[string]any{
-				"order_id":  bid.OrderID,
-				"price":     bid.Price,
-				"size":      bid.Size,
-				"volume":    bid.Volume,
-				"timestamp": bid.Timestamp,
-			}, i == len(bids)-1)
+			orders[i] = market.AskOrder(bid)
 		}
-	},
-}
+		return orders, err
+	})
 
 var marketBalancesCmd = &cobra.Command{
 	Use:   "balances",
@@ -358,87 +348,54 @@ var marketOrderInfoCmd = &cobra.Command{
 	},
 }
 
-var marketPlaceBidCmd = &cobra.Command{
-	Use:   "buy [symbol] [amount] [rate]",
-	Short: "Place a bid order (buy)",
-	Args:  cobra.ExactArgs(3),
-	Run: func(cmd *cobra.Command, args []string) {
-		var amount, rate float64
-		var err error
+type placeOrderFunc func(symbol string, amount float64, rate float64) (*market.PlaceAskResult, error)
 
-		amount, err = strconv.ParseFloat(args[1], 64)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Invalid amount")
-		}
-		rate, err = strconv.ParseFloat(args[2], 64)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Invalid rate")
-		}
+func newPlaceOrderCmd(use string, short string, failure string, place placeOrderFunc) *cobra.Command {
+	return &cobra.Command{
+		Use:   use + " [symbol] [amount] [rate]",
+		Short: short,
+		Args:  cobra.ExactArgs(3),
+		Run: func(cmd *cobra.Command, args []string) {
+			amount, err := strconv.ParseFloat(args[1], 64)
+			if err != nil {
+				log.Fatal().Err(err).Msg("Invalid amount")
+			}
+			rate, err := strconv.ParseFloat(args[2], 64)
+			if err != nil {
+				log.Fatal().Err(err).Msg("Invalid rate")
+			}
 
-		req := market.PlaceBidRequest{
-			Symbol: args[0],
-			Amount: amount,
-			Rate:   rate,
-			Type:   "limit",
-		}
+			result, err := place(args[0], amount, rate)
+			if err != nil {
+				log.Fatal().Err(err).Msg(failure)
+			}
 
-		result, err := market.PlaceBid(req)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to place bid")
-		}
-
-		output(map[string]any{
-			"id":        result.ID,
-			"type":      result.Type,
-			"amount":    result.Amount,
-			"rate":      result.Rate,
-			"fee":       result.Fee,
-			"credit":    result.Credit,
-			"timestamp": result.Timestamp,
-		})
-	},
+			output(map[string]any{
+				"id":        result.ID,
+				"type":      result.Type,
+				"amount":    result.Amount,
+				"rate":      result.Rate,
+				"fee":       result.Fee,
+				"credit":    result.Credit,
+				"timestamp": result.Timestamp,
+			})
+		},
+	}
 }
 
-var marketPlaceAskCmd = &cobra.Command{
-	Use:   "sell [symbol] [amount] [rate]",
-	Short: "Place an ask order (sell)",
-	Args:  cobra.ExactArgs(3),
-	Run: func(cmd *cobra.Command, args []string) {
-		var amount, rate float64
-		var err error
-
-		amount, err = strconv.ParseFloat(args[1], 64)
+var marketPlaceBidCmd = newPlaceOrderCmd("buy", "Place a bid order (buy)", "Failed to place bid",
+	func(symbol string, amount float64, rate float64) (*market.PlaceAskResult, error) {
+		result, err := market.PlaceBid(market.PlaceBidRequest{Symbol: symbol, Amount: amount, Rate: rate, Type: "limit"})
 		if err != nil {
-			log.Fatal().Err(err).Msg("Invalid amount")
+			return nil, err
 		}
-		rate, err = strconv.ParseFloat(args[2], 64)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Invalid rate")
-		}
+		return (*market.PlaceAskResult)(result), nil
+	})
 
-		req := market.PlaceAskRequest{
-			Symbol: args[0],
-			Amount: amount,
-			Rate:   rate,
-			Type:   "limit",
-		}
-
-		result, err := market.PlaceAsk(req)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to place ask")
-		}
-
-		output(map[string]any{
-			"id":        result.ID,
-			"type":      result.Type,
-			"amount":    result.Amount,
-			"rate":      result.Rate,
-			"fee":       result.Fee,
-			"credit":    result.Credit,
-			"timestamp": result.Timestamp,
-		})
-	},
-}
+var marketPlaceAskCmd = newPlaceOrderCmd("sell", "Place an ask order (sell)", "Failed to place ask",
+	func(symbol string, amount float64, rate float64) (*market.PlaceAskResult, error) {
+		return market.PlaceAsk(market.PlaceAskRequest{Symbol: symbol, Amount: amount, Rate: rate, Type: "limit"})
+	})
 
 var marketCancelOrderCmd = &cobra.Command{
 	Use:   "cancel [symbol] [order-id] [side]",

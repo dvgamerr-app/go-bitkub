@@ -55,15 +55,10 @@ var userCoinConvertHistoryCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		params := user.CoinHistoryParams{}
 
-		page, _ := cmd.Flags().GetInt("page")
-		limit, _ := cmd.Flags().GetInt("limit")
+		page, limit := pageFlags(cmd)
 
-		if page > 0 {
-			params.Page = page
-		}
-		if limit > 0 {
-			params.Limit = limit
-		}
+		params.Page = page
+		params.Limit = limit
 
 		history, err := user.GetCoinConvertHistory(params)
 		if err != nil {

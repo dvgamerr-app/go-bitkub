@@ -1,8 +1,6 @@
 package fiat
 
 import (
-	"fmt"
-
 	"github.com/dvgamerr-app/go-bitkub/bitkub"
 )
 
@@ -31,28 +29,5 @@ type DepositHistoryParams struct {
 }
 
 func GetDepositHistory(params DepositHistoryParams) (*DepositHistoryResponse, error) {
-	var response bitkub.ResponseAPI
-
-	url := "/api/v3/fiat/deposit-history?"
-
-	if params.Page > 0 {
-		url = fmt.Sprintf("%sp=%d&", url, params.Page)
-	}
-	if params.Limit > 0 {
-		url = fmt.Sprintf("%slmt=%d&", url, params.Limit)
-	}
-
-	if url[len(url)-1] == '&' || url[len(url)-1] == '?' {
-		url = url[:len(url)-1]
-	}
-
-	if err := bitkub.FetchSecure("POST", url, nil, &response); err != nil {
-		return nil, err
-	}
-
-	if err := response.CheckResponseError(); err != nil {
-		return nil, err
-	}
-
-	return bitkub.DecodeResult[DepositHistoryResponse](response)
+	return fetchPage[DepositHistoryResponse]("/api/v3/fiat/deposit-history", params.Page, params.Limit)
 }

@@ -20,15 +20,10 @@ var fiatAccountsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		params := fiat.AccountsParams{}
 
-		page, _ := cmd.Flags().GetInt("page")
-		limit, _ := cmd.Flags().GetInt("limit")
+		page, limit := pageFlags(cmd)
 
-		if page > 0 {
-			params.Page = page
-		}
-		if limit > 0 {
-			params.Limit = limit
-		}
+		params.Page = page
+		params.Limit = limit
 
 		accounts, err := fiat.GetAccounts(params)
 		if err != nil {
@@ -57,15 +52,10 @@ var fiatDepositHistoryCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		params := fiat.DepositHistoryParams{}
 
-		page, _ := cmd.Flags().GetInt("page")
-		limit, _ := cmd.Flags().GetInt("limit")
+		page, limit := pageFlags(cmd)
 
-		if page > 0 {
-			params.Page = page
-		}
-		if limit > 0 {
-			params.Limit = limit
-		}
+		params.Page = page
+		params.Limit = limit
 
 		deposits, err := fiat.GetDepositHistory(params)
 		if err != nil {
@@ -95,15 +85,10 @@ var fiatWithdrawHistoryCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		params := fiat.WithdrawHistoryParams{}
 
-		page, _ := cmd.Flags().GetInt("page")
-		limit, _ := cmd.Flags().GetInt("limit")
+		page, limit := pageFlags(cmd)
 
-		if page > 0 {
-			params.Page = page
-		}
-		if limit > 0 {
-			params.Limit = limit
-		}
+		params.Page = page
+		params.Limit = limit
 
 		withdraws, err := fiat.GetWithdrawHistory(params)
 		if err != nil {

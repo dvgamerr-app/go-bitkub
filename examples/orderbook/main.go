@@ -8,6 +8,35 @@ import (
 	"github.com/dvgamerr-app/go-bitkub/stream"
 )
 
+var messageTitles = map[string]string{
+	"bidschanged":   "📈 Bids Changed",
+	"askschanged":   "📉 Asks Changed",
+	"tradeschanged": "💱 Trades Changed",
+	"global.ticker": "🌐 Global Ticker",
+}
+
+func printMessage(msg stream.Message) {
+	if msg.Error != nil {
+		fmt.Printf("❌ Error: %v\n", msg.Error)
+		return
+	}
+
+	if title, ok := messageTitles[msg.Type]; ok {
+		fmt.Println(title)
+	}
+
+	data, ok := msg.Data.(map[string]any)
+	if !ok {
+		return
+	}
+	if event, ok := data["event"].(string); ok {
+		fmt.Printf("   Event: %s\n", event)
+	}
+	if pairingID, ok := data["pairing_id"].(float64); ok {
+		fmt.Printf("   Pairing ID: %.0f\n", pairingID)
+	}
+}
+
 func main() {
 	s := stream.New(nil)
 
@@ -25,31 +54,7 @@ func main() {
 	for {
 		select {
 		case msg := <-s.Messages():
-			if msg.Error != nil {
-				fmt.Printf("❌ Error: %v\n", msg.Error)
-				continue
-			}
-
-			switch msg.Type {
-			case "bidschanged":
-				fmt.Println("📈 Bids Changed")
-			case "askschanged":
-				fmt.Println("📉 Asks Changed")
-			case "tradeschanged":
-				fmt.Println("💱 Trades Changed")
-			case "global.ticker":
-				fmt.Println("🌐 Global Ticker")
-			}
-
-			if data, ok := msg.Data.(map[string]any); ok {
-				if event, ok := data["event"].(string); ok {
-					fmt.Printf("   Event: %s\n", event)
-				}
-				if pairingID, ok := data["pairing_id"].(float64); ok {
-					fmt.Printf("   Pairing ID: %.0f\n", pairingID)
-				}
-			}
-
+			printMessage(msg)
 		case <-interrupt:
 			fmt.Println("\n👋 Closing connection...")
 			s.Close()
