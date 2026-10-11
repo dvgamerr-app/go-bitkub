@@ -136,9 +136,27 @@ func TestFetchSecureStatusErrorDoesNotLeakCredentials(t *testing.T) {
 	}
 }
 
+func TestFetchSecureRequiresCredentials(t *testing.T) {
+	resetFetchState(t)
+
+	apiKey = ""
+	secretKey = ""
+	apiBitkub = &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
+		t.Fatalf("secure request without credentials reached the network")
+		return nil, nil
+	})}
+
+	var result ResponseAPI
+	if err := FetchSecure(http.MethodPost, "/secure", nil, &result); !errors.Is(err, ErrMissingCredentials) {
+		t.Fatalf("expected missing credentials error, got %v", err)
+	}
+}
+
 func TestFetchSecureAcceptsForeignPayload(t *testing.T) {
 	resetFetchState(t)
 
+	apiKey = "api-key"
+	secretKey = "secret-key"
 	apiBitkubTime = &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
 		return response("2000000000000"), nil
 	})}

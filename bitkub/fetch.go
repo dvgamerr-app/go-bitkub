@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -170,9 +171,14 @@ func FetchNonSecureWithContext(ctx context.Context, method string, path string, 
 	return nil
 }
 
+var ErrMissingCredentials = errors.New("missing API credentials: set BTK_APIKEY and BTK_SECRET or pass --key and --secret")
+
 func fetchWithContext(ctx context.Context, secure bool, method string, path string, reqBody any) (*http.Response, error) {
 	serverTime := ""
 	if secure {
+		if key, secret := credentials(); key == "" || secret == "" {
+			return nil, ErrMissingCredentials
+		}
 		var err error
 		serverTime, err = GetServerTimeWithContext(ctx)
 		if err != nil {
