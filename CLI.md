@@ -38,7 +38,7 @@ go install ./cmd/bitkub
 ### Run directly (Development)
 
 ```bash
-bitkub/cmd/bitkub/main.go [command]
+go run ./cmd/bitkub [command]
 ```
 
 ## Configuration
@@ -60,11 +60,7 @@ BTK_SECRET=your_BTK_SECRET
 bitkub --key YOUR_KEY --secret YOUR_SECRET [command]
 ```
 
-### 3. Short Flags
-
-```bash
-bitkub -k YOUR_KEY --secret YOUR_SECRET [command]
-```
+Market data and stream commands work without credentials.
 
 ## Usage
 
@@ -233,7 +229,7 @@ Output:
 ### Get your balance
 
 ```bash
-bitkub -k YOUR_KEY --secret YOUR_SECRET market balances
+bitkub --key YOUR_KEY --secret YOUR_SECRET market balances
 ```
 
 Output:
@@ -245,7 +241,7 @@ Output:
 ### Place a buy order
 
 ```bash
-bitkub -k YOUR_KEY --secret YOUR_SECRET market buy btc_thb 0.001 1200000
+bitkub --key YOUR_KEY --secret YOUR_SECRET market buy btc_thb 0.001 1200000
 ```
 
 Output:

@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.4.0] - 2026-10-11
+
+### Fixed
+- CLI public commands (market data and streams) no longer exit when `BTK_APIKEY` and `BTK_SECRET` are unset
+- `market.GetTicker(symbol)` and `bitkub market ticker <symbol>` return the requested symbol instead of an empty result
+- `market.GetDepth` and `bitkub market depth` use the V3 depth endpoint instead of the unresponsive legacy one
+
+### Added
+- `bitkub.SetLogger`: the SDK no longer prints debug logs by default when used as a library; the CLI enables them with `--debug`
+- `bitkub.ErrMissingCredentials`: secure requests without API credentials fail before any network call with a clear message
+- Version-free release archive names so `releases/latest/download/go-bitkub_<Os>_<Arch>.tar.gz` always points at the newest build
+- Windows release archives are published as `.zip`
+- GitHub Pages landing site and terminal screenshots
+
+### Documentation
+- New English and Thai READMEs; the previous README moved to `docs/reference.md`
+- Install guide covers prebuilt binaries; removed the nonexistent `-k` flag from examples
+
 ## [v1.1.0] - 2025-11-07
 
 ### Added
