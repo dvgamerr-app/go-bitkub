@@ -12,7 +12,7 @@ Check Thai baht crypto prices, stream live tickers and manage your Bitkub accoun
 [![Licence](https://img.shields.io/github/license/dvgamerr-app/go-bitkub?style=for-the-badge&color=00a86b)](LICENSE)
 [![Platforms](https://img.shields.io/badge/linux%20%7C%20macOS%20%7C%20windows-amd64%20%7C%20arm64-555?style=for-the-badge)](https://github.com/dvgamerr-app/go-bitkub/releases/latest)
 
-[Website](https://dvgamerr-app.github.io/go-bitkub/) · [Quick start](#quick-start) · [Install guide](INSTALL.md) · [CLI reference](CLI.md) · [ภาษาไทย](README.th.md)
+[Website](https://dvgamerr.app/go-bitkub/) · [Quick start](#quick-start) · [Install guide](INSTALL.md) · [CLI reference](CLI.md) · [ภาษาไทย](README.th.md)
 
 <img src="docs/screenshots/ticker.png" width="230" alt="bitkub market ticker btc_thb printing the BTC/THB price"> <img src="docs/screenshots/depth.png" width="230" alt="bitkub market depth printing five bids and five asks"> <img src="docs/screenshots/stream.png" width="230" alt="bitkub stream ticker printing live WebSocket ticker updates">
 

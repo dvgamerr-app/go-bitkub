@@ -12,7 +12,7 @@
 [![Licence](https://img.shields.io/github/license/dvgamerr-app/go-bitkub?style=for-the-badge&color=00a86b)](LICENSE)
 [![Platforms](https://img.shields.io/badge/linux%20%7C%20macOS%20%7C%20windows-amd64%20%7C%20arm64-555?style=for-the-badge)](https://github.com/dvgamerr-app/go-bitkub/releases/latest)
 
-[เว็บไซต์](https://dvgamerr-app.github.io/go-bitkub/) · [เริ่มใช้งาน](#เริ่มใช้งาน) · [คู่มือติดตั้ง](INSTALL.md) · [คู่มือ CLI](CLI.md) · [English](README.md)
+[เว็บไซต์](https://dvgamerr.app/go-bitkub/) · [เริ่มใช้งาน](#เริ่มใช้งาน) · [คู่มือติดตั้ง](INSTALL.md) · [คู่มือ CLI](CLI.md) · [English](README.md)
 
 <img src="docs/screenshots/ticker.png" width="230" alt="คำสั่ง bitkub market ticker btc_thb แสดงราคา BTC/THB"> <img src="docs/screenshots/depth.png" width="230" alt="คำสั่ง bitkub market depth แสดง bid และ ask อย่างละ 5 รายการ"> <img src="docs/screenshots/stream.png" width="230" alt="คำสั่ง bitkub stream ticker แสดง ticker แบบ real-time">
 
