@@ -18,31 +18,20 @@ var fiatAccountsCmd = &cobra.Command{
 	Use:   "accounts",
 	Short: "Get bank accounts",
 	Run: func(cmd *cobra.Command, args []string) {
-		params := fiat.AccountsParams{}
-
-		page, limit := pageFlags(cmd)
-
-		params.Page = page
-		params.Limit = limit
-
-		accounts, err := fiat.GetAccounts(params)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to get accounts")
-		}
-
-		log.Info().
-			Int("page", accounts.Pagination.Page).
-			Int("last", accounts.Pagination.Last).
-			Msg("Pagination")
-
-		for _, acc := range accounts.Result {
+		runPaged(cmd, "Failed to get accounts", func(page int, limit int) (int, int, []fiat.BankAccount, error) {
+			res, err := fiat.GetAccounts(fiat.AccountsParams{Page: page, Limit: limit})
+			if err != nil {
+				return 0, 0, nil, err
+			}
+			return res.Pagination.Page, res.Pagination.Last, res.Result, nil
+		}, func(acc fiat.BankAccount) {
 			log.Info().
 				Str("id", acc.ID).
 				Str("bank", acc.Bank).
 				Str("name", acc.Name).
 				Int64("time", acc.Time).
 				Msg("Account")
-		}
+		})
 	},
 }
 
@@ -50,24 +39,13 @@ var fiatDepositHistoryCmd = &cobra.Command{
 	Use:   "deposit-history",
 	Short: "Get deposit history",
 	Run: func(cmd *cobra.Command, args []string) {
-		params := fiat.DepositHistoryParams{}
-
-		page, limit := pageFlags(cmd)
-
-		params.Page = page
-		params.Limit = limit
-
-		deposits, err := fiat.GetDepositHistory(params)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to get deposit history")
-		}
-
-		log.Info().
-			Int("page", deposits.Pagination.Page).
-			Int("last", deposits.Pagination.Last).
-			Msg("Pagination")
-
-		for _, dep := range deposits.Result {
+		runPaged(cmd, "Failed to get deposit history", func(page int, limit int) (int, int, []fiat.DepositHistory, error) {
+			res, err := fiat.GetDepositHistory(fiat.DepositHistoryParams{Page: page, Limit: limit})
+			if err != nil {
+				return 0, 0, nil, err
+			}
+			return res.Pagination.Page, res.Pagination.Last, res.Result, nil
+		}, func(dep fiat.DepositHistory) {
 			log.Info().
 				Str("txn_id", dep.TxnID).
 				Str("currency", dep.Currency).
@@ -75,7 +53,7 @@ var fiatDepositHistoryCmd = &cobra.Command{
 				Str("status", dep.Status).
 				Int64("time", dep.Time).
 				Msg("Deposit")
-		}
+		})
 	},
 }
 
@@ -83,24 +61,13 @@ var fiatWithdrawHistoryCmd = &cobra.Command{
 	Use:   "withdraw-history",
 	Short: "Get withdraw history",
 	Run: func(cmd *cobra.Command, args []string) {
-		params := fiat.WithdrawHistoryParams{}
-
-		page, limit := pageFlags(cmd)
-
-		params.Page = page
-		params.Limit = limit
-
-		withdraws, err := fiat.GetWithdrawHistory(params)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to get withdraw history")
-		}
-
-		log.Info().
-			Int("page", withdraws.Pagination.Page).
-			Int("last", withdraws.Pagination.Last).
-			Msg("Pagination")
-
-		for _, wth := range withdraws.Result {
+		runPaged(cmd, "Failed to get withdraw history", func(page int, limit int) (int, int, []fiat.WithdrawHistory, error) {
+			res, err := fiat.GetWithdrawHistory(fiat.WithdrawHistoryParams{Page: page, Limit: limit})
+			if err != nil {
+				return 0, 0, nil, err
+			}
+			return res.Pagination.Page, res.Pagination.Last, res.Result, nil
+		}, func(wth fiat.WithdrawHistory) {
 			log.Info().
 				Str("txn_id", wth.TxnID).
 				Str("currency", wth.Currency).
@@ -109,7 +76,7 @@ var fiatWithdrawHistoryCmd = &cobra.Command{
 				Str("status", wth.Status).
 				Int64("time", wth.Time).
 				Msg("Withdraw")
-		}
+		})
 	},
 }
 
