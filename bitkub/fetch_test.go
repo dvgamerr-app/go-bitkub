@@ -1,11 +1,11 @@
 package bitkub
 
 import (
+	"context"
 	"errors"
 	"io"
 	"net/http"
 	"strings"
-	"sync"
 	"testing"
 )
 
@@ -34,12 +34,10 @@ func resetFetchState(t *testing.T) {
 		apiBitkubTime = previousTimeAPI
 		apiKey = previousAPIKey
 		secretKey = previousSecretKey
-		timeOffsetOnce = sync.Once{}
-		timeOffsetErr = nil
+		timeSynced = false
 		timeOffsetMs = 0
 	})
-	timeOffsetOnce = sync.Once{}
-	timeOffsetErr = nil
+	timeSynced = false
 	timeOffsetMs = 0
 }
 
@@ -111,5 +109,114 @@ func TestFetchTransportErrorDoesNotPanic(t *testing.T) {
 	err := FetchNonSecure(http.MethodGet, "/public", nil, &result)
 	if err == nil || !strings.Contains(err.Error(), "transport unavailable") {
 		t.Fatalf("unexpected transport error: %v", err)
+	}
+}
+
+func TestFetchSecureStatusErrorDoesNotLeakCredentials(t *testing.T) {
+	resetFetchState(t)
+
+	apiKey = "api-key-value"
+	secretKey = "secret-key-value"
+	apiBitkubTime = &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
+		return response("2000000000000"), nil
+	})}
+	apiBitkub = &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
+		resp := response("{}")
+		resp.StatusCode = http.StatusUnauthorized
+		return resp, nil
+	})}
+
+	var result ResponseAPI
+	err := FetchSecure(http.MethodPost, "/secure", nil, &result)
+	if err == nil {
+		t.Fatalf("expected status error")
+	}
+	if strings.Contains(err.Error(), apiKey) || strings.Contains(err.Error(), "X-Btk-Sign") {
+		t.Fatalf("error leaks credentials: %v", err)
+	}
+}
+
+func TestFetchSecureAcceptsForeignPayload(t *testing.T) {
+	resetFetchState(t)
+
+	apiBitkubTime = &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
+		return response("2000000000000"), nil
+	})}
+	apiBitkub = &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
+		return response(`{"value":"ok"}`), nil
+	})}
+
+	var result map[string]string
+	if err := FetchSecure(http.MethodGet, "/secure", nil, &result); err != nil {
+		t.Fatalf("FetchSecure returned error: %v", err)
+	}
+	if err := FetchSecureV4(http.MethodGet, "/secure", nil, &result); err != nil {
+		t.Fatalf("FetchSecureV4 returned error: %v", err)
+	}
+}
+
+func TestFetchNonSecureRejectsErrorStatus(t *testing.T) {
+	resetFetchState(t)
+
+	apiBitkub = &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
+		resp := response("<html>bad gateway</html>")
+		resp.StatusCode = http.StatusBadGateway
+		return resp, nil
+	})}
+
+	var result any
+	err := FetchNonSecure(http.MethodGet, "/public", nil, &result)
+	if err == nil || !strings.Contains(err.Error(), "HTTP 502") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestFetchGetWithoutBodyOmitsContentType(t *testing.T) {
+	resetFetchState(t)
+
+	apiBitkub = &http.Client{Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		if req.Header.Get("Content-Type") != "" {
+			t.Fatalf("unexpected content type on bodyless request")
+		}
+		return response(`{}`), nil
+	})}
+
+	var result any
+	if err := FetchNonSecure(http.MethodGet, "/public", nil, &result); err != nil {
+		t.Fatalf("FetchNonSecure returned error: %v", err)
+	}
+}
+
+func TestServerTimeFailureIsNotCached(t *testing.T) {
+	resetFetchState(t)
+
+	calls := 0
+	apiBitkubTime = &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
+		calls++
+		if calls <= serverTimeAttempts {
+			return nil, errors.New("offline")
+		}
+		return response("2000000000000"), nil
+	})}
+
+	if _, err := GetServerTime(); err == nil {
+		t.Fatalf("expected server time failure")
+	}
+	if _, err := GetServerTime(); err != nil {
+		t.Fatalf("server time did not recover: %v", err)
+	}
+}
+
+func TestServerTimeHonorsContextCancellation(t *testing.T) {
+	resetFetchState(t)
+
+	apiBitkubTime = &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
+		return nil, errors.New("offline")
+	})}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, err := GetServerTimeWithContext(ctx); !errors.Is(err, context.Canceled) {
+		t.Fatalf("expected context cancellation, got %v", err)
 	}
 }

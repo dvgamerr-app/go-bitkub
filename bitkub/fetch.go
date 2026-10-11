@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"sync"
 
 	"github.com/rs/zerolog/log"
 )
@@ -19,11 +18,6 @@ var (
 	apiBitkub     *http.Client
 	apiBitkubTime *http.Client
 	httpTransport *http.Transport
-	bufferPool    = sync.Pool{
-		New: func() any {
-			return new(bytes.Buffer)
-		},
-	}
 )
 
 func init() {
@@ -51,15 +45,25 @@ func initHTTPClients() {
 	}
 }
 
-func generateSignature(payload string) string {
-	h := hmac.New(sha256.New, []byte(secretKey))
+func generateSignature(secret string, payload string) string {
+	h := hmac.New(sha256.New, []byte(secret))
 	h.Write([]byte(payload))
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-// ResponseSecure interface for non-secure API responses
 type ResponseSecure interface {
 	GetError() int
+}
+
+func statusError(resp *http.Response, body string) error {
+	message, exists := ErrorCode[resp.StatusCode]
+	if !exists {
+		message = http.StatusText(resp.StatusCode)
+	}
+	if body != "" {
+		return fmt.Errorf("HTTP %d: %s - %s", resp.StatusCode, message, body)
+	}
+	return fmt.Errorf("HTTP %d: %s", resp.StatusCode, message)
 }
 
 func FetchSecure(method string, path string, reqBody any, resPayload any) error {
@@ -69,22 +73,20 @@ func FetchSecure(method string, path string, reqBody any, resPayload any) error 
 func FetchSecureWithContext(ctx context.Context, method string, path string, reqBody any, resPayload any) error {
 	resp, err := fetchWithContext(ctx, true, method, path, reqBody)
 	if err != nil {
-		return fmt.Errorf("decoding response: %+v", err)
+		return err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode > 299 {
-		return fmt.Errorf("%s : %+v", ErrorCode[resp.StatusCode], resp.Request)
+		return statusError(resp, "")
 	}
 
 	if err = json.NewDecoder(resp.Body).Decode(resPayload); err != nil {
-		return fmt.Errorf("decoding response: %+v", err)
+		return fmt.Errorf("decoding response: %w", err)
 	}
 
-	res := resPayload.(*ResponseAPI)
-
-	if res.Error != 0 {
-		return fmt.Errorf("%s : %+v", ErrorCode[res.Error], res)
+	if res, ok := resPayload.(*ResponseAPI); ok {
+		return res.CheckResponseError()
 	}
 
 	return nil
@@ -97,41 +99,32 @@ func FetchSecureV4(method string, path string, reqBody any, resPayload any) erro
 func FetchSecureV4WithContext(ctx context.Context, method string, path string, reqBody any, resPayload any) error {
 	resp, err := fetchWithContext(ctx, true, method, path, reqBody)
 	if err != nil {
-		return fmt.Errorf("decoding response: %+v", err)
+		return err
 	}
 	defer resp.Body.Close()
 
-	buf := bufferPool.Get().(*bytes.Buffer)
-	buf.Reset()
-	defer bufferPool.Put(buf)
-
-	if _, err := io.Copy(buf, resp.Body); err != nil {
-		return fmt.Errorf("reading response body: %+v", err)
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("reading response body: %w", err)
 	}
 
-	bodyBytes := buf.Bytes()
-
 	if resp.StatusCode > 299 {
-		bodyString := string(bodyBytes)
-		log.Error().Str("response_body", bodyString).Msg("API Error Response")
-		return fmt.Errorf("HTTP %d : %s - %s", resp.StatusCode, resp.Status, bodyString)
+		return statusError(resp, string(bodyBytes))
 	}
 
 	if err = json.Unmarshal(bodyBytes, resPayload); err != nil {
-		return fmt.Errorf("decoding response: %+v", err)
+		return fmt.Errorf("decoding response: %w", err)
 	}
 
-	res := resPayload.(*ResponseAPIV4)
-
-	if res.Code != "0" {
-		errDesc, exists := ErrorCodeV4[res.Code]
-		if exists {
-			return fmt.Errorf("[%s] %s: %s", res.Code, errDesc, res.Message)
-		}
-		return fmt.Errorf("[%s] %s", res.Code, res.Message)
+	res, ok := resPayload.(*ResponseAPIV4)
+	if !ok || res.Code == "0" {
+		return nil
 	}
 
-	return nil
+	if errDesc, exists := ErrorCodeV4[res.Code]; exists {
+		return fmt.Errorf("[%s] %s: %s", res.Code, errDesc, res.Message)
+	}
+	return fmt.Errorf("[%s] %s", res.Code, res.Message)
 }
 
 func FetchNonSecure(method string, path string, reqBody any, resPayload any) error {
@@ -141,16 +134,19 @@ func FetchNonSecure(method string, path string, reqBody any, resPayload any) err
 func FetchNonSecureWithContext(ctx context.Context, method string, path string, reqBody any, resPayload any) error {
 	resp, err := fetchWithContext(ctx, false, method, path, reqBody)
 	if err != nil {
-		return fmt.Errorf("decoding response: %+v", err)
+		return err
 	}
 	defer resp.Body.Close()
 
-	if err = json.NewDecoder(resp.Body).Decode(resPayload); err != nil {
-		return fmt.Errorf("decoding response: %+v", err)
+	if resp.StatusCode > 299 {
+		return statusError(resp, "")
 	}
 
-	res, ok := resPayload.(ResponseSecure)
-	if ok && res.GetError() != 0 {
+	if err = json.NewDecoder(resp.Body).Decode(resPayload); err != nil {
+		return fmt.Errorf("decoding response: %w", err)
+	}
+
+	if res, ok := resPayload.(ResponseSecure); ok && res.GetError() != 0 {
 		errMsg, exists := ErrorCode[res.GetError()]
 		if !exists {
 			errMsg = "Unknown error"
@@ -162,57 +158,52 @@ func FetchNonSecureWithContext(ctx context.Context, method string, path string, 
 }
 
 func fetchWithContext(ctx context.Context, secure bool, method string, path string, reqBody any) (*http.Response, error) {
-	var payload []byte = nil
 	serverTime := ""
 	if secure {
 		var err error
-		serverTime, err = GetServerTime()
+		serverTime, err = GetServerTimeWithContext(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("server time: %+v", err)
+			return nil, fmt.Errorf("server time: %w", err)
 		}
 	}
 
+	var payload []byte
+	var body io.Reader
 	if reqBody != nil {
-		buf := bufferPool.Get().(*bytes.Buffer)
-		buf.Reset()
-		defer bufferPool.Put(buf)
-
-		if err := json.NewEncoder(buf).Encode(reqBody); err != nil {
-			return nil, fmt.Errorf("marshaling json: %+v", err)
+		var err error
+		payload, err = json.Marshal(reqBody)
+		if err != nil {
+			return nil, fmt.Errorf("marshaling json: %w", err)
 		}
-		payload = make([]byte, buf.Len())
-		copy(payload, buf.Bytes())
+		body = bytes.NewReader(payload)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, fmt.Sprintf("%s%s", BASE_URL, path), bytes.NewReader(payload))
+	req, err := http.NewRequestWithContext(ctx, method, BASE_URL+path, body)
 	if err != nil {
-		return nil, fmt.Errorf("creating request: %+v", err)
+		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Content-Type", "application/json")
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
 	if secure {
-		signaturePayload := fmt.Sprintf(`%s%s%s`, serverTime, req.Method, req.URL.Path)
+		key, secret := credentials()
+		signaturePayload := serverTime + req.Method + req.URL.Path
 		if req.URL.RawQuery != "" {
-			signaturePayload += fmt.Sprintf(`?%s`, req.URL.RawQuery)
+			signaturePayload += "?" + req.URL.RawQuery
 		}
-		if len(payload) > 0 {
-			signaturePayload += string(payload)
-		}
+		signaturePayload += string(payload)
 
 		req.Header.Set("X-BTK-TIMESTAMP", serverTime)
-		req.Header.Set("X-BTK-APIKEY", apiKey)
-		req.Header.Set("X-BTK-SIGN", generateSignature(signaturePayload))
+		req.Header.Set("X-BTK-APIKEY", key)
+		req.Header.Set("X-BTK-SIGN", generateSignature(secret, signaturePayload))
 	}
 
 	resp, err := apiBitkub.Do(req)
 	if err != nil {
-		status := 0
-		if resp != nil {
-			status = resp.StatusCode
-		}
-		log.Warn().Int("status", status).Str("method", method).Str("path", path).Err(err).Stack().Send()
-		return nil, fmt.Errorf("making request: %+v", err)
+		log.Warn().Str("method", method).Str("path", path).Err(err).Stack().Send()
+		return nil, fmt.Errorf("making request: %w", err)
 	}
 
 	log.Debug().Int("status", resp.StatusCode).Str("method", method).Str("path", path).Send()
