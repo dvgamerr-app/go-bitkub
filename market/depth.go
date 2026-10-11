@@ -14,18 +14,24 @@ type DepthResult struct {
 	Bids []DepthEntry `json:"bids"`
 }
 
-func GetDepth(symbol string, limit int) (*DepthResult, error) {
-	var result DepthResult
+type DepthResponse struct {
+	bitkub.Error
+	Result DepthResult `json:"result"`
+}
 
-	url := fmt.Sprintf("/api/market/depth?sym=%s", utils.NormalizeSymbol(symbol))
+func GetDepth(symbol string, limit int) (*DepthResult, error) {
+	var response DepthResponse
+
+	url := fmt.Sprintf("/api/v3/market/depth?sym=%s", utils.UppercaseSymbol(symbol))
 	if limit > 0 {
 		url = fmt.Sprintf("%s&lmt=%d", url, limit)
 	}
 
-	if err := bitkub.FetchNonSecure("GET", url, nil, &result); err != nil {
+	if err := bitkub.FetchNonSecure("GET", url, nil, &response); err != nil {
 		return nil, err
 	}
 
+	result := response.Result
 	if len(result.Asks) == 0 && len(result.Bids) == 0 {
 		return nil, fmt.Errorf("invalid symbol or no data available for %s", symbol)
 	}

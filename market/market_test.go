@@ -63,10 +63,9 @@ func TestCancelOrder(t *testing.T) {
 
 func TestGetDepth(t *testing.T) {
 	result, err := GetDepth("kub_thb", 10)
-	if err != nil {
-		t.Skipf("Skipping test: %v", err)
-	}
-	assert.NotNil(t, result)
+	assert.Nil(t, err)
+	assert.NotEmpty(t, result.Bids)
+	assert.NotEmpty(t, result.Asks)
 }
 
 func TestGetOpenOrders(t *testing.T) {
@@ -159,7 +158,11 @@ func TestGetSymbols(t *testing.T) {
 func TestGetTicker(t *testing.T) {
 	result, err := GetTicker("kub_thb")
 	assert.Nil(t, err)
-	assert.NotNil(t, result)
+	assert.Len(t, result, 1)
+	assert.Equal(t, "THB_KUB", result[0].Symbol)
+
+	_, err = GetTicker("unknown_thb")
+	assert.NotNil(t, err)
 }
 
 func TestGetTrades(t *testing.T) {

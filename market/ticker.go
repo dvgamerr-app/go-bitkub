@@ -28,23 +28,30 @@ type Ticker struct {
 func GetTicker(symbol string) ([]Ticker, error) {
 	var resultMap map[string]json.RawMessage
 
-	url := "/api/market/ticker"
-	if symbol != "" {
-		url = fmt.Sprintf("%s?sym=%s", url, utils.NormalizeSymbol(symbol))
+	if err := bitkub.FetchNonSecure("GET", "/api/market/ticker", nil, &resultMap); err != nil {
+		return nil, err
 	}
 
-	if err := bitkub.FetchNonSecure("GET", url, nil, &resultMap); err != nil {
-		return nil, err
+	wanted := ""
+	if symbol != "" {
+		wanted = utils.NormalizeSymbol(symbol)
 	}
 
 	result := make([]Ticker, 0, len(resultMap))
 	for sym, rawData := range resultMap {
+		if wanted != "" && sym != wanted {
+			continue
+		}
 		var ticker Ticker
 		if err := json.Unmarshal(rawData, &ticker); err != nil {
 			continue
 		}
 		ticker.Symbol = sym
 		result = append(result, ticker)
+	}
+
+	if wanted != "" && len(result) == 0 {
+		return nil, fmt.Errorf("invalid symbol or no data available for %s", symbol)
 	}
 
 	return result, nil
