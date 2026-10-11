@@ -20,7 +20,26 @@ export PATH=$PATH:$(go env GOPATH)/bin
 $env:PATH += ";$(go env GOPATH)\bin"
 ```
 
-### Option 2: Build from source
+### Option 2: Download a prebuilt binary
+
+Each release ships archives for Linux and macOS (amd64 and arm64) and Windows (amd64). The `releases/latest/download` links below always point at the newest release.
+
+```bash
+# Linux x86_64 (other targets: Linux_arm64, Darwin_x86_64, Darwin_arm64)
+curl -fsSL https://github.com/dvgamerr-app/go-bitkub/releases/latest/download/go-bitkub_Linux_x86_64.tar.gz | tar -xz bitkub
+sudo mv bitkub /usr/local/bin/
+```
+
+```powershell
+# Windows PowerShell
+Invoke-WebRequest https://github.com/dvgamerr-app/go-bitkub/releases/latest/download/go-bitkub_Windows_x86_64.zip -OutFile bitkub.zip
+Expand-Archive bitkub.zip -DestinationPath "$env:USERPROFILE\bitkub"
+$env:PATH += ";$env:USERPROFILE\bitkub"
+```
+
+Verify downloads against `checksums.txt` from the same release.
+
+### Option 3: Build from source
 
 ```bash
 git clone https://github.com/dvgamerr-app/go-bitkub.git
@@ -28,7 +47,7 @@ cd go-bitkub
 go build -o bitkub ./cmd/bitkub
 ```
 
-### Option 3: Install locally
+### Option 4: Install locally
 
 ```bash
 git clone https://github.com/dvgamerr-app/go-bitkub.git
@@ -57,21 +76,17 @@ bitkub market depth BTC_THB --limit 5
 
 ## Configuration
 
+Market data commands (`market symbols`, `ticker`, `trades`, `depth`, `bids`, `asks`, `history` and both `stream` commands) need no configuration. Account, trading, crypto, fiat and user commands need a Bitkub API key and secret; without them they stop with `missing API credentials`.
+
 ### Method 1: Environment Variables (Recommended)
 
-Create `.env` file:
+Export the variables, or create a `.env` file in the directory you run `bitkub` from:
 ```env
 BTK_APIKEY=your_api_key_here
-BTK_SECRET=your_BTK_SECRET_here
+BTK_SECRET=your_api_secret_here
 ```
 
 ### Method 2: Command Line Flags
-
-```bash
-bitkub --key YOUR_KEY --secret YOUR_SECRET market balances
-```
-
-### Method 3: Short Flags
 
 ```bash
 bitkub --key YOUR_KEY --secret YOUR_SECRET market balances
