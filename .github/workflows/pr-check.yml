@@ -35,7 +35,7 @@ jobs:
         run: go vet ./...
       - name: Unit tests
         if: ${{ !cancelled() }}
-        run: go test -count=1 $(go list ./... | grep -v /stream)
+        run: go list ./... | grep -v /stream | xargs go test -count=1
       - name: Build
         if: ${{ !cancelled() }}
         run: go build -buildvcs=false ./...
