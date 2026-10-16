@@ -135,15 +135,7 @@ footer a{color:var(--ink)}
   .btn:hover{transform:none}
 }
 </style>
-  <script async src="https://rum.cronitor.io/script.js"></script>
-  <script>
-    window.cronitor =
-      window.cronitor ||
-      function () {
-        ;(window.cronitor.q = window.cronitor.q || []).push(arguments)
-      }
-    cronitor('config', { clientKey: 'a08df15d735c0c7518246129767fd319' })
-  </script>
+<meta name="traceway-dsn" content="__PUBLIC_TRACEWAY_DSN__">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -307,6 +299,20 @@ s.ConnectMarket(<span class="s">"market.ticker.thb_btc"</span>)
   </div>
 </footer>
 
+<script>
+(function () {
+  var m = document.querySelector('meta[name=traceway-dsn]');
+  var dsn = m && m.content;
+  if (!dsn || dsn.indexOf('__') === 0 || dsn.indexOf('@') < 1) return;
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@tracewayapp/frontend@1.2.1/dist/traceway.iife.global.js';
+  s.async = true;
+  s.onload = function () {
+    try { window.Traceway.init(dsn, { recordAllSessions: true }); } catch (e) {}
+  };
+  document.head.appendChild(s);
+})();
+</script>
 <script>
 document.querySelectorAll('[data-copy]').forEach(function (b) {
   b.addEventListener('click', function () {
