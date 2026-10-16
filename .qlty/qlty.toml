@@ -59,3 +59,23 @@ mode = "comment"
 [[source]]
 name = "default"
 default = true
+
+[[plugin]]
+name = "golangci-lint"
+mode = "comment"
+
+[[plugin]]
+name = "osv-scanner"
+
+[[plugin]]
+name = "trufflehog"
+
+[[plugin]]
+name = "zizmor"
+
+[[plugin]]
+name = "actionlint"
+
+[[exclude]]
+plugins = ["zizmor"]
+file_patterns = [".github/workflows/release.yml", ".github/workflows/testing.yml"]
